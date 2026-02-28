@@ -2,7 +2,18 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ChevronRight, Plus, Trash2, TrendingUp, X } from "lucide-react";
 import { Fragment, useState } from "react";
 import type { AccountType } from "#/generated/prisma/enums";
-import { createAccount, deleteAccount, deleteReturn, deleteSnapshot, getAccounts, getPeople, getReturns, getSnapshots } from "./accountFns";
+import {
+  createAccount,
+  createReturn,
+  createSnapshot,
+  deleteAccount,
+  deleteReturn,
+  deleteSnapshot,
+  getAccounts,
+  getPeople,
+  getReturns,
+  getSnapshots,
+} from "./accountFns";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -135,6 +146,19 @@ const panelSaveBtn = (enabled: boolean): React.CSSProperties => ({
   cursor: enabled ? "pointer" : "default",
 });
 
+const inlineInputStyle: React.CSSProperties = {
+  background: "var(--app-bg)",
+  border: "1px solid var(--border)",
+  borderRadius: 4,
+  padding: "4px 6px",
+  fontSize: 12,
+  color: "var(--text)",
+  fontFamily: "inherit",
+  outline: "none",
+  boxSizing: "border-box",
+  width: "100%",
+};
+
 // ─── Owner Badge ──────────────────────────────────────────────────────────────
 
 function OwnerBadge({ name }: { name: string }) {
@@ -211,6 +235,203 @@ function ReturnLine({ ret, onDelete }: { ret: ReturnItem; onDelete: (id: number)
   );
 }
 
+// ─── Add Snapshot Row ─────────────────────────────────────────────────────────
+
+function AddSnapshotRow({ accountId, onSaved, onCancel }: { accountId: number; onSaved: () => void; onCancel: () => void }) {
+  const today = new Date().toISOString().slice(0, 10);
+  const [date, setDate] = useState(today);
+  const [balance, setBalance] = useState("");
+  const [note, setNote] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const canSave = balance !== "" && !saving;
+
+  const handleSave = async () => {
+    if (!canSave) return;
+    setSaving(true);
+    await createSnapshot({ data: { accountId, date, balance: Number(balance), note: note.trim() || undefined } });
+    onSaved();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSave();
+    }
+    if (e.key === "Escape") {
+      onCancel();
+    }
+  };
+
+  return (
+    <tr style={{ borderTop: "1px solid var(--border)", background: `color-mix(in srgb, ${ACCENT_HEX} 5%, transparent)` }}>
+      <td style={{ padding: "5px 8px" }}>
+        {/* biome-ignore lint/a11y/noAutofocus: intentional for inline form UX */}
+        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} onKeyDown={handleKeyDown} style={inlineInputStyle} autoFocus />
+      </td>
+      <td style={{ padding: "5px 8px" }}>
+        <input
+          type="number"
+          value={balance}
+          onChange={(e) => setBalance(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="0"
+          className="num"
+          style={{ ...inlineInputStyle, textAlign: "right" }}
+        />
+      </td>
+      <td style={{ padding: "5px 8px" }}>
+        <input value={note} onChange={(e) => setNote(e.target.value)} onKeyDown={handleKeyDown} placeholder="Note (optional)" style={inlineInputStyle} />
+      </td>
+      <td style={{ padding: "5px 4px", width: 24 }}>
+        <button type="button" onClick={onCancel} style={iconBtn}>
+          <X size={11} style={{ color: "var(--text-dim)" }} />
+        </button>
+      </td>
+    </tr>
+  );
+}
+
+// ─── Add Return Row ───────────────────────────────────────────────────────────
+
+function AddReturnRow({ accountId, onSaved, onCancel }: { accountId: number; onSaved: () => void; onCancel: () => void }) {
+  const [year, setYear] = useState(String(new Date().getFullYear() - 1));
+  const [returnPct, setReturnPct] = useState("");
+  const [showCalc, setShowCalc] = useState(false);
+  const [calcStart, setCalcStart] = useState("");
+  const [calcEnd, setCalcEnd] = useState("");
+  const [calcContribs, setCalcContribs] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const canSave = returnPct !== "" && !saving;
+
+  const handleSave = async () => {
+    if (!canSave) return;
+    setSaving(true);
+    await createReturn({ data: { accountId, year: Number(year), returnPercent: Number(returnPct) } });
+    onSaved();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSave();
+    }
+    if (e.key === "Escape") {
+      onCancel();
+    }
+  };
+
+  const handleCalculate = () => {
+    const start = Number(calcStart);
+    const end = Number(calcEnd);
+    const net = Number(calcContribs) || 0;
+    if (start !== 0) {
+      setReturnPct((((end - start - net) / start) * 100).toFixed(2));
+      setShowCalc(false);
+    }
+  };
+
+  const labelStyle: React.CSSProperties = { fontSize: 10, color: "var(--text-dim)", marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.05em" };
+
+  return (
+    <>
+      <tr style={{ borderTop: "1px solid var(--border)", background: `color-mix(in srgb, ${ACCENT_HEX} 5%, transparent)` }}>
+        <td style={{ padding: "5px 8px" }}>
+          {/* biome-ignore lint/a11y/noAutofocus: intentional for inline form UX */}
+          <input type="number" value={year} onChange={(e) => setYear(e.target.value)} onKeyDown={handleKeyDown} style={inlineInputStyle} autoFocus />
+        </td>
+        <td style={{ padding: "5px 8px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <input
+              type="number"
+              value={returnPct}
+              onChange={(e) => setReturnPct(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="0.00"
+              className="num"
+              style={{ ...inlineInputStyle, textAlign: "right" }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowCalc((v) => !v)}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                color: showCalc ? ACCENT : "var(--text-dim)",
+                fontSize: 10,
+                padding: 0,
+                fontFamily: "inherit",
+                whiteSpace: "nowrap",
+                flexShrink: 0,
+              }}>
+              Calc
+            </button>
+          </div>
+        </td>
+        <td style={{ padding: "5px 4px", width: 24 }}>
+          <button type="button" onClick={onCancel} style={iconBtn}>
+            <X size={11} style={{ color: "var(--text-dim)" }} />
+          </button>
+        </td>
+      </tr>
+      {showCalc && (
+        <tr style={{ background: `color-mix(in srgb, ${ACCENT_HEX} 3%, transparent)` }}>
+          <td colSpan={3} style={{ padding: "8px 8px 10px", borderTop: "1px dashed var(--border)" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <div style={{ display: "flex", gap: 6 }}>
+                <div style={{ flex: 1 }}>
+                  <div style={labelStyle}>Start</div>
+                  <input
+                    type="number"
+                    value={calcStart}
+                    onChange={(e) => setCalcStart(e.target.value)}
+                    placeholder="0"
+                    className="num"
+                    style={inlineInputStyle}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={labelStyle}>End</div>
+                  <input type="number" value={calcEnd} onChange={(e) => setCalcEnd(e.target.value)} placeholder="0" className="num" style={inlineInputStyle} />
+                </div>
+              </div>
+              <div>
+                <div style={labelStyle}>Net Contributions</div>
+                <input
+                  type="number"
+                  value={calcContribs}
+                  onChange={(e) => setCalcContribs(e.target.value)}
+                  placeholder="0"
+                  className="num"
+                  style={inlineInputStyle}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleCalculate}
+                style={{
+                  padding: "5px 10px",
+                  borderRadius: 4,
+                  background: `color-mix(in srgb, ${ACCENT_HEX} 15%, transparent)`,
+                  border: `1px solid color-mix(in srgb, ${ACCENT_HEX} 30%, transparent)`,
+                  color: ACCENT,
+                  fontSize: 11,
+                  fontFamily: "inherit",
+                  cursor: "pointer",
+                  alignSelf: "flex-start",
+                }}>
+                Accept
+              </button>
+            </div>
+          </td>
+        </tr>
+      )}
+    </>
+  );
+}
+
 // ─── Accordion Detail ─────────────────────────────────────────────────────────
 
 function AccountDetail({
@@ -218,12 +439,16 @@ function AccountDetail({
   detail,
   onDeleteSnapshot,
   onDeleteReturn,
+  onSaved,
 }: {
   account: AccountItem;
   detail: DetailState;
   onDeleteSnapshot: (id: number) => void;
   onDeleteReturn: (id: number) => void;
+  onSaved: () => void;
 }) {
+  const [showAddSnapshot, setShowAddSnapshot] = useState(false);
+  const [showAddReturn, setShowAddReturn] = useState(false);
   const showReturns = !NO_RETURNS.has(account.type);
 
   return (
@@ -256,7 +481,10 @@ function AccountDetail({
                 }}>
                 Balance History
               </span>
-              <button type="button" style={stubBtn}>
+              <button
+                type="button"
+                style={{ ...stubBtn, ...(showAddSnapshot ? { color: ACCENT, borderColor: ACCENT } : {}) }}
+                onClick={() => setShowAddSnapshot((v) => !v)}>
                 <Plus size={10} />
                 Add Snapshot
               </button>
@@ -271,16 +499,7 @@ function AccountDetail({
                 }}>
                 Loading…
               </div>
-            ) : detail.snapshots.length === 0 ? (
-              <div
-                style={{
-                  fontSize: 12,
-                  color: "var(--text-dim)",
-                  fontStyle: "italic",
-                }}>
-                No balance snapshots yet
-              </div>
-            ) : (
+            ) : showAddSnapshot || detail.snapshots.length > 0 ? (
               <table
                 style={{
                   width: "100%",
@@ -296,11 +515,30 @@ function AccountDetail({
                   </tr>
                 </thead>
                 <tbody>
+                  {showAddSnapshot && (
+                    <AddSnapshotRow
+                      accountId={account.id}
+                      onSaved={() => {
+                        setShowAddSnapshot(false);
+                        onSaved();
+                      }}
+                      onCancel={() => setShowAddSnapshot(false)}
+                    />
+                  )}
                   {detail.snapshots.map((snap) => (
                     <SnapshotLine key={snap.id} snap={snap} onDelete={onDeleteSnapshot} />
                   ))}
                 </tbody>
               </table>
+            ) : (
+              <div
+                style={{
+                  fontSize: 12,
+                  color: "var(--text-dim)",
+                  fontStyle: "italic",
+                }}>
+                No balance snapshots yet
+              </div>
             )}
           </div>
 
@@ -324,7 +562,10 @@ function AccountDetail({
                   }}>
                   Annual Returns
                 </span>
-                <button type="button" style={stubBtn}>
+                <button
+                  type="button"
+                  style={{ ...stubBtn, ...(showAddReturn ? { color: ACCENT, borderColor: ACCENT } : {}) }}
+                  onClick={() => setShowAddReturn((v) => !v)}>
                   <Plus size={10} />
                   Add
                 </button>
@@ -339,16 +580,7 @@ function AccountDetail({
                   }}>
                   Loading…
                 </div>
-              ) : detail.returns.length === 0 ? (
-                <div
-                  style={{
-                    fontSize: 12,
-                    color: "var(--text-dim)",
-                    fontStyle: "italic",
-                  }}>
-                  No returns recorded
-                </div>
-              ) : (
+              ) : showAddReturn || detail.returns.length > 0 ? (
                 <table
                   style={{
                     width: "100%",
@@ -363,11 +595,30 @@ function AccountDetail({
                     </tr>
                   </thead>
                   <tbody>
+                    {showAddReturn && (
+                      <AddReturnRow
+                        accountId={account.id}
+                        onSaved={() => {
+                          setShowAddReturn(false);
+                          onSaved();
+                        }}
+                        onCancel={() => setShowAddReturn(false)}
+                      />
+                    )}
                     {detail.returns.map((ret) => (
                       <ReturnLine key={ret.id} ret={ret} onDelete={onDeleteReturn} />
                     ))}
                   </tbody>
                 </table>
+              ) : (
+                <div
+                  style={{
+                    fontSize: 12,
+                    color: "var(--text-dim)",
+                    fontStyle: "italic",
+                  }}>
+                  No returns recorded
+                </div>
               )}
             </div>
           )}
@@ -923,6 +1174,10 @@ function InvestmentsPage() {
                             detail={detail}
                             onDeleteSnapshot={(snapId) => handleDeleteSnapshot(snapId, account.id)}
                             onDeleteReturn={(retId) => handleDeleteReturn(retId, account.id)}
+                            onSaved={() => {
+                              refreshDetail(account.id);
+                              router.invalidate();
+                            }}
                           />
                         )}
                       </Fragment>
