@@ -100,6 +100,13 @@ function InvestmentsPage() {
     }));
   };
 
+  const handleRowKeyDown = (e: React.KeyboardEvent, id: number) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      toggleExpand(id);
+    }
+  };
+
   const toggleExpand = async (id: number) => {
     if (expandedId === id) {
       setExpandedId(null);
@@ -255,7 +262,10 @@ function InvestmentsPage() {
                       <Fragment key={account.id}>
                         <tr
                           id={`account-${account.id}`}
+                          tabIndex={0}
+                          aria-expanded={isExpanded}
                           onClick={() => toggleExpand(account.id)}
+                          onKeyDown={(e) => handleRowKeyDown(e, account.id)}
                           onMouseEnter={() => setHoveredRowId(account.id)}
                           onMouseLeave={() => setHoveredRowId(null)}
                           className="cursor-pointer"
@@ -311,16 +321,15 @@ function InvestmentsPage() {
 
                           {/* Delete */}
                           <td className="py-[10px] px-2">
-                            {hoveredRowId === account.id && (
-                              <IconButton
-                                variant="ghost"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteAccount(account.id);
-                                }}>
-                                <Trash2 size={13} style={{ color: "var(--text-dim)" }} />
-                              </IconButton>
-                            )}
+                            <IconButton
+                              variant="ghost"
+                              aria-label={`Delete ${account.name}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteAccount(account.id);
+                              }}>
+                              <Trash2 size={13} style={{ color: "var(--text-dim)" }} />
+                            </IconButton>
                           </td>
                         </tr>
 
