@@ -11,6 +11,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "format": "biome format",
+    "format:fix": "biome format --write",
     "lint": "biome lint",
     "check": "biome check",
     "db:generate": "dotenv -e .env.local -- prisma generate",

@@ -37,6 +37,7 @@ pnpm build        # Production build
 pnpm test         # Run tests (Vitest)
 pnpm lint         # Biome lint
 pnpm format       # Biome format
+pnpm format:fix   # Biome format with auto fix
 pnpm check        # Biome lint + format check (run this to catch issues)
 ```
 
@@ -167,7 +168,7 @@ Dark-only. Design tokens are CSS custom properties defined in `src/styles.css`.
 - `color-mix()` is available and used for tinted backgrounds (e.g., icon well backgrounds)
 
 ### Code Committing
-before committing code run a format and a check to keep things consistent
+before committing code run a format:fix and a check to keep things consistent
 
 ### AI integration
 
