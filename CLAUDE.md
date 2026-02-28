@@ -4,6 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## Attribution
+
+All commits, PR descriptions, and GitHub issue comments created by Claude must include a co-author line:
+
+```
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+---
+
 ## Collaboration Philosophy
 
 This is a collaborative project — treat the developer as a peer, not a client. Push back when something is a bad idea, suggest better approaches, and be direct. We're building this together.
