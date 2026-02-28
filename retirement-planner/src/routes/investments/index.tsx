@@ -1,12 +1,14 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { ChevronRight, Plus, Trash2, TrendingUp } from "lucide-react";
+import { ChevronRight, Plus, Trash2, TrendingUp, X } from "lucide-react";
 import { Fragment, useState } from "react";
 import type { AccountType } from "#/generated/prisma/enums";
 import {
+	createAccount,
 	deleteAccount,
 	deleteReturn,
 	deleteSnapshot,
 	getAccounts,
+	getPeople,
 	getReturns,
 	getSnapshots,
 } from "./accountFns";
@@ -49,6 +51,7 @@ const fmtReturn = (pct: number) => `${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%`;
 type AccountItem = Awaited<ReturnType<typeof getAccounts>>[number];
 type SnapshotItem = Awaited<ReturnType<typeof getSnapshots>>[number];
 type ReturnItem = Awaited<ReturnType<typeof getReturns>>[number];
+type PersonItem = Awaited<ReturnType<typeof getPeople>>[number];
 
 interface DetailState {
 	snapshots: SnapshotItem[];
@@ -60,7 +63,10 @@ interface DetailState {
 
 export const Route = createFileRoute("/investments/")({
 	component: InvestmentsPage,
-	loader: async () => getAccounts(),
+	loader: async () => {
+		const [accounts, people] = await Promise.all([getAccounts(), getPeople()]);
+		return { accounts, people };
+	},
 });
 
 // ─── Shared Styles ────────────────────────────────────────────────────────────
@@ -100,6 +106,44 @@ const thStyle = (align: "left" | "right"): React.CSSProperties => ({
 	textTransform: "uppercase",
 	letterSpacing: "0.05em",
 	whiteSpace: "nowrap",
+});
+
+const panelInputStyle: React.CSSProperties = {
+	width: "100%",
+	background: "var(--surface-raised)",
+	border: "1px solid var(--border)",
+	borderRadius: 6,
+	padding: "7px 10px",
+	fontSize: 13,
+	color: "var(--text)",
+	fontFamily: "inherit",
+	outline: "none",
+	boxSizing: "border-box",
+};
+
+const panelCancelBtn: React.CSSProperties = {
+	padding: "7px 16px",
+	borderRadius: 6,
+	background: "none",
+	border: "1px solid var(--border)",
+	color: "var(--text-muted)",
+	fontSize: 13,
+	fontFamily: "inherit",
+	cursor: "pointer",
+};
+
+const panelSaveBtn = (enabled: boolean): React.CSSProperties => ({
+	padding: "7px 16px",
+	borderRadius: 6,
+	background: enabled
+		? `color-mix(in srgb, ${ACCENT_HEX} 20%, transparent)`
+		: "var(--surface-raised)",
+	border: `1px solid ${enabled ? `color-mix(in srgb, ${ACCENT_HEX} 40%, transparent)` : "var(--border)"}`,
+	color: enabled ? ACCENT : "var(--text-dim)",
+	fontSize: 13,
+	fontWeight: 500,
+	fontFamily: "inherit",
+	cursor: enabled ? "pointer" : "default",
 });
 
 // ─── Owner Badge ──────────────────────────────────────────────────────────────
@@ -521,14 +565,229 @@ function EmptyState() {
 	);
 }
 
+// ─── Panel Field Wrapper ──────────────────────────────────────────────────────
+
+function Field({
+	label,
+	children,
+}: {
+	label: string;
+	children: React.ReactNode;
+}) {
+	return (
+		<div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+			<label
+				style={{
+					fontSize: 11,
+					fontWeight: 500,
+					color: "var(--text-muted)",
+					textTransform: "uppercase",
+					letterSpacing: "0.05em",
+				}}
+			>
+				{label}
+			</label>
+			{children}
+		</div>
+	);
+}
+
+// ─── Add Account Panel ────────────────────────────────────────────────────────
+
+function AddAccountPanel({
+	people,
+	onClose,
+	onSaved,
+}: {
+	people: PersonItem[];
+	onClose: () => void;
+	onSaved: () => void;
+}) {
+	const today = new Date().toISOString().slice(0, 10);
+	const [name, setName] = useState("");
+	const [type, setType] = useState<AccountType>("TFSA");
+	const [ownerId, setOwnerId] = useState<number>(people[0]?.id ?? 0);
+	const [balance, setBalance] = useState("");
+	const [date, setDate] = useState(today);
+	const [saving, setSaving] = useState(false);
+
+	const canSave = name.trim().length > 0 && !saving;
+
+	const handleSave = async () => {
+		if (!canSave) return;
+		setSaving(true);
+		await createAccount({
+			data: {
+				name: name.trim(),
+				type,
+				ownerId,
+				initialBalance: balance !== "" ? Number(balance) : undefined,
+				initialDate: balance !== "" ? date : undefined,
+			},
+		});
+		onSaved();
+	};
+
+	return (
+		<>
+			{/* Backdrop */}
+			<div
+				onClick={onClose}
+				style={{
+					position: "fixed",
+					inset: 0,
+					background: "rgba(0,0,0,0.45)",
+					zIndex: 100,
+				}}
+			/>
+
+			{/* Panel */}
+			<div
+				style={{
+					position: "fixed",
+					top: 0,
+					right: 0,
+					height: "100%",
+					width: 380,
+					background: "var(--surface)",
+					borderLeft: "1px solid var(--border)",
+					zIndex: 101,
+					display: "flex",
+					flexDirection: "column",
+				}}
+			>
+				{/* Header */}
+				<div
+					style={{
+						padding: "18px 20px",
+						borderBottom: "1px solid var(--border)",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "space-between",
+					}}
+				>
+					<h2
+						style={{
+							margin: 0,
+							fontSize: 15,
+							fontWeight: 600,
+							color: "var(--text)",
+						}}
+					>
+						Add Account
+					</h2>
+					<button type="button" onClick={onClose} style={iconBtn}>
+						<X size={15} style={{ color: "var(--text-dim)" }} />
+					</button>
+				</div>
+
+				{/* Fields */}
+				<div
+					style={{
+						padding: 20,
+						display: "flex",
+						flexDirection: "column",
+						gap: 16,
+						flex: 1,
+						overflowY: "auto",
+					}}
+				>
+					<Field label="Name">
+						<input
+							autoFocus
+							value={name}
+							onChange={(e) => setName(e.target.value)}
+							onKeyDown={(e) => e.key === "Enter" && handleSave()}
+							placeholder="e.g. TD TFSA"
+							style={panelInputStyle}
+						/>
+					</Field>
+
+					<Field label="Type">
+						<select
+							value={type}
+							onChange={(e) => setType(e.target.value as AccountType)}
+							style={panelInputStyle}
+						>
+							<option value="TFSA">TFSA</option>
+							<option value="RRSP">RRSP</option>
+							<option value="RRIF">RRIF</option>
+							<option value="REGULAR_SAVINGS">Regular Savings</option>
+							<option value="CHEQUING">Chequing</option>
+						</select>
+					</Field>
+
+					<Field label="Owner">
+						<select
+							value={ownerId}
+							onChange={(e) => setOwnerId(Number(e.target.value))}
+							style={panelInputStyle}
+						>
+							{people.map((p) => (
+								<option key={p.id} value={p.id}>
+									{p.name}
+								</option>
+							))}
+						</select>
+					</Field>
+
+					<Field label="Initial Balance (optional)">
+						<input
+							type="number"
+							value={balance}
+							onChange={(e) => setBalance(e.target.value)}
+							placeholder="0"
+							className="num"
+							style={panelInputStyle}
+						/>
+					</Field>
+
+					<Field label="As of Date">
+						<input
+							type="date"
+							value={date}
+							onChange={(e) => setDate(e.target.value)}
+							style={panelInputStyle}
+						/>
+					</Field>
+				</div>
+
+				{/* Footer */}
+				<div
+					style={{
+						padding: "14px 20px",
+						borderTop: "1px solid var(--border)",
+						display: "flex",
+						gap: 8,
+						justifyContent: "flex-end",
+					}}
+				>
+					<button type="button" onClick={onClose} style={panelCancelBtn}>
+						Cancel
+					</button>
+					<button
+						type="button"
+						onClick={handleSave}
+						disabled={!canSave}
+						style={panelSaveBtn(canSave)}
+					>
+						{saving ? "Saving…" : "Save Account"}
+					</button>
+				</div>
+			</div>
+		</>
+	);
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 function InvestmentsPage() {
 	const router = useRouter();
-	const accounts = Route.useLoaderData();
+	const { accounts, people } = Route.useLoaderData();
 	const [expandedId, setExpandedId] = useState<number | null>(null);
 	const [details, setDetails] = useState<Record<number, DetailState>>({});
 	const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
+	const [panelOpen, setPanelOpen] = useState(false);
 
 	const toggleExpand = async (id: number) => {
 		if (expandedId === id) {
@@ -584,260 +843,282 @@ function InvestmentsPage() {
 	const showToc = accounts.length > 4;
 
 	return (
-		<div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
-			{/* Main content */}
-			<div
-				style={{
-					flex: 1,
-					minWidth: 0,
-					display: "flex",
-					flexDirection: "column",
-					gap: 20,
-				}}
-			>
-				{/* Header */}
+		<>
+			<div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
+				{/* Main content */}
 				<div
 					style={{
+						flex: 1,
+						minWidth: 0,
 						display: "flex",
-						alignItems: "center",
-						justifyContent: "space-between",
+						flexDirection: "column",
+						gap: 20,
 					}}
 				>
-					<div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-						<div
-							style={{
-								width: 4,
-								height: 20,
-								borderRadius: 2,
-								backgroundColor: ACCENT_HEX,
-							}}
-						/>
-						<h1
-							style={{
-								margin: 0,
-								fontSize: 18,
-								fontWeight: 600,
-								color: "var(--text)",
-								letterSpacing: "-0.02em",
-							}}
-						>
-							Investment Accounts
-						</h1>
-					</div>
-
-					<button
-						type="button"
+					{/* Header */}
+					<div
 						style={{
 							display: "flex",
 							alignItems: "center",
-							gap: 6,
-							padding: "6px 14px",
-							borderRadius: 6,
-							background: `color-mix(in srgb, ${ACCENT_HEX} 12%, transparent)`,
-							border: `1px solid color-mix(in srgb, ${ACCENT_HEX} 30%, transparent)`,
-							color: ACCENT,
-							fontSize: 12.5,
-							fontWeight: 500,
-							fontFamily: "inherit",
-							cursor: "pointer",
+							justifyContent: "space-between",
 						}}
 					>
-						<Plus size={13} />
-						Add Account
-					</button>
-				</div>
+						<div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+							<div
+								style={{
+									width: 4,
+									height: 20,
+									borderRadius: 2,
+									backgroundColor: ACCENT_HEX,
+								}}
+							/>
+							<h1
+								style={{
+									margin: 0,
+									fontSize: 18,
+									fontWeight: 600,
+									color: "var(--text)",
+									letterSpacing: "-0.02em",
+								}}
+							>
+								Investment Accounts
+							</h1>
+						</div>
 
-				{/* Accounts table */}
-				{accounts.length === 0 ? (
-					<EmptyState />
-				) : (
-					<div
-						style={{
-							background: "var(--surface)",
-							border: "1px solid var(--border)",
-							borderRadius: 8,
-							overflow: "hidden",
-						}}
-					>
-						<table
+						<button
+							type="button"
+							onClick={() => setPanelOpen(true)}
 							style={{
-								width: "100%",
-								borderCollapse: "collapse",
-								fontSize: 13,
+								display: "flex",
+								alignItems: "center",
+								gap: 6,
+								padding: "6px 14px",
+								borderRadius: 6,
+								background: `color-mix(in srgb, ${ACCENT_HEX} 12%, transparent)`,
+								border: `1px solid color-mix(in srgb, ${ACCENT_HEX} 30%, transparent)`,
+								color: ACCENT,
+								fontSize: 12.5,
+								fontWeight: 500,
+								fontFamily: "inherit",
+								cursor: "pointer",
 							}}
 						>
-							<thead>
-								<tr style={{ borderBottom: "1px solid var(--border)" }}>
-									<th style={thStyle("left")}>Account</th>
-									<th style={thStyle("left")}>Type</th>
-									<th style={thStyle("left")}>Owner</th>
-									<th style={thStyle("right")}>Balance</th>
-									<th style={thStyle("left")}>Updated</th>
-									<th style={thStyle("right")}>Return</th>
-									<th style={{ width: 36 }} />
-								</tr>
-							</thead>
-							<tbody>
-								{accounts.map((account) => {
-									const isExpanded = expandedId === account.id;
-									const snap = account.snapshots[0];
-									const ret = account.returns[0];
-									const detail = details[account.id] ?? {
-										snapshots: [],
-										returns: [],
-										loading: true,
-									};
+							<Plus size={13} />
+							Add Account
+						</button>
+					</div>
 
-									return (
-										<Fragment key={account.id}>
-											<tr
-												id={`account-${account.id}`}
-												onClick={() => toggleExpand(account.id)}
-												onMouseEnter={() => setHoveredRowId(account.id)}
-												onMouseLeave={() => setHoveredRowId(null)}
-												style={{
-													borderTop: "1px solid var(--border)",
-													cursor: "pointer",
-													background: isExpanded
-														? `color-mix(in srgb, ${ACCENT_HEX} 6%, transparent)`
-														: hoveredRowId === account.id
-															? "var(--surface-raised)"
-															: "transparent",
-													transition: "background 0.1s",
-												}}
-											>
-												{/* Name + chevron */}
-												<td style={{ padding: "10px 12px" }}>
-													<div
+					{/* Accounts table */}
+					{accounts.length === 0 ? (
+						<EmptyState />
+					) : (
+						<div
+							style={{
+								background: "var(--surface)",
+								border: "1px solid var(--border)",
+								borderRadius: 8,
+								overflow: "hidden",
+							}}
+						>
+							<table
+								style={{
+									width: "100%",
+									borderCollapse: "collapse",
+									fontSize: 13,
+								}}
+							>
+								<thead>
+									<tr style={{ borderBottom: "1px solid var(--border)" }}>
+										<th style={thStyle("left")}>Account</th>
+										<th style={thStyle("left")}>Type</th>
+										<th style={thStyle("left")}>Owner</th>
+										<th style={thStyle("right")}>Balance</th>
+										<th style={thStyle("left")}>Updated</th>
+										<th style={thStyle("right")}>Return</th>
+										<th style={{ width: 36 }} />
+									</tr>
+								</thead>
+								<tbody>
+									{accounts.map((account) => {
+										const isExpanded = expandedId === account.id;
+										const snap = account.snapshots[0];
+										const ret = account.returns[0];
+										const detail = details[account.id] ?? {
+											snapshots: [],
+											returns: [],
+											loading: true,
+										};
+
+										return (
+											<Fragment key={account.id}>
+												<tr
+													id={`account-${account.id}`}
+													onClick={() => toggleExpand(account.id)}
+													onMouseEnter={() => setHoveredRowId(account.id)}
+													onMouseLeave={() => setHoveredRowId(null)}
+													style={{
+														borderTop: "1px solid var(--border)",
+														cursor: "pointer",
+														background: isExpanded
+															? `color-mix(in srgb, ${ACCENT_HEX} 6%, transparent)`
+															: hoveredRowId === account.id
+																? "var(--surface-raised)"
+																: "transparent",
+														transition: "background 0.1s",
+													}}
+												>
+													{/* Name + chevron */}
+													<td style={{ padding: "10px 12px" }}>
+														<div
+															style={{
+																display: "flex",
+																alignItems: "center",
+																gap: 8,
+															}}
+														>
+															<ChevronRight
+																size={13}
+																style={{
+																	color: "var(--text-dim)",
+																	transform: isExpanded
+																		? "rotate(90deg)"
+																		: "none",
+																	transition: "transform 0.15s",
+																	flexShrink: 0,
+																}}
+															/>
+															<span
+																style={{
+																	color: "var(--text)",
+																	fontWeight: 500,
+																}}
+															>
+																{account.name}
+															</span>
+														</div>
+													</td>
+
+													{/* Type */}
+													<td
 														style={{
-															display: "flex",
-															alignItems: "center",
-															gap: 8,
+															padding: "10px 12px",
+															color: "var(--text-muted)",
 														}}
 													>
-														<ChevronRight
-															size={13}
-															style={{
-																color: "var(--text-dim)",
-																transform: isExpanded
-																	? "rotate(90deg)"
-																	: "none",
-																transition: "transform 0.15s",
-																flexShrink: 0,
-															}}
-														/>
-														<span
-															style={{ color: "var(--text)", fontWeight: 500 }}
-														>
-															{account.name}
-														</span>
-													</div>
-												</td>
+														{TYPE_LABEL[account.type]}
+													</td>
 
-												{/* Type */}
-												<td
-													style={{
-														padding: "10px 12px",
-														color: "var(--text-muted)",
-													}}
-												>
-													{TYPE_LABEL[account.type]}
-												</td>
+													{/* Owner */}
+													<td style={{ padding: "10px 12px" }}>
+														<OwnerBadge name={account.owner.name} />
+													</td>
 
-												{/* Owner */}
-												<td style={{ padding: "10px 12px" }}>
-													<OwnerBadge name={account.owner.name} />
-												</td>
+													{/* Balance */}
+													<td
+														style={{ padding: "10px 12px", textAlign: "right" }}
+														className="num"
+													>
+														{snap ? (
+															<span style={{ color: "var(--text)" }}>
+																{fmtCAD(snap.balance)}
+															</span>
+														) : (
+															<span style={{ color: "var(--text-dim)" }}>
+																—
+															</span>
+														)}
+													</td>
 
-												{/* Balance */}
-												<td
-													style={{ padding: "10px 12px", textAlign: "right" }}
-													className="num"
-												>
-													{snap ? (
-														<span style={{ color: "var(--text)" }}>
-															{fmtCAD(snap.balance)}
-														</span>
-													) : (
-														<span style={{ color: "var(--text-dim)" }}>—</span>
-													)}
-												</td>
+													{/* Last Updated */}
+													<td
+														style={{
+															padding: "10px 12px",
+															color: "var(--text-muted)",
+														}}
+													>
+														{snap ? fmtDate(snap.date) : "—"}
+													</td>
 
-												{/* Last Updated */}
-												<td
-													style={{
-														padding: "10px 12px",
-														color: "var(--text-muted)",
-													}}
-												>
-													{snap ? fmtDate(snap.date) : "—"}
-												</td>
+													{/* Return % */}
+													<td
+														style={{ padding: "10px 12px", textAlign: "right" }}
+														className="num"
+													>
+														{ret && !NO_RETURNS.has(account.type) ? (
+															<span
+																style={{
+																	color:
+																		ret.returnPercent >= 0
+																			? "#10b981"
+																			: "#ef4444",
+																}}
+															>
+																{fmtReturn(ret.returnPercent)}
+															</span>
+														) : (
+															<span style={{ color: "var(--text-dim)" }}>
+																—
+															</span>
+														)}
+													</td>
 
-												{/* Return % */}
-												<td
-													style={{ padding: "10px 12px", textAlign: "right" }}
-													className="num"
-												>
-													{ret && !NO_RETURNS.has(account.type) ? (
-														<span
-															style={{
-																color:
-																	ret.returnPercent >= 0
-																		? "#10b981"
-																		: "#ef4444",
-															}}
-														>
-															{fmtReturn(ret.returnPercent)}
-														</span>
-													) : (
-														<span style={{ color: "var(--text-dim)" }}>—</span>
-													)}
-												</td>
+													{/* Delete */}
+													<td style={{ padding: "10px 8px" }}>
+														{hoveredRowId === account.id && (
+															<button
+																type="button"
+																onClick={(e) => {
+																	e.stopPropagation();
+																	handleDeleteAccount(account.id);
+																}}
+																style={iconBtn}
+															>
+																<Trash2
+																	size={13}
+																	style={{ color: "var(--text-dim)" }}
+																/>
+															</button>
+														)}
+													</td>
+												</tr>
 
-												{/* Delete */}
-												<td style={{ padding: "10px 8px" }}>
-													{hoveredRowId === account.id && (
-														<button
-															type="button"
-															onClick={(e) => {
-																e.stopPropagation();
-																handleDeleteAccount(account.id);
-															}}
-															style={iconBtn}
-														>
-															<Trash2
-																size={13}
-																style={{ color: "var(--text-dim)" }}
-															/>
-														</button>
-													)}
-												</td>
-											</tr>
+												{/* Accordion detail */}
+												{isExpanded && (
+													<AccountDetail
+														account={account}
+														detail={detail}
+														onDeleteSnapshot={(snapId) =>
+															handleDeleteSnapshot(snapId, account.id)
+														}
+														onDeleteReturn={(retId) =>
+															handleDeleteReturn(retId, account.id)
+														}
+													/>
+												)}
+											</Fragment>
+										);
+									})}
+								</tbody>
+							</table>
+						</div>
+					)}
+				</div>
 
-											{/* Accordion detail */}
-											{isExpanded && (
-												<AccountDetail
-													account={account}
-													detail={detail}
-													onDeleteSnapshot={(snapId) =>
-														handleDeleteSnapshot(snapId, account.id)
-													}
-													onDeleteReturn={(retId) =>
-														handleDeleteReturn(retId, account.id)
-													}
-												/>
-											)}
-										</Fragment>
-									);
-								})}
-							</tbody>
-						</table>
-					</div>
-				)}
+				{/* Floating TOC */}
+				{showToc && <FloatingToc accounts={accounts} />}
 			</div>
 
-			{/* Floating TOC */}
-			{showToc && <FloatingToc accounts={accounts} />}
-		</div>
+			{/* Add Account Panel */}
+			{panelOpen && (
+				<AddAccountPanel
+					people={people}
+					onClose={() => setPanelOpen(false)}
+					onSaved={() => {
+						setPanelOpen(false);
+						router.invalidate();
+					}}
+				/>
+			)}
+		</>
 	);
 }
