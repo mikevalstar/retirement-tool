@@ -44,3 +44,34 @@ A: No — too gamified for now. Noted as a possible future idea.
 
 **Q: Simulation output / charts design?**
 A: To be designed iteratively once data entry screens are solid. Firm principle: every chart has an overview mode and a drill-down mode from the same view.
+
+---
+
+## Investment Accounts - 2026-02-28
+
+**Q: Which Canadian account types are needed?**
+A: TFSA, RRSP, RRIF, Regular Savings, Chequing. Fixed dropdown, no free-text type. LIRA, LIF, RESP, FHSA, corporate, pension are out of scope for this user.
+
+**Q: How are two people represented in the app?**
+A: Named — people are configured by name in Settings (established here, reused across all sections). Each account belongs to one person. No shared accounts; user picks an owner for joint accounts.
+
+**Q: Balance tracking — snapshot log or current-value-only?**
+A: Snapshot log. Each balance entry stores a date + value. Current balance = most recent snapshot by date (not by insertion order). Retroactive entries are allowed.
+
+**Q: Can balance snapshots be edited?**
+A: No — delete and re-add to correct a mistake. Delete icon on each snapshot, hover to reveal, immediate with no confirmation.
+
+**Q: How are historical returns entered?**
+A: Per-year table (year + return %). Includes an inline calculator helper: enter start balance, end balance, net contributions → calculates approximate return using `(end - start - net contributions) / start`. User can accept or override. Returns are delete-only (no inline edit).
+
+**Q: Which account types show the returns section?**
+A: TFSA and RRSP only (investment accounts). Chequing and Regular Savings hide the returns section as not relevant.
+
+**Q: Monthly balance update flow — separate screen or part of Accounts?**
+A: Right slide-in panel accessible from Dashboard shortcut and Accounts header. Flat list of all accounts, one shared date (defaults to today), single balance input per account. Leave blank to skip. Commits only accounts where a value was entered.
+
+**Q: Long list navigation?**
+A: Floating TOC panel on right edge of page — account names as jump links, grouped by owner. Appears when the list is long enough to need it.
+
+**Q: Delete behavior?**
+A: Immediate, no confirmation for both accounts and sub-records (snapshots, return entries). Audience of one — no guard rails.
