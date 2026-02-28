@@ -325,7 +325,12 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       {/* ── Expand button (collapsed mode only) ── */}
       {collapsed && (
         <div className="p-1.5 shrink-0" style={{ borderTop: "1px solid var(--border)" }}>
-          <button type="button" onClick={onToggle} title="Expand sidebar" className={`${iconBtnCls} w-full justify-center`} style={{ color: "var(--text-dim)" }}>
+          <button
+            type="button"
+            onClick={onToggle}
+            title="Expand sidebar"
+            className={`${iconBtnCls} w-full justify-center`}
+            style={{ color: "var(--text-dim)" }}>
             <PanelLeftOpen size={13} />
           </button>
         </div>

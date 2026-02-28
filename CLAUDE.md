@@ -166,6 +166,9 @@ Dark-only. Design tokens are CSS custom properties defined in `src/styles.css`.
 - Inline `style` objects are acceptable for one-off structural styles tied to component logic
 - `color-mix()` is available and used for tinted backgrounds (e.g., icon well backgrounds)
 
+### Code Committing
+before committing code run a format and a check to keep things consistent
+
 ### AI integration
 
 AI is used sparingly — the primary planned use is merchant categorization in the expense import flow. TanStack AI is already installed with adapters for Anthropic, Gemini, OpenAI, and Ollama. The Anthropic API key goes in `.env.local` as `ANTHROPIC_API_KEY`.
