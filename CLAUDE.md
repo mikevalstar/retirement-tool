@@ -125,7 +125,7 @@ TanStack Router with file-based routing. Adding a file to `src/routes/` auto-reg
 
 Use `Route.useLoaderData()` to access data loaded by a route's `loader`. For server-only code use `createServerFn`.
 
-For routes that exist in the sidebar but aren't built yet, cast `to` props: `to={"/unbuilt-path" as any}`.
+For routes that exist in the sidebar but aren't built yet, the only acceptable `as any` cast in this codebase is on unregistered `to` props: `to={"/unbuilt-path" as any}`. Add a `// TODO: remove cast when route is registered` comment inline.
 
 ### Database
 
@@ -163,12 +163,21 @@ Dark-only. Design tokens are CSS custom properties defined in `src/styles.css`.
 ### Styling approach
 
 - Design tokens (CSS vars) for colors, surfaces, borders — prefer these over raw Tailwind color classes
+- **Never hardcode hex color values** — always use the corresponding CSS variable (e.g. `var(--section-investments)` not `#10b981`). This applies to inline styles, style objects, and className strings.
 - Tailwind utilities are fine for spacing, layout, flex/grid
 - Inline `style` objects are acceptable for one-off structural styles tied to component logic
 - `color-mix()` is available and used for tinted backgrounds (e.g., icon well backgrounds)
 
+### Code Quality Rules
+
+- **No `as any` except unbuilt routes.** `as any` is only sanctioned for unregistered TanStack Router `to` props. Every other `as any` or explicit `: any` type annotation is a bug — fix the types properly.
+- **No `@ts-ignore` / `@ts-expect-error`** unless paired with a comment explaining why it's unavoidable and a link to an upstream bug.
+- **Wrap all `createServerFn` calls in try/catch.** Surface errors to the user — don't silently swallow failures or leave UI in a broken loading state.
+- **Validate server function inputs with Zod.** Every `createServerFn` with user-supplied data should use a Zod schema in `.inputValidator()`, not a plain TypeScript cast.
+- **Prefer named types over inline object types** in function signatures — keeps function signatures readable at a glance.
+
 ### Code Committing
-before committing code run a format:fix and a check to keep things consistent
+Before committing code run a `format:fix` and `check` to keep things consistent.
 
 ### AI integration
 
