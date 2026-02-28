@@ -24,34 +24,13 @@ export default function AppShell({ children }: AppShellProps) {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        height: "100vh",
-        width: "100vw",
-        overflow: "hidden",
-        backgroundColor: "var(--app-bg)",
-      }}>
+    <div className="flex h-screen w-screen overflow-hidden" style={{ backgroundColor: "var(--app-bg)" }}>
       <Sidebar collapsed={collapsed} onToggle={handleToggle} />
 
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          flex: 1,
-          overflow: "hidden",
-          minWidth: 0,
-        }}>
+      <div className="flex flex-col flex-1 overflow-hidden min-w-0">
         <TopBar />
 
-        <main
-          style={{
-            flex: 1,
-            overflow: "auto",
-            padding: "24px",
-          }}>
-          {children}
-        </main>
+        <main className="flex-1 overflow-auto p-6">{children}</main>
       </div>
     </div>
   );

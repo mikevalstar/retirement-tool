@@ -77,90 +77,40 @@ export const Route = createFileRoute("/investments/")({
 
 // ─── Shared Styles ────────────────────────────────────────────────────────────
 
-const iconBtn: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  padding: 4,
-  borderRadius: 4,
-  background: "none",
-  border: "none",
-  cursor: "pointer",
-  flexShrink: 0,
-};
+const iconBtnCls = "flex items-center justify-center p-1 rounded border-none bg-transparent cursor-pointer shrink-0";
 
-const stubBtn: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: 4,
-  padding: "3px 8px",
-  borderRadius: 4,
-  background: "none",
-  border: "1px solid var(--border)",
-  color: "var(--text-dim)",
-  fontSize: 11,
-  fontFamily: "inherit",
-  cursor: "pointer",
-};
+const stubBtnCls = "flex items-center gap-1 py-[3px] px-2 rounded text-[11px] bg-transparent cursor-pointer";
+const stubBtnCSS: React.CSSProperties = { border: "1px solid var(--border)", color: "var(--text-dim)", fontFamily: "inherit" };
 
-const thStyle = (align: "left" | "right"): React.CSSProperties => ({
-  padding: "8px 12px",
-  textAlign: align,
-  fontSize: 11,
-  fontWeight: 500,
-  color: "var(--text-dim)",
-  textTransform: "uppercase",
-  letterSpacing: "0.05em",
-  whiteSpace: "nowrap",
-});
+const thCls = (align: "left" | "right") =>
+  `py-2 px-3 text-[11px] font-medium uppercase tracking-[0.05em] whitespace-nowrap ${align === "right" ? "text-right" : "text-left"}`;
+const thCSS: React.CSSProperties = { color: "var(--text-dim)" };
 
-const panelInputStyle: React.CSSProperties = {
-  width: "100%",
+const panelInputCls = "w-full rounded-md py-[7px] px-[10px] text-[13px] outline-none box-border";
+const panelInputCSS: React.CSSProperties = {
   background: "var(--surface-raised)",
   border: "1px solid var(--border)",
-  borderRadius: 6,
-  padding: "7px 10px",
-  fontSize: 13,
   color: "var(--text)",
   fontFamily: "inherit",
-  outline: "none",
-  boxSizing: "border-box",
 };
 
-const panelCancelBtn: React.CSSProperties = {
-  padding: "7px 16px",
-  borderRadius: 6,
-  background: "none",
-  border: "1px solid var(--border)",
-  color: "var(--text-muted)",
-  fontSize: 13,
-  fontFamily: "inherit",
-  cursor: "pointer",
-};
+const panelCancelBtnCls = "py-[7px] px-4 rounded-md bg-transparent text-[13px] cursor-pointer";
+const panelCancelBtnCSS: React.CSSProperties = { border: "1px solid var(--border)", color: "var(--text-muted)", fontFamily: "inherit" };
 
-const panelSaveBtn = (enabled: boolean): React.CSSProperties => ({
-  padding: "7px 16px",
-  borderRadius: 6,
+const panelSaveBtnCls = (enabled: boolean) => `py-[7px] px-4 rounded-md text-[13px] font-medium ${enabled ? "cursor-pointer" : "cursor-default"}`;
+const panelSaveBtnCSS = (enabled: boolean): React.CSSProperties => ({
   background: enabled ? `color-mix(in srgb, ${ACCENT_HEX} 20%, transparent)` : "var(--surface-raised)",
   border: `1px solid ${enabled ? `color-mix(in srgb, ${ACCENT_HEX} 40%, transparent)` : "var(--border)"}`,
   color: enabled ? ACCENT : "var(--text-dim)",
-  fontSize: 13,
-  fontWeight: 500,
   fontFamily: "inherit",
-  cursor: enabled ? "pointer" : "default",
 });
 
-const inlineInputStyle: React.CSSProperties = {
+const inlineInputCls = "rounded py-1 px-1.5 text-xs outline-none box-border w-full";
+const inlineInputCSS: React.CSSProperties = {
   background: "var(--app-bg)",
   border: "1px solid var(--border)",
-  borderRadius: 4,
-  padding: "4px 6px",
-  fontSize: 12,
   color: "var(--text)",
   fontFamily: "inherit",
-  outline: "none",
-  boxSizing: "border-box",
-  width: "100%",
 };
 
 // ─── Owner Badge ──────────────────────────────────────────────────────────────
@@ -168,18 +118,8 @@ const inlineInputStyle: React.CSSProperties = {
 function OwnerBadge({ name }: { name: string }) {
   return (
     <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        padding: "2px 8px",
-        borderRadius: 12,
-        fontSize: 11,
-        fontWeight: 500,
-        background: "var(--surface-raised)",
-        color: "var(--text-muted)",
-        border: "1px solid var(--border)",
-        whiteSpace: "nowrap",
-      }}>
+      className="inline-flex items-center py-0.5 px-2 rounded-xl text-[11px] font-medium whitespace-nowrap"
+      style={{ background: "var(--surface-raised)", color: "var(--text-muted)", border: "1px solid var(--border)" }}>
       {name}
     </span>
   );
@@ -191,24 +131,16 @@ function SnapshotLine({ snap, onDelete }: { snap: SnapshotItem; onDelete: (id: n
   const [hovered, setHovered] = useState(false);
   return (
     <tr onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{ borderTop: "1px solid var(--border)" }}>
-      <td style={{ padding: "6px 8px", color: "var(--text-muted)" }}>{fmtDate(snap.date)}</td>
-      <td style={{ padding: "6px 8px", textAlign: "right" }} className="num">
-        {fmtCAD(snap.balance)}
+      <td className="py-1.5 px-2" style={{ color: "var(--text-muted)" }}>
+        {fmtDate(snap.date)}
       </td>
-      <td
-        style={{
-          padding: "6px 8px",
-          color: "var(--text-dim)",
-          maxWidth: 200,
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}>
+      <td className="py-1.5 px-2 text-right num">{fmtCAD(snap.balance)}</td>
+      <td className="py-1.5 px-2 max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap" style={{ color: "var(--text-dim)" }}>
         {snap.note ?? ""}
       </td>
-      <td style={{ padding: "6px 4px", width: 24 }}>
+      <td className="py-1.5 px-1 w-6">
         {hovered && (
-          <button type="button" onClick={() => onDelete(snap.id)} style={iconBtn}>
+          <button type="button" onClick={() => onDelete(snap.id)} className={iconBtnCls}>
             <Trash2 size={11} style={{ color: "var(--text-dim)" }} />
           </button>
         )}
@@ -224,13 +156,15 @@ function ReturnLine({ ret, onDelete }: { ret: ReturnItem; onDelete: (id: number)
   const pct = ret.returnPercent;
   return (
     <tr onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{ borderTop: "1px solid var(--border)" }}>
-      <td style={{ padding: "6px 8px", color: "var(--text-muted)" }}>{ret.year}</td>
-      <td style={{ padding: "6px 8px", textAlign: "right" }} className="num">
+      <td className="py-1.5 px-2" style={{ color: "var(--text-muted)" }}>
+        {ret.year}
+      </td>
+      <td className="py-1.5 px-2 text-right num">
         <span style={{ color: pct >= 0 ? "#10b981" : "#ef4444" }}>{fmtReturn(pct)}</span>
       </td>
-      <td style={{ padding: "6px 4px", width: 24 }}>
+      <td className="py-1.5 px-1 w-6">
         {hovered && (
-          <button type="button" onClick={() => onDelete(ret.id)} style={iconBtn}>
+          <button type="button" onClick={() => onDelete(ret.id)} className={iconBtnCls}>
             <Trash2 size={11} style={{ color: "var(--text-dim)" }} />
           </button>
         )}
@@ -269,26 +203,41 @@ function AddSnapshotRow({ accountId, onSaved, onCancel }: { accountId: number; o
 
   return (
     <tr style={{ borderTop: "1px solid var(--border)", background: `color-mix(in srgb, ${ACCENT_HEX} 5%, transparent)` }}>
-      <td style={{ padding: "5px 8px" }}>
+      <td className="py-[5px] px-2">
         {/* biome-ignore lint/a11y/noAutofocus: intentional for inline form UX */}
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} onKeyDown={handleKeyDown} style={inlineInputStyle} autoFocus />
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className={inlineInputCls}
+          style={inlineInputCSS}
+          autoFocus
+        />
       </td>
-      <td style={{ padding: "5px 8px" }}>
+      <td className="py-[5px] px-2">
         <input
           type="number"
           value={balance}
           onChange={(e) => setBalance(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="0"
-          className="num"
-          style={{ ...inlineInputStyle, textAlign: "right" }}
+          className={`num ${inlineInputCls} text-right`}
+          style={inlineInputCSS}
         />
       </td>
-      <td style={{ padding: "5px 8px" }}>
-        <input value={note} onChange={(e) => setNote(e.target.value)} onKeyDown={handleKeyDown} placeholder="Note (optional)" style={inlineInputStyle} />
+      <td className="py-[5px] px-2">
+        <input
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Note (optional)"
+          className={inlineInputCls}
+          style={inlineInputCSS}
+        />
       </td>
-      <td style={{ padding: "5px 4px", width: 24 }}>
-        <button type="button" onClick={onCancel} style={iconBtn}>
+      <td className="py-[5px] px-1 w-6">
+        <button type="button" onClick={onCancel} className={iconBtnCls}>
           <X size={11} style={{ color: "var(--text-dim)" }} />
         </button>
       </td>
@@ -336,95 +285,103 @@ function AddReturnRow({ accountId, onSaved, onCancel }: { accountId: number; onS
     }
   };
 
-  const labelStyle: React.CSSProperties = { fontSize: 10, color: "var(--text-dim)", marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.05em" };
+  const labelCls = "text-[10px] mb-[3px] uppercase tracking-[0.05em]";
 
   return (
     <>
       <tr style={{ borderTop: "1px solid var(--border)", background: `color-mix(in srgb, ${ACCENT_HEX} 5%, transparent)` }}>
-        <td style={{ padding: "5px 8px" }}>
+        <td className="py-[5px] px-2">
           {/* biome-ignore lint/a11y/noAutofocus: intentional for inline form UX */}
-          <input type="number" value={year} onChange={(e) => setYear(e.target.value)} onKeyDown={handleKeyDown} style={inlineInputStyle} autoFocus />
+          <input
+            type="number"
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className={inlineInputCls}
+            style={inlineInputCSS}
+            autoFocus
+          />
         </td>
-        <td style={{ padding: "5px 8px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        <td className="py-[5px] px-2">
+          <div className="flex items-center gap-1">
             <input
               type="number"
               value={returnPct}
               onChange={(e) => setReturnPct(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="0.00"
-              className="num"
-              style={{ ...inlineInputStyle, textAlign: "right" }}
+              className={`num ${inlineInputCls} text-right`}
+              style={inlineInputCSS}
             />
             <button
               type="button"
               onClick={() => setShowCalc((v) => !v)}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                color: showCalc ? ACCENT : "var(--text-dim)",
-                fontSize: 10,
-                padding: 0,
-                fontFamily: "inherit",
-                whiteSpace: "nowrap",
-                flexShrink: 0,
-              }}>
+              className="text-[10px] p-0 border-none bg-transparent cursor-pointer whitespace-nowrap shrink-0"
+              style={{ color: showCalc ? ACCENT : "var(--text-dim)", fontFamily: "inherit" }}>
               Calc
             </button>
           </div>
         </td>
-        <td style={{ padding: "5px 4px", width: 24 }}>
-          <button type="button" onClick={onCancel} style={iconBtn}>
+        <td className="py-[5px] px-1 w-6">
+          <button type="button" onClick={onCancel} className={iconBtnCls}>
             <X size={11} style={{ color: "var(--text-dim)" }} />
           </button>
         </td>
       </tr>
       {showCalc && (
         <tr style={{ background: `color-mix(in srgb, ${ACCENT_HEX} 3%, transparent)` }}>
-          <td colSpan={3} style={{ padding: "8px 8px 10px", borderTop: "1px dashed var(--border)" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <div style={{ display: "flex", gap: 6 }}>
-                <div style={{ flex: 1 }}>
-                  <div style={labelStyle}>Start</div>
+          <td colSpan={3} className="px-2 pt-2 pb-[10px]" style={{ borderTop: "1px dashed var(--border)" }}>
+            <div className="flex flex-col gap-1.5">
+              <div className="flex gap-1.5">
+                <div className="flex-1">
+                  <div className={labelCls} style={{ color: "var(--text-dim)" }}>
+                    Start
+                  </div>
                   <input
                     type="number"
                     value={calcStart}
                     onChange={(e) => setCalcStart(e.target.value)}
                     placeholder="0"
-                    className="num"
-                    style={inlineInputStyle}
+                    className={`num ${inlineInputCls}`}
+                    style={inlineInputCSS}
                   />
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={labelStyle}>End</div>
-                  <input type="number" value={calcEnd} onChange={(e) => setCalcEnd(e.target.value)} placeholder="0" className="num" style={inlineInputStyle} />
+                <div className="flex-1">
+                  <div className={labelCls} style={{ color: "var(--text-dim)" }}>
+                    End
+                  </div>
+                  <input
+                    type="number"
+                    value={calcEnd}
+                    onChange={(e) => setCalcEnd(e.target.value)}
+                    placeholder="0"
+                    className={`num ${inlineInputCls}`}
+                    style={inlineInputCSS}
+                  />
                 </div>
               </div>
               <div>
-                <div style={labelStyle}>Net Contributions</div>
+                <div className={labelCls} style={{ color: "var(--text-dim)" }}>
+                  Net Contributions
+                </div>
                 <input
                   type="number"
                   value={calcContribs}
                   onChange={(e) => setCalcContribs(e.target.value)}
                   placeholder="0"
-                  className="num"
-                  style={inlineInputStyle}
+                  className={`num ${inlineInputCls}`}
+                  style={inlineInputCSS}
                 />
               </div>
               <button
                 type="button"
                 onClick={handleCalculate}
+                className="py-[5px] px-[10px] rounded text-[11px] cursor-pointer self-start"
                 style={{
-                  padding: "5px 10px",
-                  borderRadius: 4,
                   background: `color-mix(in srgb, ${ACCENT_HEX} 15%, transparent)`,
                   border: `1px solid color-mix(in srgb, ${ACCENT_HEX} 30%, transparent)`,
                   color: ACCENT,
-                  fontSize: 11,
                   fontFamily: "inherit",
-                  cursor: "pointer",
-                  alignSelf: "flex-start",
                 }}>
                 Accept
               </button>
@@ -457,37 +414,18 @@ function AccountDetail({
 
   return (
     <tr>
-      <td colSpan={7} style={{ padding: 0 }}>
-        <div
-          style={{
-            background: "var(--app-bg)",
-            borderBottom: "1px solid var(--border)",
-            padding: "16px 32px 20px 48px",
-            display: "flex",
-            gap: 40,
-          }}>
+      <td colSpan={7} className="p-0">
+        <div className="pt-4 pr-8 pb-5 pl-12 flex gap-10" style={{ background: "var(--app-bg)", borderBottom: "1px solid var(--border)" }}>
           {/* Balance History */}
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: 10,
-              }}>
-              <span
-                style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: "var(--text-muted)",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.07em",
-                }}>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between mb-[10px]">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.07em]" style={{ color: "var(--text-muted)" }}>
                 Balance History
               </span>
               <button
                 type="button"
-                style={{ ...stubBtn, ...(showAddSnapshot ? { color: ACCENT, borderColor: ACCENT } : {}) }}
+                className={stubBtnCls}
+                style={{ ...stubBtnCSS, ...(showAddSnapshot ? { color: ACCENT, borderColor: ACCENT } : {}) }}
                 onClick={() => setShowAddSnapshot((v) => !v)}>
                 <Plus size={10} />
                 Add Snapshot
@@ -495,27 +433,23 @@ function AccountDetail({
             </div>
 
             {detail.loading ? (
-              <div
-                style={{
-                  fontSize: 12,
-                  color: "var(--text-dim)",
-                  fontStyle: "italic",
-                }}>
+              <div className="text-xs italic" style={{ color: "var(--text-dim)" }}>
                 Loading…
               </div>
             ) : showAddSnapshot || detail.snapshots.length > 0 ? (
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  fontSize: 12,
-                }}>
+              <table className="w-full border-collapse text-xs">
                 <thead>
                   <tr>
-                    <th style={thStyle("left")}>Date</th>
-                    <th style={thStyle("right")}>Balance</th>
-                    <th style={thStyle("left")}>Note</th>
-                    <th style={{ width: 24 }} />
+                    <th className={thCls("left")} style={thCSS}>
+                      Date
+                    </th>
+                    <th className={thCls("right")} style={thCSS}>
+                      Balance
+                    </th>
+                    <th className={thCls("left")} style={thCSS}>
+                      Note
+                    </th>
+                    <th className="w-6" />
                   </tr>
                 </thead>
                 <tbody>
@@ -535,12 +469,7 @@ function AccountDetail({
                 </tbody>
               </table>
             ) : (
-              <div
-                style={{
-                  fontSize: 12,
-                  color: "var(--text-dim)",
-                  fontStyle: "italic",
-                }}>
+              <div className="text-xs italic" style={{ color: "var(--text-dim)" }}>
                 No balance snapshots yet
               </div>
             )}
@@ -548,27 +477,15 @@ function AccountDetail({
 
           {/* Returns History */}
           {showReturns && (
-            <div style={{ width: 220, flexShrink: 0 }}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  marginBottom: 10,
-                }}>
-                <span
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: "var(--text-muted)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.07em",
-                  }}>
+            <div className="w-[220px] shrink-0">
+              <div className="flex items-center justify-between mb-[10px]">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.07em]" style={{ color: "var(--text-muted)" }}>
                   Annual Returns
                 </span>
                 <button
                   type="button"
-                  style={{ ...stubBtn, ...(showAddReturn ? { color: ACCENT, borderColor: ACCENT } : {}) }}
+                  className={stubBtnCls}
+                  style={{ ...stubBtnCSS, ...(showAddReturn ? { color: ACCENT, borderColor: ACCENT } : {}) }}
                   onClick={() => setShowAddReturn((v) => !v)}>
                   <Plus size={10} />
                   Add
@@ -576,26 +493,20 @@ function AccountDetail({
               </div>
 
               {detail.loading ? (
-                <div
-                  style={{
-                    fontSize: 12,
-                    color: "var(--text-dim)",
-                    fontStyle: "italic",
-                  }}>
+                <div className="text-xs italic" style={{ color: "var(--text-dim)" }}>
                   Loading…
                 </div>
               ) : showAddReturn || detail.returns.length > 0 ? (
-                <table
-                  style={{
-                    width: "100%",
-                    borderCollapse: "collapse",
-                    fontSize: 12,
-                  }}>
+                <table className="w-full border-collapse text-xs">
                   <thead>
                     <tr>
-                      <th style={thStyle("left")}>Year</th>
-                      <th style={thStyle("right")}>Return</th>
-                      <th style={{ width: 24 }} />
+                      <th className={thCls("left")} style={thCSS}>
+                        Year
+                      </th>
+                      <th className={thCls("right")} style={thCSS}>
+                        Return
+                      </th>
+                      <th className="w-6" />
                     </tr>
                   </thead>
                   <tbody>
@@ -615,12 +526,7 @@ function AccountDetail({
                   </tbody>
                 </table>
               ) : (
-                <div
-                  style={{
-                    fontSize: 12,
-                    color: "var(--text-dim)",
-                    fontStyle: "italic",
-                  }}>
+                <div className="text-xs italic" style={{ color: "var(--text-dim)" }}>
                   No returns recorded
                 </div>
               )}
@@ -643,59 +549,22 @@ function FloatingToc({ accounts }: { accounts: AccountItem[] }) {
   }, new Map());
 
   return (
-    <div
-      style={{
-        position: "sticky",
-        top: 20,
-        width: 160,
-        flexShrink: 0,
-        alignSelf: "flex-start",
-      }}>
-      <div
-        style={{
-          background: "var(--surface)",
-          border: "1px solid var(--border)",
-          borderRadius: 8,
-          padding: "10px 0",
-        }}>
-        <div
-          style={{
-            fontSize: 10,
-            fontWeight: 600,
-            textTransform: "uppercase",
-            letterSpacing: "0.07em",
-            color: "var(--text-dim)",
-            padding: "0 12px 8px",
-          }}>
+    <div className="sticky top-5 w-40 shrink-0 self-start">
+      <div className="rounded-lg py-[10px]" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+        <div className="text-[10px] font-semibold uppercase tracking-[0.07em] px-3 pb-2" style={{ color: "var(--text-dim)" }}>
           Jump to
         </div>
         {[...groups.entries()].map(([owner, accs]) => (
           <div key={owner}>
-            <div
-              style={{
-                fontSize: 10,
-                fontWeight: 600,
-                color: ACCENT,
-                padding: "4px 12px 2px",
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-              }}>
+            <div className="text-[10px] font-semibold uppercase tracking-[0.05em] px-3 pt-1 pb-0.5" style={{ color: ACCENT }}>
               {owner}
             </div>
             {accs.map((a) => (
               <a
                 key={a.id}
                 href={`#account-${a.id}`}
-                style={{
-                  display: "block",
-                  padding: "3px 12px",
-                  fontSize: 12,
-                  color: hoveredId === a.id ? "var(--text)" : "var(--text-muted)",
-                  textDecoration: "none",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                }}
+                className="block py-[3px] px-3 text-xs no-underline overflow-hidden text-ellipsis whitespace-nowrap"
+                style={{ color: hoveredId === a.id ? "var(--text)" : "var(--text-muted)" }}
                 onMouseEnter={() => setHoveredId(a.id)}
                 onMouseLeave={() => setHoveredId(null)}>
                 {a.name}
@@ -713,31 +582,19 @@ function FloatingToc({ accounts }: { accounts: AccountItem[] }) {
 function EmptyState() {
   return (
     <div
-      style={{
-        padding: "48px 24px",
-        background: "var(--surface)",
-        border: "1px solid var(--border)",
-        borderRadius: 8,
-        textAlign: "center",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 12,
-      }}>
+      className="py-12 px-6 rounded-lg text-center flex flex-col items-center gap-3"
+      style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
       <div
-        style={{
-          width: 44,
-          height: 44,
-          borderRadius: 10,
-          backgroundColor: `color-mix(in srgb, ${ACCENT_HEX} 10%, transparent)`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}>
+        className="w-11 h-11 rounded-[10px] flex items-center justify-center"
+        style={{ backgroundColor: `color-mix(in srgb, ${ACCENT_HEX} 10%, transparent)` }}>
         <TrendingUp size={20} style={{ color: ACCENT }} />
       </div>
-      <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }}>No accounts yet</div>
-      <div style={{ fontSize: 13, color: "var(--text-muted)" }}>Click "Add Account" to add your first investment account.</div>
+      <div className="text-sm font-medium" style={{ color: "var(--text)" }}>
+        No accounts yet
+      </div>
+      <div className="text-[13px]" style={{ color: "var(--text-muted)" }}>
+        Click "Add Account" to add your first investment account.
+      </div>
     </div>
   );
 }
@@ -746,15 +603,8 @@ function EmptyState() {
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-      <label
-        style={{
-          fontSize: 11,
-          fontWeight: 500,
-          color: "var(--text-muted)",
-          textTransform: "uppercase",
-          letterSpacing: "0.05em",
-        }}>
+    <div className="flex flex-col gap-[5px]">
+      <label className="text-[11px] font-medium uppercase tracking-[0.05em]" style={{ color: "var(--text-muted)" }}>
         {label}
       </label>
       {children}
@@ -793,63 +643,24 @@ function AddAccountPanel({ people, onClose, onSaved }: { people: PersonItem[]; o
   return (
     <>
       {/* Backdrop */}
-      <div
-        onClick={onClose}
-        style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.45)",
-          zIndex: 100,
-        }}
-      />
+      <div onClick={onClose} className="fixed inset-0 z-[100]" style={{ background: "rgba(0,0,0,0.45)" }} />
 
       {/* Panel */}
       <div
-        style={{
-          position: "fixed",
-          top: 0,
-          right: 0,
-          height: "100%",
-          width: 380,
-          background: "var(--surface)",
-          borderLeft: "1px solid var(--border)",
-          zIndex: 101,
-          display: "flex",
-          flexDirection: "column",
-        }}>
+        className="fixed top-0 right-0 h-full w-[380px] flex flex-col z-[101]"
+        style={{ background: "var(--surface)", borderLeft: "1px solid var(--border)" }}>
         {/* Header */}
-        <div
-          style={{
-            padding: "18px 20px",
-            borderBottom: "1px solid var(--border)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}>
-          <h2
-            style={{
-              margin: 0,
-              fontSize: 15,
-              fontWeight: 600,
-              color: "var(--text)",
-            }}>
+        <div className="py-[18px] px-5 flex items-center justify-between" style={{ borderBottom: "1px solid var(--border)" }}>
+          <h2 className="m-0 text-[15px] font-semibold" style={{ color: "var(--text)" }}>
             Add Account
           </h2>
-          <button type="button" onClick={onClose} style={iconBtn}>
+          <button type="button" onClick={onClose} className={iconBtnCls}>
             <X size={15} style={{ color: "var(--text-dim)" }} />
           </button>
         </div>
 
         {/* Fields */}
-        <div
-          style={{
-            padding: 20,
-            display: "flex",
-            flexDirection: "column",
-            gap: 16,
-            flex: 1,
-            overflowY: "auto",
-          }}>
+        <div className="p-5 flex flex-col gap-4 flex-1 overflow-y-auto">
           <Field label="Name">
             <input
               autoFocus
@@ -857,12 +668,13 @@ function AddAccountPanel({ people, onClose, onSaved }: { people: PersonItem[]; o
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSave()}
               placeholder="e.g. TD TFSA"
-              style={panelInputStyle}
+              className={panelInputCls}
+              style={panelInputCSS}
             />
           </Field>
 
           <Field label="Type">
-            <select value={type} onChange={(e) => setType(e.target.value as AccountType)} style={panelInputStyle}>
+            <select value={type} onChange={(e) => setType(e.target.value as AccountType)} className={panelInputCls} style={panelInputCSS}>
               <option value="TFSA">TFSA</option>
               <option value="RRSP">RRSP</option>
               <option value="RRIF">RRIF</option>
@@ -872,7 +684,7 @@ function AddAccountPanel({ people, onClose, onSaved }: { people: PersonItem[]; o
           </Field>
 
           <Field label="Owner">
-            <select value={ownerId} onChange={(e) => setOwnerId(Number(e.target.value))} style={panelInputStyle}>
+            <select value={ownerId} onChange={(e) => setOwnerId(Number(e.target.value))} className={panelInputCls} style={panelInputCSS}>
               {people.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
@@ -882,27 +694,27 @@ function AddAccountPanel({ people, onClose, onSaved }: { people: PersonItem[]; o
           </Field>
 
           <Field label="Initial Balance (optional)">
-            <input type="number" value={balance} onChange={(e) => setBalance(e.target.value)} placeholder="0" className="num" style={panelInputStyle} />
+            <input
+              type="number"
+              value={balance}
+              onChange={(e) => setBalance(e.target.value)}
+              placeholder="0"
+              className={`num ${panelInputCls}`}
+              style={panelInputCSS}
+            />
           </Field>
 
           <Field label="As of Date">
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} style={panelInputStyle} />
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={panelInputCls} style={panelInputCSS} />
           </Field>
         </div>
 
         {/* Footer */}
-        <div
-          style={{
-            padding: "14px 20px",
-            borderTop: "1px solid var(--border)",
-            display: "flex",
-            gap: 8,
-            justifyContent: "flex-end",
-          }}>
-          <button type="button" onClick={onClose} style={panelCancelBtn}>
+        <div className="py-3.5 px-5 flex gap-2 justify-end" style={{ borderTop: "1px solid var(--border)" }}>
+          <button type="button" onClick={onClose} className={panelCancelBtnCls} style={panelCancelBtnCSS}>
             Cancel
           </button>
-          <button type="button" onClick={handleSave} disabled={!canSave} style={panelSaveBtn(canSave)}>
+          <button type="button" onClick={handleSave} disabled={!canSave} className={panelSaveBtnCls(canSave)} style={panelSaveBtnCSS(canSave)}>
             {saving ? "Saving…" : "Save Account"}
           </button>
         </div>
@@ -937,71 +749,52 @@ function UpdateBalancesPanel({ accounts, onClose, onSaved }: { accounts: Account
   return (
     <>
       {/* Backdrop */}
-      <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 100 }} />
+      <div onClick={onClose} className="fixed inset-0 z-[100]" style={{ background: "rgba(0,0,0,0.45)" }} />
 
       {/* Panel */}
       <div
-        style={{
-          position: "fixed",
-          top: 0,
-          right: 0,
-          height: "100%",
-          width: 420,
-          background: "var(--surface)",
-          borderLeft: "1px solid var(--border)",
-          zIndex: 101,
-          display: "flex",
-          flexDirection: "column",
-        }}>
+        className="fixed top-0 right-0 h-full w-[420px] flex flex-col z-[101]"
+        style={{ background: "var(--surface)", borderLeft: "1px solid var(--border)" }}>
         {/* Header */}
-        <div
-          style={{
-            padding: "18px 20px",
-            borderBottom: "1px solid var(--border)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}>
-          <h2 style={{ margin: 0, fontSize: 15, fontWeight: 600, color: "var(--text)" }}>Update Balances</h2>
-          <button type="button" onClick={onClose} style={iconBtn}>
+        <div className="py-[18px] px-5 flex items-center justify-between" style={{ borderBottom: "1px solid var(--border)" }}>
+          <h2 className="m-0 text-[15px] font-semibold" style={{ color: "var(--text)" }}>
+            Update Balances
+          </h2>
+          <button type="button" onClick={onClose} className={iconBtnCls}>
             <X size={15} style={{ color: "var(--text-dim)" }} />
           </button>
         </div>
 
         {/* As of date */}
-        <div style={{ padding: "14px 20px", borderBottom: "1px solid var(--border)" }}>
+        <div className="py-3.5 px-5" style={{ borderBottom: "1px solid var(--border)" }}>
           <Field label="As of Date">
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} style={panelInputStyle} />
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={panelInputCls} style={panelInputCSS} />
           </Field>
         </div>
 
         {/* Account list */}
-        <div style={{ flex: 1, overflowY: "auto" }}>
+        <div className="flex-1 overflow-y-auto">
           {accounts.map((account) => {
             const snap = account.snapshots[0];
             return (
-              <div
-                key={account.id}
-                style={{
-                  padding: "10px 20px",
-                  borderBottom: "1px solid var(--border)",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 12,
-                }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
-                    <span style={{ fontSize: 13, fontWeight: 500, color: "var(--text)" }}>{account.name}</span>
+              <div key={account.id} className="py-[10px] px-5 flex items-center gap-3" style={{ borderBottom: "1px solid var(--border)" }}>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-[3px]">
+                    <span className="text-[13px] font-medium" style={{ color: "var(--text)" }}>
+                      {account.name}
+                    </span>
                     <OwnerBadge name={account.owner.name} />
                   </div>
                   {snap ? (
-                    <div style={{ fontSize: 11, color: "var(--text-dim)" }}>
+                    <div className="text-[11px]" style={{ color: "var(--text-dim)" }}>
                       <span className="num">{fmtCAD(snap.balance)}</span>
                       {" · "}
                       {fmtDate(snap.date)}
                     </div>
                   ) : (
-                    <div style={{ fontSize: 11, color: "var(--text-dim)", fontStyle: "italic" }}>No balance recorded</div>
+                    <div className="text-[11px] italic" style={{ color: "var(--text-dim)" }}>
+                      No balance recorded
+                    </div>
                   )}
                 </div>
                 <input
@@ -1009,8 +802,8 @@ function UpdateBalancesPanel({ accounts, onClose, onSaved }: { accounts: Account
                   value={values[account.id] ?? ""}
                   onChange={(e) => setValues((prev) => ({ ...prev, [account.id]: e.target.value }))}
                   placeholder="—"
-                  className="num"
-                  style={{ ...panelInputStyle, width: 120, textAlign: "right" }}
+                  className={`num ${panelInputCls} !w-[120px] text-right`}
+                  style={panelInputCSS}
                 />
               </div>
             );
@@ -1018,18 +811,16 @@ function UpdateBalancesPanel({ accounts, onClose, onSaved }: { accounts: Account
         </div>
 
         {/* Footer */}
-        <div
-          style={{
-            padding: "14px 20px",
-            borderTop: "1px solid var(--border)",
-            display: "flex",
-            gap: 8,
-            justifyContent: "flex-end",
-          }}>
-          <button type="button" onClick={onClose} style={panelCancelBtn}>
+        <div className="py-3.5 px-5 flex gap-2 justify-end" style={{ borderTop: "1px solid var(--border)" }}>
+          <button type="button" onClick={onClose} className={panelCancelBtnCls} style={panelCancelBtnCSS}>
             Cancel
           </button>
-          <button type="button" onClick={handleSave} disabled={saving} style={panelSaveBtn(entries.length > 0)}>
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={saving}
+            className={panelSaveBtnCls(entries.length > 0)}
+            style={panelSaveBtnCSS(entries.length > 0)}>
             {saving ? "Saving…" : entries.length > 0 ? `Save ${entries.length} Balance${entries.length !== 1 ? "s" : ""}` : "Save"}
           </button>
         </div>
@@ -1103,61 +894,28 @@ function InvestmentsPage() {
 
   return (
     <>
-      <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
+      <div className="flex gap-5 items-start">
         {/* Main content */}
-        <div
-          style={{
-            flex: 1,
-            minWidth: 0,
-            display: "flex",
-            flexDirection: "column",
-            gap: 20,
-          }}>
+        <div className="flex-1 min-w-0 flex flex-col gap-5">
           {/* Header */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div
-                style={{
-                  width: 4,
-                  height: 20,
-                  borderRadius: 2,
-                  backgroundColor: ACCENT_HEX,
-                }}
-              />
-              <h1
-                style={{
-                  margin: 0,
-                  fontSize: 18,
-                  fontWeight: 600,
-                  color: "var(--text)",
-                  letterSpacing: "-0.02em",
-                }}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-[10px]">
+              <div className="w-1 h-5 rounded-[2px]" style={{ backgroundColor: ACCENT_HEX }} />
+              <h1 className="m-0 text-lg font-semibold tracking-[-0.02em]" style={{ color: "var(--text)" }}>
                 Investment Accounts
               </h1>
             </div>
 
-            <div style={{ display: "flex", gap: 8 }}>
+            <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setUpdatePanelOpen(true)}
+                className="flex items-center gap-1.5 py-1.5 px-[14px] rounded-md text-[12.5px] font-medium cursor-pointer"
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  padding: "6px 14px",
-                  borderRadius: 6,
                   background: "none",
                   border: "1px solid var(--border)",
                   color: "var(--text-muted)",
-                  fontSize: 12.5,
-                  fontWeight: 500,
                   fontFamily: "inherit",
-                  cursor: "pointer",
                 }}>
                 <RefreshCw size={13} />
                 Update Balances
@@ -1165,19 +923,12 @@ function InvestmentsPage() {
               <button
                 type="button"
                 onClick={() => setPanelOpen(true)}
+                className="flex items-center gap-1.5 py-1.5 px-[14px] rounded-md text-[12.5px] font-medium cursor-pointer"
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  padding: "6px 14px",
-                  borderRadius: 6,
                   background: `color-mix(in srgb, ${ACCENT_HEX} 12%, transparent)`,
                   border: `1px solid color-mix(in srgb, ${ACCENT_HEX} 30%, transparent)`,
                   color: ACCENT,
-                  fontSize: 12.5,
-                  fontWeight: 500,
                   fontFamily: "inherit",
-                  cursor: "pointer",
                 }}>
                 <Plus size={13} />
                 Add Account
@@ -1189,28 +940,29 @@ function InvestmentsPage() {
           {accounts.length === 0 ? (
             <EmptyState />
           ) : (
-            <div
-              style={{
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
-                borderRadius: 8,
-                overflow: "hidden",
-              }}>
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  fontSize: 13,
-                }}>
+            <div className="rounded-lg overflow-hidden" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+              <table className="w-full border-collapse text-[13px]">
                 <thead>
                   <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                    <th style={thStyle("left")}>Account</th>
-                    <th style={thStyle("left")}>Type</th>
-                    <th style={thStyle("left")}>Owner</th>
-                    <th style={thStyle("right")}>Balance</th>
-                    <th style={thStyle("left")}>Updated</th>
-                    <th style={thStyle("right")}>Return</th>
-                    <th style={{ width: 36 }} />
+                    <th className={thCls("left")} style={thCSS}>
+                      Account
+                    </th>
+                    <th className={thCls("left")} style={thCSS}>
+                      Type
+                    </th>
+                    <th className={thCls("left")} style={thCSS}>
+                      Owner
+                    </th>
+                    <th className={thCls("right")} style={thCSS}>
+                      Balance
+                    </th>
+                    <th className={thCls("left")} style={thCSS}>
+                      Updated
+                    </th>
+                    <th className={thCls("right")} style={thCSS}>
+                      Return
+                    </th>
+                    <th className="w-9" />
                   </tr>
                 </thead>
                 <tbody>
@@ -1231,9 +983,9 @@ function InvestmentsPage() {
                           onClick={() => toggleExpand(account.id)}
                           onMouseEnter={() => setHoveredRowId(account.id)}
                           onMouseLeave={() => setHoveredRowId(null)}
+                          className="cursor-pointer"
                           style={{
                             borderTop: "1px solid var(--border)",
-                            cursor: "pointer",
                             background: isExpanded
                               ? `color-mix(in srgb, ${ACCENT_HEX} 6%, transparent)`
                               : hoveredRowId === account.id
@@ -1242,76 +994,54 @@ function InvestmentsPage() {
                             transition: "background 0.1s",
                           }}>
                           {/* Name + chevron */}
-                          <td style={{ padding: "10px 12px" }}>
-                            <div
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 8,
-                              }}>
+                          <td className="py-[10px] px-3">
+                            <div className="flex items-center gap-2">
                               <ChevronRight
                                 size={13}
+                                className="shrink-0"
                                 style={{
                                   color: "var(--text-dim)",
                                   transform: isExpanded ? "rotate(90deg)" : "none",
                                   transition: "transform 0.15s",
-                                  flexShrink: 0,
                                 }}
                               />
-                              <span
-                                style={{
-                                  color: "var(--text)",
-                                  fontWeight: 500,
-                                }}>
+                              <span className="font-medium" style={{ color: "var(--text)" }}>
                                 {account.name}
                               </span>
                             </div>
                           </td>
 
                           {/* Type */}
-                          <td
-                            style={{
-                              padding: "10px 12px",
-                              color: "var(--text-muted)",
-                            }}>
+                          <td className="py-[10px] px-3" style={{ color: "var(--text-muted)" }}>
                             {TYPE_LABEL[account.type]}
                           </td>
 
                           {/* Owner */}
-                          <td style={{ padding: "10px 12px" }}>
+                          <td className="py-[10px] px-3">
                             <OwnerBadge name={account.owner.name} />
                           </td>
 
                           {/* Balance */}
-                          <td style={{ padding: "10px 12px", textAlign: "right" }} className="num">
+                          <td className="py-[10px] px-3 text-right num">
                             {snap ? <span style={{ color: "var(--text)" }}>{fmtCAD(snap.balance)}</span> : <span style={{ color: "var(--text-dim)" }}>—</span>}
                           </td>
 
                           {/* Last Updated */}
-                          <td
-                            style={{
-                              padding: "10px 12px",
-                              color: "var(--text-muted)",
-                            }}>
+                          <td className="py-[10px] px-3" style={{ color: "var(--text-muted)" }}>
                             {snap ? fmtDate(snap.date) : "—"}
                           </td>
 
                           {/* Return % */}
-                          <td style={{ padding: "10px 12px", textAlign: "right" }} className="num">
+                          <td className="py-[10px] px-3 text-right num">
                             {ret && !NO_RETURNS.has(account.type) ? (
-                              <span
-                                style={{
-                                  color: ret.returnPercent >= 0 ? "#10b981" : "#ef4444",
-                                }}>
-                                {fmtReturn(ret.returnPercent)}
-                              </span>
+                              <span style={{ color: ret.returnPercent >= 0 ? "#10b981" : "#ef4444" }}>{fmtReturn(ret.returnPercent)}</span>
                             ) : (
                               <span style={{ color: "var(--text-dim)" }}>—</span>
                             )}
                           </td>
 
                           {/* Delete */}
-                          <td style={{ padding: "10px 8px" }}>
+                          <td className="py-[10px] px-2">
                             {hoveredRowId === account.id && (
                               <button
                                 type="button"
@@ -1319,7 +1049,7 @@ function InvestmentsPage() {
                                   e.stopPropagation();
                                   handleDeleteAccount(account.id);
                                 }}
-                                style={iconBtn}>
+                                className={iconBtnCls}>
                                 <Trash2 size={13} style={{ color: "var(--text-dim)" }} />
                               </button>
                             )}

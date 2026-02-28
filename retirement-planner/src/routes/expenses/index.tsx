@@ -8,50 +8,28 @@ const ACCENT_HEX = "#f59e0b";
 
 function ExpensesPage() {
   return (
-    <div style={{ maxWidth: 960, display: "flex", flexDirection: "column", gap: 20 }}>
+    <div className="max-w-[960px] flex flex-col gap-5">
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <div
-          style={{
-            width: 4,
-            height: 20,
-            borderRadius: 2,
-            backgroundColor: ACCENT,
-          }}
-        />
-        <h1
-          style={{
-            margin: 0,
-            fontSize: 18,
-            fontWeight: 600,
-            color: "var(--text)",
-            letterSpacing: "-0.02em",
-          }}>
+      <div className="flex items-center gap-[10px]">
+        <div className="w-1 h-5 rounded-[2px]" style={{ backgroundColor: ACCENT }} />
+        <h1 className="m-0 text-lg font-semibold tracking-[-0.02em]" style={{ color: "var(--text)" }}>
           Expenses
         </h1>
       </div>
 
       {/* Sub-nav tabs */}
-      <div
-        style={{
-          display: "flex",
-          borderBottom: "1px solid var(--border)",
-          gap: 0,
-        }}>
+      <div className="flex" style={{ borderBottom: "1px solid var(--border)" }}>
         {["Monthly Import", "Budget Baseline", "Categories"].map((tab, i) => (
           <button
             key={tab}
+            className="py-2 px-4 text-[13px] cursor-pointer -mb-px"
             style={{
-              padding: "8px 16px",
-              fontSize: 13,
               fontFamily: "inherit",
               fontWeight: i === 0 ? 500 : 400,
               color: i === 0 ? ACCENT : "var(--text-muted)",
               background: "none",
               border: "none",
               borderBottom: i === 0 ? `2px solid ${ACCENT_HEX}` : "2px solid transparent",
-              cursor: "pointer",
-              marginBottom: -1,
             }}>
             {tab}
           </button>
@@ -59,37 +37,26 @@ function ExpensesPage() {
       </div>
 
       {/* ── Monthly Import content ── */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <div className="flex flex-col gap-4">
         {/* Drop zone */}
         <div
+          className="rounded-[10px] py-9 px-6 flex flex-col items-center gap-3 cursor-pointer"
           style={{
             border: `2px dashed color-mix(in srgb, ${ACCENT_HEX} 30%, var(--border))`,
-            borderRadius: 10,
-            padding: "36px 24px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 12,
             background: `color-mix(in srgb, ${ACCENT_HEX} 4%, var(--surface))`,
-            cursor: "pointer",
             transition: "border-color 150ms, background 150ms",
           }}>
           <div
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 10,
-              background: `color-mix(in srgb, ${ACCENT_HEX} 14%, transparent)`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}>
+            className="w-12 h-12 rounded-[10px] flex items-center justify-center"
+            style={{ background: `color-mix(in srgb, ${ACCENT_HEX} 14%, transparent)` }}>
             <Upload size={22} style={{ color: ACCENT }} />
           </div>
 
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)", marginBottom: 4 }}>Drop a CSV or paste transactions</div>
-            <div style={{ fontSize: 12.5, color: "var(--text-muted)", lineHeight: 1.6 }}>
+          <div className="text-center">
+            <div className="text-sm font-medium mb-1" style={{ color: "var(--text)" }}>
+              Drop a CSV or paste transactions
+            </div>
+            <div className="text-[12.5px] leading-[1.6]" style={{ color: "var(--text-muted)" }}>
               Export from your credit card or bank, then drop the file here.
               <br />
               Multiple cards can be imported in one session.
@@ -97,101 +64,63 @@ function ExpensesPage() {
           </div>
 
           <button
+            className="py-[7px] px-[18px] rounded-md text-[13px] font-medium cursor-pointer mt-1"
             style={{
-              padding: "7px 18px",
-              borderRadius: 6,
               background: `color-mix(in srgb, ${ACCENT_HEX} 14%, transparent)`,
               border: `1px solid color-mix(in srgb, ${ACCENT_HEX} 35%, transparent)`,
               color: ACCENT,
-              fontSize: 13,
-              fontWeight: 500,
               fontFamily: "inherit",
-              cursor: "pointer",
-              marginTop: 4,
             }}>
             Choose file
           </button>
         </div>
 
         {/* Empty state */}
-        <div
-          style={{
-            background: "var(--surface)",
-            border: "1px solid var(--border)",
-            borderRadius: 8,
-            overflow: "hidden",
-          }}>
+        <div className="rounded-lg overflow-hidden" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
           {/* Table header */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 120px 160px",
-              padding: "10px 16px",
-              borderBottom: "1px solid var(--border)",
-              gap: 12,
-            }}>
+          <div className="grid py-[10px] px-4 gap-3" style={{ gridTemplateColumns: "1fr 1fr 120px 160px", borderBottom: "1px solid var(--border)" }}>
             {["Merchant", "Date", "Amount", "Category"].map((col) => (
-              <span
-                key={col}
-                style={{
-                  fontSize: 11,
-                  fontWeight: 500,
-                  color: "var(--text-dim)",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.07em",
-                }}>
+              <span key={col} className="text-[11px] font-medium uppercase tracking-[0.07em]" style={{ color: "var(--text-dim)" }}>
                 {col}
               </span>
             ))}
           </div>
 
           {/* Empty rows placeholder */}
-          <div
-            style={{
-              padding: "40px 24px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 10,
-            }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div className="py-[40px] px-6 flex flex-col items-center gap-[10px]">
+            <div className="flex items-center gap-1.5">
               <AlertCircle size={14} style={{ color: "var(--text-dim)" }} />
-              <span style={{ fontSize: 13, color: "var(--text-muted)" }}>No transactions imported for this month</span>
+              <span className="text-[13px]" style={{ color: "var(--text-muted)" }}>
+                No transactions imported for this month
+              </span>
             </div>
-            <div style={{ fontSize: 12, color: "var(--text-dim)", textAlign: "center" }}>Import a CSV above to begin reviewing and categorizing expenses</div>
+            <div className="text-xs text-center" style={{ color: "var(--text-dim)" }}>
+              Import a CSV above to begin reviewing and categorizing expenses
+            </div>
           </div>
         </div>
 
         {/* How it works */}
         <div
+          className="py-3.5 px-[18px] rounded-lg flex gap-3 items-start"
           style={{
-            padding: "14px 18px",
             background: "var(--surface)",
             border: "1px solid var(--border)",
             borderLeft: `3px solid ${ACCENT}`,
-            borderRadius: 8,
-            display: "flex",
-            gap: 12,
-            alignItems: "flex-start",
           }}>
-          <FileText size={14} style={{ color: ACCENT, marginTop: 1, flexShrink: 0 }} />
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            <div style={{ fontSize: 12.5, fontWeight: 500, color: "var(--text)" }}>How import works</div>
-            <ul
-              style={{
-                margin: 0,
-                paddingLeft: 16,
-                display: "flex",
-                flexDirection: "column",
-                gap: 4,
-              }}>
+          <FileText size={14} className="mt-[1px] shrink-0" style={{ color: ACCENT }} />
+          <div className="flex flex-col gap-1.5">
+            <div className="text-[12.5px] font-medium" style={{ color: "var(--text)" }}>
+              How import works
+            </div>
+            <ul className="m-0 pl-4 flex flex-col gap-1">
               {[
                 "Known merchants auto-assign their saved category — those rows are collapsed",
                 "Unknown merchants surface at the top for manual assignment",
                 "Assignments are saved permanently — next import is faster",
                 "A running sidebar shows category totals as you work",
               ].map((tip) => (
-                <li key={tip} style={{ fontSize: 12.5, color: "var(--text-muted)", lineHeight: 1.5 }}>
+                <li key={tip} className="text-[12.5px] leading-[1.5]" style={{ color: "var(--text-muted)" }}>
                   {tip}
                 </li>
               ))}

@@ -170,52 +170,29 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
   return (
     <div
+      className="flex flex-col overflow-hidden h-screen shrink-0"
       style={{
         width: W,
         minWidth: W,
         maxWidth: W,
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
         backgroundColor: "var(--sidebar-bg)",
         borderRight: "1px solid var(--border)",
         transition: "width 200ms ease, min-width 200ms ease, max-width 200ms ease",
-        overflow: "hidden",
       }}>
       {/* ── Header ── */}
       <div
+        className="flex items-center shrink-0 gap-2"
         style={{
           height: 44,
-          display: "flex",
-          alignItems: "center",
           justifyContent: collapsed ? "center" : "space-between",
           padding: collapsed ? "0" : "0 10px 0 14px",
           borderBottom: "1px solid var(--border)",
-          flexShrink: 0,
-          gap: 8,
         }}>
         {/* App mark */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
-          <div
-            style={{
-              width: 20,
-              height: 20,
-              borderRadius: 4,
-              background: "linear-gradient(135deg, #06b6d4 0%, #2dd4bf 100%)",
-              flexShrink: 0,
-            }}
-          />
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-5 h-5 rounded shrink-0" style={{ background: "linear-gradient(135deg, #06b6d4 0%, #2dd4bf 100%)" }} />
           {!collapsed && (
-            <span
-              style={{
-                fontSize: 12.5,
-                fontWeight: 600,
-                color: "var(--text)",
-                letterSpacing: "-0.01em",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}>
+            <span className="text-[12.5px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis tracking-[-0.01em]" style={{ color: "var(--text)" }}>
               Retirement Planner
             </span>
           )}
@@ -223,14 +200,14 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
         {/* Collapse toggle (expanded mode only) */}
         {!collapsed && (
-          <button onClick={onToggle} title="Collapse sidebar" style={iconBtnStyle}>
+          <button type="button" onClick={onToggle} title="Collapse sidebar" className={iconBtnCls} style={{ color: "var(--text-dim)" }}>
             <PanelLeftClose size={13} />
           </button>
         )}
       </div>
 
       {/* ── Nav ── */}
-      <nav style={{ flex: 1, overflowY: "auto", overflowX: "hidden", padding: "6px 0" }}>
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden py-1.5">
         {NAV.map((section) => {
           const Icon = section.icon;
           const active = isActive(section);
@@ -241,7 +218,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
             <div key={section.id}>
               {/* Section row */}
               {hasChildren ? (
-                <div style={{ display: "flex", position: "relative" }}>
+                <div className="flex relative">
                   <Link
                     to={section.path as any}
                     title={collapsed ? section.label : undefined}
@@ -252,30 +229,32 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                         return next;
                       })
                     }
+                    className={rowBaseCls}
                     style={{ ...rowStyle(active, section.color, collapsed), flex: 1, paddingRight: collapsed ? undefined : 28 }}>
                     <IconSlot collapsed={collapsed} active={active} color={section.color}>
                       <Icon size={15} strokeWidth={1.75} style={{ color: active ? section.color : "inherit" }} />
                     </IconSlot>
-                    {!collapsed && <span style={{ flex: 1, whiteSpace: "nowrap" }}>{section.label}</span>}
+                    {!collapsed && <span className="flex-1 whitespace-nowrap">{section.label}</span>}
                   </Link>
                   {/* Chevron: only toggles accordion, does not navigate */}
                   {!collapsed && (
                     <button
+                      type="button"
                       onClick={(e) => {
                         e.preventDefault();
                         toggleSection(section.id);
                       }}
+                      className={iconBtnCls}
                       style={{
                         position: "absolute",
                         right: 8,
                         top: "50%",
                         transform: "translateY(-50%)",
-                        ...iconBtnStyle,
+                        color: "var(--text-dim)",
                       }}>
                       <ChevronDown
                         size={12}
                         style={{
-                          color: "var(--text-dim)",
                           transform: open ? "rotate(180deg)" : "none",
                           transition: "transform 200ms ease",
                         }}
@@ -284,11 +263,15 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                   )}
                 </div>
               ) : (
-                <Link to={section.path as any} title={collapsed ? section.label : undefined} style={rowStyle(active, section.color, collapsed)}>
+                <Link
+                  to={section.path as any}
+                  title={collapsed ? section.label : undefined}
+                  className={rowBaseCls}
+                  style={rowStyle(active, section.color, collapsed)}>
                   <IconSlot collapsed={collapsed} active={active} color={section.color}>
                     <Icon size={15} strokeWidth={1.75} style={{ color: active ? section.color : "inherit" }} />
                   </IconSlot>
-                  {!collapsed && <span style={{ flex: 1, whiteSpace: "nowrap" }}>{section.label}</span>}
+                  {!collapsed && <span className="flex-1 whitespace-nowrap">{section.label}</span>}
                 </Link>
               )}
 
@@ -306,30 +289,14 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                       <Link
                         key={child.path}
                         to={child.path as any}
+                        className="flex items-center gap-1.5 h-[34px] pl-9 pr-3 text-[12.5px] whitespace-nowrap"
                         style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 6,
-                          height: 34,
-                          padding: "0 12px 0 36px",
-                          fontSize: 12.5,
                           color: childActive ? "var(--text)" : "var(--text-dim)",
                           borderLeft: `3px solid ${childActive ? section.color : "transparent"}`,
                           background: childActive ? "rgba(240, 246, 252, 0.03)" : "none",
                           transition: "color 150ms, background 150ms",
-                          whiteSpace: "nowrap",
                         }}>
-                        {childActive && (
-                          <div
-                            style={{
-                              width: 4,
-                              height: 4,
-                              borderRadius: "50%",
-                              backgroundColor: section.color,
-                              flexShrink: 0,
-                            }}
-                          />
-                        )}
+                        {childActive && <div className="w-1 h-1 rounded-full shrink-0" style={{ backgroundColor: section.color }} />}
                         {child.label}
                       </Link>
                     );
@@ -342,19 +309,23 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       </nav>
 
       {/* ── Divider + Settings ── */}
-      <div style={{ borderTop: "1px solid var(--border)", flexShrink: 0 }}>
-        <Link to={"/settings" as any} title={collapsed ? "Settings" : undefined} style={rowStyle(pathname === "/settings", "#6e7681", collapsed)}>
+      <div className="shrink-0" style={{ borderTop: "1px solid var(--border)" }}>
+        <Link
+          to={"/settings" as any}
+          title={collapsed ? "Settings" : undefined}
+          className={rowBaseCls}
+          style={rowStyle(pathname === "/settings", "#6e7681", collapsed)}>
           <IconSlot collapsed={collapsed} active={pathname === "/settings"} color="#6e7681">
             <Settings size={15} strokeWidth={1.75} />
           </IconSlot>
-          {!collapsed && <span style={{ whiteSpace: "nowrap" }}>Settings</span>}
+          {!collapsed && <span className="whitespace-nowrap">Settings</span>}
         </Link>
       </div>
 
       {/* ── Expand button (collapsed mode only) ── */}
       {collapsed && (
-        <div style={{ padding: "6px", borderTop: "1px solid var(--border)", flexShrink: 0 }}>
-          <button onClick={onToggle} title="Expand sidebar" style={{ ...iconBtnStyle, width: "100%", justifyContent: "center" }}>
+        <div className="p-1.5 shrink-0" style={{ borderTop: "1px solid var(--border)" }}>
+          <button type="button" onClick={onToggle} title="Expand sidebar" className={`${iconBtnCls} w-full justify-center`} style={{ color: "var(--text-dim)" }}>
             <PanelLeftOpen size={13} />
           </button>
         </div>
@@ -365,69 +336,33 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
 // ─── Shared style helpers ─────────────────────────────────────────────────────
 
+// Static Tailwind classes for all nav row elements
+const rowBaseCls = "flex items-center h-9 w-full text-[13px] cursor-pointer border-none no-underline box-border";
+
+// Dynamic/CSS-var-only properties (active state, color, collapsed layout)
 function rowStyle(active: boolean, color: string, collapsed: boolean): React.CSSProperties {
   return {
-    display: "flex",
-    alignItems: "center",
     gap: collapsed ? 0 : 6,
-    height: 36,
-    width: "100%",
     padding: collapsed ? 0 : "0 10px 0 0",
     paddingLeft: 0,
     background: active ? "rgba(240, 246, 252, 0.05)" : "none",
     color: active ? "var(--text)" : "var(--text-muted)",
-    fontSize: 13,
     fontWeight: active ? 500 : 400,
     fontFamily: "inherit",
-    cursor: "pointer",
-    border: "none",
-    borderLeft: `3px solid ${active ? color : "transparent"}`,
-    textDecoration: "none",
     justifyContent: collapsed ? "center" : "flex-start",
+    borderLeft: `3px solid ${active ? color : "transparent"}`,
     transition: "background 150ms, color 150ms, border-color 150ms",
-    boxSizing: "border-box",
   };
 }
 
 function IconSlot({ collapsed, active, color, children }: { collapsed: boolean; active: boolean; color: string; children: React.ReactNode }) {
   return (
-    <div
-      style={{
-        width: collapsed ? "100%" : 36,
-        height: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexShrink: 0,
-        position: "relative",
-      }}>
+    <div className="flex items-center justify-center shrink-0 relative h-full" style={{ width: collapsed ? "100%" : 36 }}>
       {children}
       {/* Active dot in collapsed mode */}
-      {collapsed && active && (
-        <div
-          style={{
-            position: "absolute",
-            top: 6,
-            right: 8,
-            width: 5,
-            height: 5,
-            borderRadius: "50%",
-            backgroundColor: color,
-          }}
-        />
-      )}
+      {collapsed && active && <div className="absolute top-1.5 right-2 w-[5px] h-[5px] rounded-full" style={{ backgroundColor: color }} />}
     </div>
   );
 }
 
-const iconBtnStyle: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  padding: 4,
-  borderRadius: 4,
-  background: "none",
-  border: "none",
-  color: "var(--text-dim)",
-  cursor: "pointer",
-};
+const iconBtnCls = "flex items-center justify-center p-1 rounded border-none bg-transparent cursor-pointer";
