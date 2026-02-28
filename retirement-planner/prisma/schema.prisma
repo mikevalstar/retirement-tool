@@ -14,8 +14,77 @@ model Todo {
 }
 
 model Person {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   name      String
-  sortOrder Int      @default(0)
+  sortOrder Int       @default(0)
+  createdAt DateTime  @default(now())
+  // Restrict (Prisma default) — cannot delete a Person who owns accounts.
+  // This prevents accidentally nuking investment history via Settings.
+  accounts  Account[]
+}
+
+// ─── Account Types ────────────────────────────────────────────────────────────
+// Fixed set of Canadian registered and non-registered account types.
+// Prisma maps enums to strings in SQLite. CHEQUING and REGULAR_SAVINGS are
+// cash/savings accounts — they do not track investment returns (enforced in UI).
+
+enum AccountType {
+  TFSA            // Tax-Free Savings Account — registered, tax-sheltered growth
+  RRSP            // Registered Retirement Savings Plan — pre-tax contributions, taxed on withdrawal
+  RRIF            // Registered Retirement Income Fund — converted from RRSP, mandatory annual drawdowns
+  REGULAR_SAVINGS // Non-registered savings — no tax advantages, no contribution limits
+  CHEQUING        // Chequing / cash account — liquidity tracking only, no return history
+}
+
+// ─── Investment Accounts ──────────────────────────────────────────────────────
+
+model Account {
+  id        Int         @id @default(autoincrement())
+  name      String      // User-defined label (e.g. "TD TFSA", "Mike's RRSP")
+  type      AccountType
+  // FK to Person — no shared accounts. If an account is technically joint,
+  // the user picks a primary owner. Deleting a Person is blocked if they own accounts.
+  ownerId   Int
+  owner     Person      @relation(fields: [ownerId], references: [id])
+  createdAt DateTime    @default(now())
+
+  snapshots BalanceSnapshot[]
+  returns   ReturnEntry[]
+}
+
+// ─── Balance Snapshots ────────────────────────────────────────────────────────
+// Point-in-time balance records. Not editable — delete and re-add to correct.
+// "Current balance" = the snapshot with the most recent `date`, not `createdAt`.
+// Retroactive entries are allowed; ordering is always by `date`.
+
+model BalanceSnapshot {
+  id        Int      @id @default(autoincrement())
+  accountId Int
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  // The as-of date for this balance reading — this is what determines "current".
+  // Two snapshots on the same date are allowed (e.g. mid-month vs end-of-month).
+  date      DateTime
+  balance   Float    // CAD amount
+  note      String?  // Optional memo (e.g. "after Q4 dividend reinvestment")
+  // Insertion timestamp — for audit only. Do not use for balance ordering; use `date`.
   createdAt DateTime @default(now())
+}
+
+// ─── Annual Returns ───────────────────────────────────────────────────────────
+// One return percentage per account per year. Not editable — delete and re-add.
+// Hidden in the UI for CHEQUING and REGULAR_SAVINGS account types.
+
+model ReturnEntry {
+  id            Int      @id @default(autoincrement())
+  accountId     Int
+  account       Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  year          Int      // Calendar year (e.g. 2024)
+  // Stored as a plain percentage value: 7.5 means 7.5%, -12.3 means a down year.
+  // Formula from the inline calculator: (end - start - netContributions) / start * 100
+  returnPercent Float
+  createdAt     DateTime @default(now())
+
+  // One return entry per account per year. Delete the existing row before re-adding
+  // to correct a mistake — the UI enforces this with delete-only rows.
+  @@unique([accountId, year])
 }
