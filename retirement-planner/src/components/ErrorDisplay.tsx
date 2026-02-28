@@ -27,20 +27,20 @@ export function ErrorDisplay({ error, onDismiss }: ErrorDisplayProps) {
   return (
     <div
       style={{
-        background: "color-mix(in srgb, #ef4444 10%, transparent)",
-        border: "1px solid color-mix(in srgb, #ef4444 30%, transparent)",
+        background: "color-mix(in srgb, var(--color-negative) 10%, transparent)",
+        border: "1px solid color-mix(in srgb, var(--color-negative) 30%, transparent)",
         borderRadius: 6,
         fontSize: 12,
         overflow: "hidden",
       }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 8, padding: "10px 12px" }}>
-        <AlertCircle size={13} style={{ color: "#ef4444", flexShrink: 0, marginTop: 1 }} />
+        <AlertCircle size={13} style={{ color: "var(--color-negative)", flexShrink: 0, marginTop: 1 }} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <span
             style={{
               fontFamily: "JetBrains Mono, monospace",
               fontSize: 11,
-              color: "#ef4444",
+              color: "var(--color-negative)",
               fontWeight: 600,
               display: "block",
               marginBottom: 2,
@@ -103,8 +103,8 @@ export function ErrorDisplay({ error, onDismiss }: ErrorDisplayProps) {
             wordBreak: "break-all",
             overflowY: "auto",
             maxHeight: 220,
-            borderTop: "1px solid color-mix(in srgb, #ef4444 20%, transparent)",
-            background: "color-mix(in srgb, #ef4444 5%, transparent)",
+            borderTop: "1px solid color-mix(in srgb, var(--color-negative) 20%, transparent)",
+            background: "color-mix(in srgb, var(--color-negative) 5%, transparent)",
             lineHeight: 1.6,
           }}>
           {stack}

@@ -39,7 +39,7 @@ export const Route = createFileRoute("/settings")({
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-const ACCENT = "#6e7681";
+const ACCENT = "var(--text-dim)";
 
 function SettingsPage() {
   const router = useRouter();
@@ -217,7 +217,7 @@ function SettingsPage() {
                       }}
                     />
                     <button type="button" onClick={commitEdit} style={iconBtn}>
-                      <Check size={13} style={{ color: "#10b981" }} />
+                      <Check size={13} style={{ color: "var(--color-positive)" }} />
                     </button>
                     <button type="button" onClick={cancelEdit} style={iconBtn}>
                       <X size={13} style={{ color: "var(--text-dim)" }} />
@@ -284,7 +284,7 @@ function SettingsPage() {
                   }}
                 />
                 <button type="button" onClick={handleAdd} style={iconBtn}>
-                  <Check size={13} style={{ color: "#10b981" }} />
+                  <Check size={13} style={{ color: "var(--color-positive)" }} />
                 </button>
                 <button
                   type="button"

@@ -5,7 +5,6 @@ import { IconButton } from "#/components/IconButton";
 import { createReturn } from "#/routes/investments/accountFns";
 
 const ACCENT = "var(--section-investments)";
-const ACCENT_HEX = "#10b981";
 
 const inlineInputCls = "rounded py-1 px-1.5 text-xs outline-none box-border w-full";
 const inlineInputCSS: React.CSSProperties = {
@@ -64,7 +63,7 @@ export function AddReturnRow({ accountId, onSaved, onCancel }: { accountId: numb
 
   return (
     <>
-      <tr style={{ borderTop: "1px solid var(--border)", background: `color-mix(in srgb, ${ACCENT_HEX} 5%, transparent)` }}>
+      <tr style={{ borderTop: "1px solid var(--border)", background: `color-mix(in srgb, ${ACCENT} 5%, transparent)` }}>
         <td className="py-[5px] px-2">
           <input
             type="number"
@@ -103,7 +102,7 @@ export function AddReturnRow({ accountId, onSaved, onCancel }: { accountId: numb
         </td>
       </tr>
       {showCalc && (
-        <tr style={{ background: `color-mix(in srgb, ${ACCENT_HEX} 3%, transparent)` }}>
+        <tr style={{ background: `color-mix(in srgb, ${ACCENT} 3%, transparent)` }}>
           <td colSpan={3} className="px-2 pt-2 pb-[10px]" style={{ borderTop: "1px dashed var(--border)" }}>
             <div className="flex flex-col gap-1.5">
               <div className="flex gap-1.5">
@@ -152,8 +151,8 @@ export function AddReturnRow({ accountId, onSaved, onCancel }: { accountId: numb
                 onClick={handleCalculate}
                 className="py-[5px] px-[10px] rounded text-[11px] cursor-pointer self-start"
                 style={{
-                  background: `color-mix(in srgb, ${ACCENT_HEX} 15%, transparent)`,
-                  border: `1px solid color-mix(in srgb, ${ACCENT_HEX} 30%, transparent)`,
+                  background: `color-mix(in srgb, ${ACCENT} 15%, transparent)`,
+                  border: `1px solid color-mix(in srgb, ${ACCENT} 30%, transparent)`,
                   color: ACCENT,
                   fontFamily: "inherit",
                 }}>

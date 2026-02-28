@@ -16,7 +16,6 @@ import { deleteAccount, deleteReturn, deleteSnapshot, getAccounts, getPeople, ge
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const ACCENT = "var(--section-investments)";
-const ACCENT_HEX = "#10b981";
 
 const TYPE_LABEL: Record<AccountType, string> = {
   TFSA: "TFSA",
@@ -168,7 +167,7 @@ function InvestmentsPage() {
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-[10px]">
-              <div className="w-1 h-5 rounded-[2px]" style={{ backgroundColor: ACCENT_HEX }} />
+              <div className="w-1 h-5 rounded-[2px]" style={{ backgroundColor: ACCENT }} />
               <h1 className="m-0 text-lg font-semibold tracking-[-0.02em]" style={{ color: "var(--text)" }}>
                 Investment Accounts
               </h1>
@@ -193,8 +192,8 @@ function InvestmentsPage() {
                 onClick={() => setPanelOpen(true)}
                 className="flex items-center gap-1.5 py-1.5 px-[14px] rounded-md text-[12.5px] font-medium cursor-pointer"
                 style={{
-                  background: `color-mix(in srgb, ${ACCENT_HEX} 12%, transparent)`,
-                  border: `1px solid color-mix(in srgb, ${ACCENT_HEX} 30%, transparent)`,
+                  background: `color-mix(in srgb, ${ACCENT} 12%, transparent)`,
+                  border: `1px solid color-mix(in srgb, ${ACCENT} 30%, transparent)`,
                   color: ACCENT,
                   fontFamily: "inherit",
                 }}>
@@ -213,7 +212,7 @@ function InvestmentsPage() {
               icon={<TrendingUp size={20} style={{ color: ACCENT }} />}
               title="No accounts yet"
               description='Click "Add Account" to add your first investment account.'
-              accent={ACCENT_HEX}
+              accent={ACCENT}
             />
           ) : (
             <div className="rounded-lg overflow-hidden" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
@@ -263,7 +262,7 @@ function InvestmentsPage() {
                           style={{
                             borderTop: "1px solid var(--border)",
                             background: isExpanded
-                              ? `color-mix(in srgb, ${ACCENT_HEX} 6%, transparent)`
+                              ? `color-mix(in srgb, ${ACCENT} 6%, transparent)`
                               : hoveredRowId === account.id
                                 ? "var(--surface-raised)"
                                 : "transparent",
@@ -302,7 +301,9 @@ function InvestmentsPage() {
                           {/* Return % */}
                           <td className="py-[10px] px-3 text-right num">
                             {ret && !NO_RETURNS.has(account.type) ? (
-                              <span style={{ color: ret.returnPercent >= 0 ? "#10b981" : "#ef4444" }}>{fmtReturn(ret.returnPercent)}</span>
+                              <span style={{ color: ret.returnPercent >= 0 ? "var(--color-positive)" : "var(--color-negative)" }}>
+                                {fmtReturn(ret.returnPercent)}
+                              </span>
                             ) : (
                               <span style={{ color: "var(--text-dim)" }}>—</span>
                             )}

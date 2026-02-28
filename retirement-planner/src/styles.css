@@ -38,6 +38,10 @@
   --section-scenarios:   #8b5cf6;
   --section-simulation:  #00e5ff;
 
+  /* ── Semantic colors ── */
+  --color-positive:      #10b981;
+  --color-negative:      #ef4444;
+
   /* Scrollbar */
   scrollbar-width: thin;
   scrollbar-color: #30363d transparent;

@@ -107,9 +107,9 @@ export default function TopBar() {
           title="Run Simulation"
           className="flex items-center gap-1.5 py-1 px-3 rounded-[5px] text-xs font-medium cursor-pointer"
           style={{
-            background: "rgba(6, 182, 212, 0.10)",
-            border: "1px solid rgba(6, 182, 212, 0.28)",
-            color: "#06b6d4",
+            background: "color-mix(in srgb, var(--section-dashboard) 10%, transparent)",
+            border: "1px solid color-mix(in srgb, var(--section-dashboard) 28%, transparent)",
+            color: "var(--section-dashboard)",
             fontFamily: "inherit",
           }}>
           <Play size={10} fill="currentColor" />

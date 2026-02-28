@@ -8,7 +8,6 @@ import { createBulkSnapshots, type getAccounts } from "#/routes/investments/acco
 type AccountItem = Awaited<ReturnType<typeof getAccounts>>[number];
 
 const ACCENT = "var(--section-investments)";
-const ACCENT_HEX = "#10b981";
 
 const panelInputCls = "w-full rounded-md py-[7px] px-[10px] text-[13px] outline-none box-border";
 const panelInputCSS: React.CSSProperties = {
@@ -23,8 +22,8 @@ const panelCancelBtnCSS: React.CSSProperties = { border: "1px solid var(--border
 
 const panelSaveBtnCls = (enabled: boolean) => `py-[7px] px-4 rounded-md text-[13px] font-medium ${enabled ? "cursor-pointer" : "cursor-default"}`;
 const panelSaveBtnCSS = (enabled: boolean): React.CSSProperties => ({
-  background: enabled ? `color-mix(in srgb, ${ACCENT_HEX} 20%, transparent)` : "var(--surface-raised)",
-  border: `1px solid ${enabled ? `color-mix(in srgb, ${ACCENT_HEX} 40%, transparent)` : "var(--border)"}`,
+  background: enabled ? `color-mix(in srgb, ${ACCENT} 20%, transparent)` : "var(--surface-raised)",
+  border: `1px solid ${enabled ? `color-mix(in srgb, ${ACCENT} 40%, transparent)` : "var(--border)"}`,
   color: enabled ? ACCENT : "var(--text-dim)",
   fontFamily: "inherit",
 });

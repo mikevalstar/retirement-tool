@@ -33,14 +33,14 @@ const NAV: NavSection[] = [
     id: "dashboard",
     label: "Dashboard",
     icon: LayoutDashboard,
-    color: "#06b6d4",
+    color: "var(--section-dashboard)",
     path: "/",
   },
   {
     id: "investments",
     label: "Investments",
     icon: TrendingUp,
-    color: "#10b981",
+    color: "var(--section-investments)",
     path: "/investments",
     children: [
       { label: "Accounts", path: "/investments/accounts" },
@@ -52,7 +52,7 @@ const NAV: NavSection[] = [
     id: "income",
     label: "Income",
     icon: Wallet,
-    color: "#14b8a6",
+    color: "var(--section-income)",
     path: "/income",
     children: [
       { label: "Employment", path: "/income/employment" },
@@ -64,7 +64,7 @@ const NAV: NavSection[] = [
     id: "expenses",
     label: "Expenses",
     icon: Receipt,
-    color: "#f59e0b",
+    color: "var(--section-expenses)",
     path: "/expenses",
     children: [
       { label: "Monthly Import", path: "/expenses/monthly-import" },
@@ -76,7 +76,7 @@ const NAV: NavSection[] = [
     id: "housing",
     label: "Housing",
     icon: Home,
-    color: "#6366f1",
+    color: "var(--section-housing)",
     path: "/housing",
     children: [
       { label: "Mortgage", path: "/housing/mortgage" },
@@ -88,7 +88,7 @@ const NAV: NavSection[] = [
     id: "taxes",
     label: "Taxes",
     icon: FileText,
-    color: "#f97316",
+    color: "var(--section-taxes)",
     path: "/taxes",
     children: [
       { label: "Overview", path: "/taxes/overview" },
@@ -100,7 +100,7 @@ const NAV: NavSection[] = [
     id: "scenarios",
     label: "Scenarios",
     icon: GitBranch,
-    color: "#8b5cf6",
+    color: "var(--section-scenarios)",
     path: "/scenarios",
     children: [
       { label: "Configure", path: "/scenarios/configure" },
@@ -111,7 +111,7 @@ const NAV: NavSection[] = [
     id: "simulation",
     label: "Simulation",
     icon: Play,
-    color: "#00e5ff",
+    color: "var(--section-simulation)",
     path: "/simulation",
     children: [
       { label: "Run", path: "/simulation/run" },
@@ -190,7 +190,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         }}>
         {/* App mark */}
         <div className="flex items-center gap-2 min-w-0">
-          <div className="w-5 h-5 rounded shrink-0" style={{ background: "linear-gradient(135deg, #06b6d4 0%, #2dd4bf 100%)" }} />
+          <div className="w-5 h-5 rounded shrink-0" style={{ background: "linear-gradient(135deg, var(--section-dashboard) 0%, var(--accent) 100%)" }} />
           {!collapsed && (
             <span className="text-[12.5px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis tracking-[-0.01em]" style={{ color: "var(--text)" }}>
               Retirement Planner
@@ -318,8 +318,8 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
           to={"/settings" as any}
           title={collapsed ? "Settings" : undefined}
           className={rowBaseCls}
-          style={rowStyle(pathname === "/settings", "#6e7681", collapsed)}>
-          <IconSlot collapsed={collapsed} active={pathname === "/settings"} color="#6e7681">
+          style={rowStyle(pathname === "/settings", "var(--text-dim)", collapsed)}>
+          <IconSlot collapsed={collapsed} active={pathname === "/settings"} color="var(--text-dim)">
             <Settings size={15} strokeWidth={1.75} />
           </IconSlot>
           {!collapsed && <span className="whitespace-nowrap">Settings</span>}

@@ -4,7 +4,7 @@ import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { IconButton } from "#/components/IconButton";
 import { createSnapshot } from "#/routes/investments/accountFns";
 
-const ACCENT_HEX = "#10b981";
+const ACCENT = "var(--section-investments)";
 
 const inlineInputCls = "rounded py-1 px-1.5 text-xs outline-none box-border w-full";
 const inlineInputCSS: React.CSSProperties = {
@@ -49,7 +49,7 @@ export function AddSnapshotRow({ accountId, onSaved, onCancel }: { accountId: nu
 
   return (
     <Fragment>
-      <tr style={{ borderTop: "1px solid var(--border)", background: `color-mix(in srgb, ${ACCENT_HEX} 5%, transparent)` }}>
+      <tr style={{ borderTop: "1px solid var(--border)", background: `color-mix(in srgb, ${ACCENT} 5%, transparent)` }}>
         <td className="py-[5px] px-2">
           <input
             type="date"

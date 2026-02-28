@@ -16,7 +16,7 @@ export function ReturnLine({ ret, onDelete }: { ret: ReturnItem; onDelete: (id: 
         {ret.year}
       </td>
       <td className="py-1.5 px-2 text-right num">
-        <span style={{ color: pct >= 0 ? "#10b981" : "#ef4444" }}>{fmtReturn(pct)}</span>
+        <span style={{ color: pct >= 0 ? "var(--color-positive)" : "var(--color-negative)" }}>{fmtReturn(pct)}</span>
       </td>
       <td className="py-1.5 px-1 w-6">
         {hovered && (

@@ -4,7 +4,6 @@ import { AlertCircle, FileText, Upload } from "lucide-react";
 export const Route = createFileRoute("/expenses/")({ component: ExpensesPage });
 
 const ACCENT = "var(--section-expenses)";
-const ACCENT_HEX = "#f59e0b";
 
 function ExpensesPage() {
   return (
@@ -30,7 +29,7 @@ function ExpensesPage() {
               color: i === 0 ? ACCENT : "var(--text-muted)",
               background: "none",
               border: "none",
-              borderBottom: i === 0 ? `2px solid ${ACCENT_HEX}` : "2px solid transparent",
+              borderBottom: i === 0 ? `2px solid ${ACCENT}` : "2px solid transparent",
             }}>
             {tab}
           </button>
@@ -43,13 +42,11 @@ function ExpensesPage() {
         <div
           className="rounded-[10px] py-9 px-6 flex flex-col items-center gap-3 cursor-pointer"
           style={{
-            border: `2px dashed color-mix(in srgb, ${ACCENT_HEX} 30%, var(--border))`,
-            background: `color-mix(in srgb, ${ACCENT_HEX} 4%, var(--surface))`,
+            border: `2px dashed color-mix(in srgb, ${ACCENT} 30%, var(--border))`,
+            background: `color-mix(in srgb, ${ACCENT} 4%, var(--surface))`,
             transition: "border-color 150ms, background 150ms",
           }}>
-          <div
-            className="w-12 h-12 rounded-[10px] flex items-center justify-center"
-            style={{ background: `color-mix(in srgb, ${ACCENT_HEX} 14%, transparent)` }}>
+          <div className="w-12 h-12 rounded-[10px] flex items-center justify-center" style={{ background: `color-mix(in srgb, ${ACCENT} 14%, transparent)` }}>
             <Upload size={22} style={{ color: ACCENT }} />
           </div>
 
@@ -68,8 +65,8 @@ function ExpensesPage() {
             type="button"
             className="py-[7px] px-[18px] rounded-md text-[13px] font-medium cursor-pointer mt-1"
             style={{
-              background: `color-mix(in srgb, ${ACCENT_HEX} 14%, transparent)`,
-              border: `1px solid color-mix(in srgb, ${ACCENT_HEX} 35%, transparent)`,
+              background: `color-mix(in srgb, ${ACCENT} 14%, transparent)`,
+              border: `1px solid color-mix(in srgb, ${ACCENT} 35%, transparent)`,
               color: ACCENT,
               fontFamily: "inherit",
             }}>
