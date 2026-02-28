@@ -42,7 +42,6 @@ export function AddSnapshotRow({ accountId, onSaved, onCancel }: { accountId: nu
   return (
     <tr style={{ borderTop: "1px solid var(--border)", background: `color-mix(in srgb, ${ACCENT_HEX} 5%, transparent)` }}>
       <td className="py-[5px] px-2">
-        {/* biome-ignore lint/a11y/noAutofocus: intentional for inline form UX */}
         <input
           type="date"
           value={date}

@@ -129,6 +129,7 @@ function SettingsPage() {
             <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>Names used for account ownership, income, and taxes across the app</div>
           </div>
           <button
+            type="button"
             onClick={() => setAdding(true)}
             style={{
               display: "flex",
@@ -197,26 +198,32 @@ function SettingsPage() {
                         outline: "none",
                       }}
                     />
-                    <button onClick={commitEdit} style={iconBtn}>
+                    <button type="button" onClick={commitEdit} style={iconBtn}>
                       <Check size={13} style={{ color: "#10b981" }} />
                     </button>
-                    <button onClick={cancelEdit} style={iconBtn}>
+                    <button type="button" onClick={cancelEdit} style={iconBtn}>
                       <X size={13} style={{ color: "var(--text-dim)" }} />
                     </button>
                   </>
                 ) : (
                   <>
-                    <span
+                    <button
+                      type="button"
                       onClick={() => startEdit(person.id, person.name)}
                       style={{
                         flex: 1,
                         fontSize: 13,
                         color: "var(--text)",
                         cursor: "text",
+                        background: "none",
+                        border: "none",
+                        padding: 0,
+                        textAlign: "left",
+                        fontFamily: "inherit",
                       }}>
                       {person.name}
-                    </span>
-                    <button onClick={() => handleDelete(person.id)} style={iconBtn}>
+                    </button>
+                    <button type="button" onClick={() => handleDelete(person.id)} style={iconBtn}>
                       <Trash2 size={13} style={{ color: "var(--text-dim)" }} />
                     </button>
                   </>
@@ -258,10 +265,11 @@ function SettingsPage() {
                     outline: "none",
                   }}
                 />
-                <button onClick={handleAdd} style={iconBtn}>
+                <button type="button" onClick={handleAdd} style={iconBtn}>
                   <Check size={13} style={{ color: "#10b981" }} />
                 </button>
                 <button
+                  type="button"
                   onClick={() => {
                     setAdding(false);
                     setNewName("");

@@ -21,6 +21,7 @@ function ExpensesPage() {
       <div className="flex" style={{ borderBottom: "1px solid var(--border)" }}>
         {["Monthly Import", "Budget Baseline", "Categories"].map((tab, i) => (
           <button
+            type="button"
             key={tab}
             className="py-2 px-4 text-[13px] cursor-pointer -mb-px"
             style={{
@@ -64,6 +65,7 @@ function ExpensesPage() {
           </div>
 
           <button
+            type="button"
             className="py-[7px] px-[18px] rounded-md text-[13px] font-medium cursor-pointer mt-1"
             style={{
               background: `color-mix(in srgb, ${ACCENT_HEX} 14%, transparent)`,

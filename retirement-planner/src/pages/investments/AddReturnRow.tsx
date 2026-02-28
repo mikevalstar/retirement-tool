@@ -58,7 +58,6 @@ export function AddReturnRow({ accountId, onSaved, onCancel }: { accountId: numb
     <>
       <tr style={{ borderTop: "1px solid var(--border)", background: `color-mix(in srgb, ${ACCENT_HEX} 5%, transparent)` }}>
         <td className="py-[5px] px-2">
-          {/* biome-ignore lint/a11y/noAutofocus: intentional for inline form UX */}
           <input
             type="number"
             value={year}

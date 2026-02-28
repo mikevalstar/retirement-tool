@@ -73,52 +73,50 @@ export function UpdateBalancesPanel({ accounts, onClose, onSaved }: { accounts: 
           </button>
         </>
       }>
-      <>
-        {/* As of date */}
-        <div className="py-3.5 px-5" style={{ borderBottom: "1px solid var(--border)" }}>
-          <Field label="As of Date">
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={panelInputCls} style={panelInputCSS} />
-          </Field>
-        </div>
+      {/* As of date */}
+      <div className="py-3.5 px-5" style={{ borderBottom: "1px solid var(--border)" }}>
+        <Field label="As of Date">
+          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={panelInputCls} style={panelInputCSS} />
+        </Field>
+      </div>
 
-        {/* Account list */}
-        <div>
-          {accounts.map((account) => {
-            const snap = account.snapshots[0];
-            return (
-              <div key={account.id} className="py-[10px] px-5 flex items-center gap-3" style={{ borderBottom: "1px solid var(--border)" }}>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-[3px]">
-                    <span className="text-[13px] font-medium" style={{ color: "var(--text)" }}>
-                      {account.name}
-                    </span>
-                    <OwnerBadge name={account.owner.name} />
-                  </div>
-                  {snap ? (
-                    <div className="text-[11px]" style={{ color: "var(--text-dim)" }}>
-                      <span className="num">{fmtCAD(snap.balance)}</span>
-                      {" · "}
-                      {fmtDate(snap.date)}
-                    </div>
-                  ) : (
-                    <div className="text-[11px] italic" style={{ color: "var(--text-dim)" }}>
-                      No balance recorded
-                    </div>
-                  )}
+      {/* Account list */}
+      <div>
+        {accounts.map((account) => {
+          const snap = account.snapshots[0];
+          return (
+            <div key={account.id} className="py-[10px] px-5 flex items-center gap-3" style={{ borderBottom: "1px solid var(--border)" }}>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-[3px]">
+                  <span className="text-[13px] font-medium" style={{ color: "var(--text)" }}>
+                    {account.name}
+                  </span>
+                  <OwnerBadge name={account.owner.name} />
                 </div>
-                <input
-                  type="number"
-                  value={values[account.id] ?? ""}
-                  onChange={(e) => setValues((prev) => ({ ...prev, [account.id]: e.target.value }))}
-                  placeholder="—"
-                  className={`num ${panelInputCls} !w-[120px] text-right`}
-                  style={panelInputCSS}
-                />
+                {snap ? (
+                  <div className="text-[11px]" style={{ color: "var(--text-dim)" }}>
+                    <span className="num">{fmtCAD(snap.balance)}</span>
+                    {" · "}
+                    {fmtDate(snap.date)}
+                  </div>
+                ) : (
+                  <div className="text-[11px] italic" style={{ color: "var(--text-dim)" }}>
+                    No balance recorded
+                  </div>
+                )}
               </div>
-            );
-          })}
-        </div>
-      </>
+              <input
+                type="number"
+                value={values[account.id] ?? ""}
+                onChange={(e) => setValues((prev) => ({ ...prev, [account.id]: e.target.value }))}
+                placeholder="—"
+                className={`num ${panelInputCls} !w-[120px] text-right`}
+                style={panelInputCSS}
+              />
+            </div>
+          );
+        })}
+      </div>
     </SlidePanel>
   );
 }

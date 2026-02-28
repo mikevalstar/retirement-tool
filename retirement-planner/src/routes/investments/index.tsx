@@ -1,11 +1,11 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Plus, RefreshCw, Trash2, TrendingUp } from "lucide-react";
 import { Fragment, useState } from "react";
-import type { AccountType } from "#/generated/prisma/enums";
 import { EmptyState } from "#/components/EmptyState";
 import { ExpandChevron } from "#/components/ExpandChevron";
 import { IconButton } from "#/components/IconButton";
 import { OwnerBadge } from "#/components/OwnerBadge";
+import type { AccountType } from "#/generated/prisma/enums";
 import { AccountDetail } from "#/pages/investments/AccountDetail";
 import { AddAccountPanel } from "#/pages/investments/AddAccountPanel";
 import { FloatingToc } from "#/pages/investments/FloatingToc";

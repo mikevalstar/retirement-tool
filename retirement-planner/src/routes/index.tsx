@@ -55,7 +55,9 @@ function QuickAction({
 }) {
   return (
     <Link
+      // biome-ignore lint/suspicious/noExplicitAny: TanStack Router `to`/`search` requires registered types; unbuilt routes need cast
       to={to as any}
+      // biome-ignore lint/suspicious/noExplicitAny: TanStack Router `to`/`search` requires registered types; unbuilt routes need cast
       search={search as any}
       className="flex-1 flex items-center gap-[14px] px-[18px] py-[14px] rounded-lg cursor-pointer no-underline min-w-0"
       style={{
@@ -134,6 +136,7 @@ function Dashboard() {
         {/* Empty state */}
         <div className="h-[220px] flex flex-col items-center justify-center gap-[10px] relative overflow-hidden">
           {/* Decorative grid lines */}
+          {/* biome-ignore lint/a11y/noSvgWithoutTitle: decorative SVG, aria-hidden is correct */}
           <svg aria-hidden className="absolute inset-0 w-full h-full opacity-[0.15]">
             {[0.25, 0.5, 0.75].map((y) => (
               <line key={y} x1="0" y1={`${y * 100}%`} x2="100%" y2={`${y * 100}%`} stroke="var(--border-strong)" strokeWidth="1" strokeDasharray="4 6" />

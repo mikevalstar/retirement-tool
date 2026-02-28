@@ -135,7 +135,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const [expanded, setExpanded] = useState<Set<string>>(() => {
     const initial = new Set<string>();
     for (const s of NAV) {
-      if (s.children && (pathname === s.path || pathname.startsWith(s.path + "/"))) {
+      if (s.children && (pathname === s.path || pathname.startsWith(`${s.path}/`))) {
         initial.add(s.id);
       }
     }
@@ -156,7 +156,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
     setExpanded((prev) => {
       const next = new Set(prev);
       for (const s of NAV) {
-        if (s.children && (pathname === s.path || pathname.startsWith(s.path + "/"))) {
+        if (s.children && (pathname === s.path || pathname.startsWith(`${s.path}/`))) {
           next.add(s.id);
         }
       }
@@ -164,7 +164,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
     });
   }, [pathname]);
 
-  const isActive = (section: NavSection) => (section.path === "/" ? pathname === "/" : pathname === section.path || pathname.startsWith(section.path + "/"));
+  const isActive = (section: NavSection) => (section.path === "/" ? pathname === "/" : pathname === section.path || pathname.startsWith(`${section.path}/`));
 
   const W = collapsed ? 52 : 220;
 
@@ -220,6 +220,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
               {hasChildren ? (
                 <div className="flex relative">
                   <Link
+                    // biome-ignore lint/suspicious/noExplicitAny: TanStack Router `to` requires registered routes; unbuilt routes need cast
                     to={section.path as any}
                     title={collapsed ? section.label : undefined}
                     onClick={() =>
@@ -264,6 +265,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 </div>
               ) : (
                 <Link
+                  // biome-ignore lint/suspicious/noExplicitAny: TanStack Router `to` requires registered routes; unbuilt routes need cast
                   to={section.path as any}
                   title={collapsed ? section.label : undefined}
                   className={rowBaseCls}
@@ -279,15 +281,16 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
               {hasChildren && !collapsed && (
                 <div
                   style={{
-                    maxHeight: open ? section.children!.length * 34 : 0,
+                    maxHeight: open ? (section.children?.length ?? 0) * 34 : 0,
                     overflow: "hidden",
                     transition: "max-height 200ms ease",
                   }}>
-                  {section.children!.map((child) => {
+                  {section.children?.map((child) => {
                     const childActive = pathname === child.path;
                     return (
                       <Link
                         key={child.path}
+                        // biome-ignore lint/suspicious/noExplicitAny: TanStack Router `to` requires registered routes; unbuilt routes need cast
                         to={child.path as any}
                         className="flex items-center gap-1.5 h-[34px] pl-9 pr-3 text-[12.5px] whitespace-nowrap"
                         style={{
@@ -311,6 +314,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       {/* ── Divider + Settings ── */}
       <div className="shrink-0" style={{ borderTop: "1px solid var(--border)" }}>
         <Link
+          // biome-ignore lint/suspicious/noExplicitAny: TanStack Router `to` requires registered routes; unbuilt routes need cast
           to={"/settings" as any}
           title={collapsed ? "Settings" : undefined}
           className={rowBaseCls}

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import type { AccountType } from "#/generated/prisma/enums";
 import { Field } from "#/components/Field";
 import { SlidePanel } from "#/components/SlidePanel";
+import type { AccountType } from "#/generated/prisma/enums";
 import { createAccount, type getPeople } from "#/routes/investments/accountFns";
 
 type PersonItem = Awaited<ReturnType<typeof getPeople>>[number];
@@ -71,7 +71,6 @@ export function AddAccountPanel({ people, onClose, onSaved }: { people: PersonIt
       }>
       <div className="p-5 flex flex-col gap-4">
         <Field label="Name">
-          {/* biome-ignore lint/a11y/noAutofocus: intentional for panel UX */}
           <input
             autoFocus
             value={name}
