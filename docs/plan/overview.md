@@ -101,3 +101,11 @@ Results are aggregated into percentile bands (e.g., 10th / 25th / 50th / 75th / 
 - **Personal over generic** — Defaults are starting points; everything is configurable to actual life
 - **Iterative** — Start simple, add complexity as the model is validated against real data
 - **Understandable** — Outputs should be readable by a person, not just a financial analyst
+
+---
+
+## Design
+
+UI design decisions (layout, navigation, color system, data entry patterns, command palette, etc.) are documented separately:
+
+→ [`docs/plan/ui-design-overall.md`](./ui-design-overall.md)
