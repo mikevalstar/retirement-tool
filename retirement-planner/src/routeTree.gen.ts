@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as InvestmentsIndexRouteImport } from './routes/investments/index'
+import { Route as ExpensesIndexRouteImport } from './routes/expenses/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as DemoStoreRouteImport } from './routes/demo/store'
 import { Route as DemoPrismaRouteImport } from './routes/demo/prisma'
@@ -42,6 +44,16 @@ const AboutRoute = AboutRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvestmentsIndexRoute = InvestmentsIndexRouteImport.update({
+  id: '/investments/',
+  path: '/investments/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExpensesIndexRoute = ExpensesIndexRouteImport.update({
+  id: '/expenses/',
+  path: '/expenses/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
@@ -136,6 +148,8 @@ export interface FileRoutesByFullPath {
   '/demo/prisma': typeof DemoPrismaRoute
   '/demo/store': typeof DemoStoreRoute
   '/blog/': typeof BlogIndexRoute
+  '/expenses/': typeof ExpensesIndexRoute
+  '/investments/': typeof InvestmentsIndexRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
   '/demo/guitars/$guitarId': typeof DemoGuitarsGuitarIdRoute
@@ -157,6 +171,8 @@ export interface FileRoutesByTo {
   '/demo/prisma': typeof DemoPrismaRoute
   '/demo/store': typeof DemoStoreRoute
   '/blog': typeof BlogIndexRoute
+  '/expenses': typeof ExpensesIndexRoute
+  '/investments': typeof InvestmentsIndexRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
   '/demo/guitars/$guitarId': typeof DemoGuitarsGuitarIdRoute
@@ -179,6 +195,8 @@ export interface FileRoutesById {
   '/demo/prisma': typeof DemoPrismaRoute
   '/demo/store': typeof DemoStoreRoute
   '/blog/': typeof BlogIndexRoute
+  '/expenses/': typeof ExpensesIndexRoute
+  '/investments/': typeof InvestmentsIndexRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
   '/demo/guitars/$guitarId': typeof DemoGuitarsGuitarIdRoute
@@ -202,6 +220,8 @@ export interface FileRouteTypes {
     | '/demo/prisma'
     | '/demo/store'
     | '/blog/'
+    | '/expenses/'
+    | '/investments/'
     | '/demo/form/address'
     | '/demo/form/simple'
     | '/demo/guitars/$guitarId'
@@ -223,6 +243,8 @@ export interface FileRouteTypes {
     | '/demo/prisma'
     | '/demo/store'
     | '/blog'
+    | '/expenses'
+    | '/investments'
     | '/demo/form/address'
     | '/demo/form/simple'
     | '/demo/guitars/$guitarId'
@@ -244,6 +266,8 @@ export interface FileRouteTypes {
     | '/demo/prisma'
     | '/demo/store'
     | '/blog/'
+    | '/expenses/'
+    | '/investments/'
     | '/demo/form/address'
     | '/demo/form/simple'
     | '/demo/guitars/$guitarId'
@@ -266,6 +290,8 @@ export interface RootRouteChildren {
   DemoPrismaRoute: typeof DemoPrismaRoute
   DemoStoreRoute: typeof DemoStoreRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  ExpensesIndexRoute: typeof ExpensesIndexRoute
+  InvestmentsIndexRoute: typeof InvestmentsIndexRoute
   DemoFormAddressRoute: typeof DemoFormAddressRoute
   DemoFormSimpleRoute: typeof DemoFormSimpleRoute
   DemoGuitarsGuitarIdRoute: typeof DemoGuitarsGuitarIdRoute
@@ -298,6 +324,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/investments/': {
+      id: '/investments/'
+      path: '/investments'
+      fullPath: '/investments/'
+      preLoaderRoute: typeof InvestmentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/expenses/': {
+      id: '/expenses/'
+      path: '/expenses'
+      fullPath: '/expenses/'
+      preLoaderRoute: typeof ExpensesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/': {
@@ -426,6 +466,8 @@ const rootRouteChildren: RootRouteChildren = {
   DemoPrismaRoute: DemoPrismaRoute,
   DemoStoreRoute: DemoStoreRoute,
   BlogIndexRoute: BlogIndexRoute,
+  ExpensesIndexRoute: ExpensesIndexRoute,
+  InvestmentsIndexRoute: InvestmentsIndexRoute,
   DemoFormAddressRoute: DemoFormAddressRoute,
   DemoFormSimpleRoute: DemoFormSimpleRoute,
   DemoGuitarsGuitarIdRoute: DemoGuitarsGuitarIdRoute,
