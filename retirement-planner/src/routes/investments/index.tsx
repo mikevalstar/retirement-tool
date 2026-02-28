@@ -1,9 +1,10 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { ChevronRight, Plus, Trash2, TrendingUp, X } from "lucide-react";
+import { ChevronRight, Plus, RefreshCw, Trash2, TrendingUp, X } from "lucide-react";
 import { Fragment, useState } from "react";
 import type { AccountType } from "#/generated/prisma/enums";
 import {
   createAccount,
+  createBulkSnapshots,
   createReturn,
   createSnapshot,
   deleteAccount,
@@ -65,6 +66,9 @@ interface DetailState {
 
 export const Route = createFileRoute("/investments/")({
   component: InvestmentsPage,
+  validateSearch: (search: Record<string, unknown>) => ({
+    update: search.update === true || search.update === "true" ? (true as const) : undefined,
+  }),
   loader: async () => {
     const [accounts, people] = await Promise.all([getAccounts(), getPeople()]);
     return { accounts, people };
@@ -907,15 +911,148 @@ function AddAccountPanel({ people, onClose, onSaved }: { people: PersonItem[]; o
   );
 }
 
+// ─── Update Balances Panel ────────────────────────────────────────────────────
+
+function UpdateBalancesPanel({ accounts, onClose, onSaved }: { accounts: AccountItem[]; onClose: () => void; onSaved: () => void }) {
+  const today = new Date().toISOString().slice(0, 10);
+  const [date, setDate] = useState(today);
+  const [values, setValues] = useState<Record<number, string>>({});
+  const [saving, setSaving] = useState(false);
+
+  const entries = accounts
+    .map((a) => ({ accountId: a.id, balance: Number(values[a.id]) }))
+    .filter((e) => values[e.accountId] !== undefined && values[e.accountId] !== "" && !Number.isNaN(e.balance));
+
+  const handleSave = async () => {
+    if (saving) return;
+    if (entries.length === 0) {
+      onClose();
+      return;
+    }
+    setSaving(true);
+    await createBulkSnapshots({ data: { date, entries } });
+    onSaved();
+  };
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 100 }} />
+
+      {/* Panel */}
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          right: 0,
+          height: "100%",
+          width: 420,
+          background: "var(--surface)",
+          borderLeft: "1px solid var(--border)",
+          zIndex: 101,
+          display: "flex",
+          flexDirection: "column",
+        }}>
+        {/* Header */}
+        <div
+          style={{
+            padding: "18px 20px",
+            borderBottom: "1px solid var(--border)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}>
+          <h2 style={{ margin: 0, fontSize: 15, fontWeight: 600, color: "var(--text)" }}>Update Balances</h2>
+          <button type="button" onClick={onClose} style={iconBtn}>
+            <X size={15} style={{ color: "var(--text-dim)" }} />
+          </button>
+        </div>
+
+        {/* As of date */}
+        <div style={{ padding: "14px 20px", borderBottom: "1px solid var(--border)" }}>
+          <Field label="As of Date">
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} style={panelInputStyle} />
+          </Field>
+        </div>
+
+        {/* Account list */}
+        <div style={{ flex: 1, overflowY: "auto" }}>
+          {accounts.map((account) => {
+            const snap = account.snapshots[0];
+            return (
+              <div
+                key={account.id}
+                style={{
+                  padding: "10px 20px",
+                  borderBottom: "1px solid var(--border)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
+                    <span style={{ fontSize: 13, fontWeight: 500, color: "var(--text)" }}>{account.name}</span>
+                    <OwnerBadge name={account.owner.name} />
+                  </div>
+                  {snap ? (
+                    <div style={{ fontSize: 11, color: "var(--text-dim)" }}>
+                      <span className="num">{fmtCAD(snap.balance)}</span>
+                      {" · "}
+                      {fmtDate(snap.date)}
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: 11, color: "var(--text-dim)", fontStyle: "italic" }}>No balance recorded</div>
+                  )}
+                </div>
+                <input
+                  type="number"
+                  value={values[account.id] ?? ""}
+                  onChange={(e) => setValues((prev) => ({ ...prev, [account.id]: e.target.value }))}
+                  placeholder="—"
+                  className="num"
+                  style={{ ...panelInputStyle, width: 120, textAlign: "right" }}
+                />
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Footer */}
+        <div
+          style={{
+            padding: "14px 20px",
+            borderTop: "1px solid var(--border)",
+            display: "flex",
+            gap: 8,
+            justifyContent: "flex-end",
+          }}>
+          <button type="button" onClick={onClose} style={panelCancelBtn}>
+            Cancel
+          </button>
+          <button type="button" onClick={handleSave} disabled={saving} style={panelSaveBtn(entries.length > 0)}>
+            {saving ? "Saving…" : entries.length > 0 ? `Save ${entries.length} Balance${entries.length !== 1 ? "s" : ""}` : "Save"}
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 function InvestmentsPage() {
   const router = useRouter();
   const { accounts, people } = Route.useLoaderData();
+  const { update } = Route.useSearch();
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [details, setDetails] = useState<Record<number, DetailState>>({});
   const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [updatePanelOpen, setUpdatePanelOpen] = useState(!!update);
+
+  const closeUpdatePanel = () => {
+    setUpdatePanelOpen(false);
+  };
 
   const toggleExpand = async (id: number) => {
     if (expandedId === id) {
@@ -1004,26 +1141,48 @@ function InvestmentsPage() {
               </h1>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setPanelOpen(true)}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "6px 14px",
-                borderRadius: 6,
-                background: `color-mix(in srgb, ${ACCENT_HEX} 12%, transparent)`,
-                border: `1px solid color-mix(in srgb, ${ACCENT_HEX} 30%, transparent)`,
-                color: ACCENT,
-                fontSize: 12.5,
-                fontWeight: 500,
-                fontFamily: "inherit",
-                cursor: "pointer",
-              }}>
-              <Plus size={13} />
-              Add Account
-            </button>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button
+                type="button"
+                onClick={() => setUpdatePanelOpen(true)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "6px 14px",
+                  borderRadius: 6,
+                  background: "none",
+                  border: "1px solid var(--border)",
+                  color: "var(--text-muted)",
+                  fontSize: 12.5,
+                  fontWeight: 500,
+                  fontFamily: "inherit",
+                  cursor: "pointer",
+                }}>
+                <RefreshCw size={13} />
+                Update Balances
+              </button>
+              <button
+                type="button"
+                onClick={() => setPanelOpen(true)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "6px 14px",
+                  borderRadius: 6,
+                  background: `color-mix(in srgb, ${ACCENT_HEX} 12%, transparent)`,
+                  border: `1px solid color-mix(in srgb, ${ACCENT_HEX} 30%, transparent)`,
+                  color: ACCENT,
+                  fontSize: 12.5,
+                  fontWeight: 500,
+                  fontFamily: "inherit",
+                  cursor: "pointer",
+                }}>
+                <Plus size={13} />
+                Add Account
+              </button>
+            </div>
           </div>
 
           {/* Accounts table */}
@@ -1200,6 +1359,18 @@ function InvestmentsPage() {
           onClose={() => setPanelOpen(false)}
           onSaved={() => {
             setPanelOpen(false);
+            router.invalidate();
+          }}
+        />
+      )}
+
+      {/* Update Balances Panel */}
+      {updatePanelOpen && (
+        <UpdateBalancesPanel
+          accounts={accounts}
+          onClose={closeUpdatePanel}
+          onSaved={() => {
+            closeUpdatePanel();
             router.invalidate();
           }}
         />

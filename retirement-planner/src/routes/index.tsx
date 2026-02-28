@@ -59,16 +59,19 @@ function QuickAction({
   sub,
   accent,
   to,
+  search,
 }: {
   icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>;
   label: string;
   sub: string;
   accent: string;
   to: string;
+  search?: Record<string, unknown>;
 }) {
   return (
     <Link
       to={to as any}
+      search={search as any}
       style={{
         flex: 1,
         display: "flex",
@@ -153,6 +156,7 @@ function Dashboard() {
             sub="Tab through accounts, enter new values"
             accent="var(--section-investments)"
             to="/investments"
+            search={{ update: true }}
           />
           <QuickAction icon={Play} label="Run Simulation" sub="Monte Carlo · generates percentile bands" accent="var(--section-simulation)" to="/simulation" />
         </div>
