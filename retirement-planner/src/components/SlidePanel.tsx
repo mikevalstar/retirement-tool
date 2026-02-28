@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import { Sheet, SheetContent, SheetTitle } from "#/components/ui/sheet";
 
 interface SlidePanelProps {
   title: string;
@@ -10,19 +11,16 @@ interface SlidePanelProps {
 
 export function SlidePanel({ title, width = 380, onClose, children, footer }: SlidePanelProps) {
   return (
-    <>
-      {/* Backdrop */}
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: backdrop dismiss is a standard modal pattern */}
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: backdrop dismiss is a standard modal pattern */}
-      <div onClick={onClose} className="fixed inset-0 z-[100]" style={{ background: "rgba(0,0,0,0.45)" }} />
-
-      {/* Panel */}
-      <div className="fixed top-0 right-0 h-full flex flex-col z-[101]" style={{ width, background: "var(--surface)", borderLeft: "1px solid var(--border)" }}>
+    <Sheet open onOpenChange={(open) => !open && onClose()}>
+      <SheetContent
+        showCloseButton={false}
+        className="gap-0 p-0 sm:max-w-none"
+        style={{ width, background: "var(--surface)", borderLeft: "1px solid var(--border)" }}>
         {/* Header */}
         <div className="py-[18px] px-5 flex items-center justify-between" style={{ borderBottom: "1px solid var(--border)" }}>
-          <h2 className="m-0 text-[15px] font-semibold" style={{ color: "var(--text)" }}>
+          <SheetTitle className="m-0 text-[15px]" style={{ color: "var(--text)" }}>
             {title}
-          </h2>
+          </SheetTitle>
           <button type="button" onClick={onClose} className="flex items-center justify-center p-1 rounded border-none bg-transparent cursor-pointer shrink-0">
             <X size={15} style={{ color: "var(--text-dim)" }} />
           </button>
@@ -35,7 +33,7 @@ export function SlidePanel({ title, width = 380, onClose, children, footer }: Sl
         <div className="py-3.5 px-5 flex gap-2 justify-end" style={{ borderTop: "1px solid var(--border)" }}>
           {footer}
         </div>
-      </div>
-    </>
+      </SheetContent>
+    </Sheet>
   );
 }
