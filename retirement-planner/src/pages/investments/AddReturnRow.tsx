@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { useState } from "react";
+import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { IconButton } from "#/components/IconButton";
 import { createReturn } from "#/routes/investments/accountFns";
 
@@ -22,14 +23,21 @@ export function AddReturnRow({ accountId, onSaved, onCancel }: { accountId: numb
   const [calcEnd, setCalcEnd] = useState("");
   const [calcContribs, setCalcContribs] = useState("");
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<unknown>(null);
 
   const canSave = returnPct !== "" && !saving;
 
   const handleSave = async () => {
     if (!canSave) return;
     setSaving(true);
-    await createReturn({ data: { accountId, year: Number(year), returnPercent: Number(returnPct) } });
-    onSaved();
+    setError(null);
+    try {
+      await createReturn({ data: { accountId, year: Number(year), returnPercent: Number(returnPct) } });
+      onSaved();
+    } catch (err) {
+      setError(err);
+      setSaving(false);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -152,6 +160,13 @@ export function AddReturnRow({ accountId, onSaved, onCancel }: { accountId: numb
                 Accept
               </button>
             </div>
+          </td>
+        </tr>
+      )}
+      {!!error && (
+        <tr>
+          <td colSpan={3} className="px-2 pb-2">
+            <ErrorDisplay error={error} onDismiss={() => setError(null)} />
           </td>
         </tr>
       )}

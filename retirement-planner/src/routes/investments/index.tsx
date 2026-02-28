@@ -2,6 +2,7 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Plus, RefreshCw, Trash2, TrendingUp } from "lucide-react";
 import { Fragment, useState } from "react";
 import { EmptyState } from "#/components/EmptyState";
+import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { ExpandChevron } from "#/components/ExpandChevron";
 import { IconButton } from "#/components/IconButton";
 import { OwnerBadge } from "#/components/OwnerBadge";
@@ -86,9 +87,18 @@ function InvestmentsPage() {
   const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
   const [updatePanelOpen, setUpdatePanelOpen] = useState(!!update);
+  const [pageError, setPageError] = useState<unknown>(null);
 
   const closeUpdatePanel = () => {
     setUpdatePanelOpen(false);
+  };
+
+  const refreshDetail = async (id: number) => {
+    const [snaps, rets] = await Promise.all([getSnapshots({ data: { accountId: id } }), getReturns({ data: { accountId: id } })]);
+    setDetails((prev) => ({
+      ...prev,
+      [id]: { snapshots: snaps, returns: rets, loading: false },
+    }));
   };
 
   const toggleExpand = async (id: number) => {
@@ -102,38 +112,50 @@ function InvestmentsPage() {
         ...prev,
         [id]: { snapshots: [], returns: [], loading: true },
       }));
-      const [snaps, rets] = await Promise.all([getSnapshots({ data: { accountId: id } }), getReturns({ data: { accountId: id } })]);
-      setDetails((prev) => ({
-        ...prev,
-        [id]: { snapshots: snaps, returns: rets, loading: false },
-      }));
+      try {
+        const [snaps, rets] = await Promise.all([getSnapshots({ data: { accountId: id } }), getReturns({ data: { accountId: id } })]);
+        setDetails((prev) => ({
+          ...prev,
+          [id]: { snapshots: snaps, returns: rets, loading: false },
+        }));
+      } catch (err) {
+        setPageError(err);
+        setDetails((prev) => ({
+          ...prev,
+          [id]: { snapshots: [], returns: [], loading: false },
+        }));
+      }
     }
   };
 
-  const refreshDetail = async (id: number) => {
-    const [snaps, rets] = await Promise.all([getSnapshots({ data: { accountId: id } }), getReturns({ data: { accountId: id } })]);
-    setDetails((prev) => ({
-      ...prev,
-      [id]: { snapshots: snaps, returns: rets, loading: false },
-    }));
-  };
-
   const handleDeleteAccount = async (id: number) => {
-    await deleteAccount({ data: { id } });
-    if (expandedId === id) setExpandedId(null);
-    router.invalidate();
+    try {
+      await deleteAccount({ data: { id } });
+      if (expandedId === id) setExpandedId(null);
+      router.invalidate();
+    } catch (err) {
+      setPageError(err);
+    }
   };
 
   const handleDeleteSnapshot = async (snapId: number, accountId: number) => {
-    await deleteSnapshot({ data: { id: snapId } });
-    refreshDetail(accountId);
-    router.invalidate();
+    try {
+      await deleteSnapshot({ data: { id: snapId } });
+      refreshDetail(accountId);
+      router.invalidate();
+    } catch (err) {
+      setPageError(err);
+    }
   };
 
   const handleDeleteReturn = async (retId: number, accountId: number) => {
-    await deleteReturn({ data: { id: retId } });
-    refreshDetail(accountId);
-    router.invalidate();
+    try {
+      await deleteReturn({ data: { id: retId } });
+      refreshDetail(accountId);
+      router.invalidate();
+    } catch (err) {
+      setPageError(err);
+    }
   };
 
   const showToc = accounts.length > 4;
@@ -181,6 +203,9 @@ function InvestmentsPage() {
               </button>
             </div>
           </div>
+
+          {/* Page-level error */}
+          {!!pageError && <ErrorDisplay error={pageError} onDismiss={() => setPageError(null)} />}
 
           {/* Accounts table */}
           {accounts.length === 0 ? (

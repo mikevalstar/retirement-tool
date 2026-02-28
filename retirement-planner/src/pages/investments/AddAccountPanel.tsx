@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { Field } from "#/components/Field";
 import { SlidePanel } from "#/components/SlidePanel";
 import type { AccountType } from "#/generated/prisma/enums";
@@ -36,22 +37,29 @@ export function AddAccountPanel({ people, onClose, onSaved }: { people: PersonIt
   const [balance, setBalance] = useState("");
   const [date, setDate] = useState(today);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<unknown>(null);
 
   const canSave = name.trim().length > 0 && !saving;
 
   const handleSave = async () => {
     if (!canSave) return;
     setSaving(true);
-    await createAccount({
-      data: {
-        name: name.trim(),
-        type,
-        ownerId,
-        initialBalance: balance !== "" ? Number(balance) : undefined,
-        initialDate: balance !== "" ? date : undefined,
-      },
-    });
-    onSaved();
+    setError(null);
+    try {
+      await createAccount({
+        data: {
+          name: name.trim(),
+          type,
+          ownerId,
+          initialBalance: balance !== "" ? Number(balance) : undefined,
+          initialDate: balance !== "" ? date : undefined,
+        },
+      });
+      onSaved();
+    } catch (err) {
+      setError(err);
+      setSaving(false);
+    }
   };
 
   return (
@@ -116,6 +124,8 @@ export function AddAccountPanel({ people, onClose, onSaved }: { people: PersonIt
         <Field label="As of Date">
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={panelInputCls} style={panelInputCSS} />
         </Field>
+
+        {!!error && <ErrorDisplay error={error} onDismiss={() => setError(null)} />}
       </div>
     </SlidePanel>
   );

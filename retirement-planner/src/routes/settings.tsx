@@ -2,6 +2,7 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { Check, GripVertical, Plus, Settings, Trash2, X } from "lucide-react";
 import { useState } from "react";
+import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { prisma } from "#/db";
 
 // ─── Server functions ─────────────────────────────────────────────────────────
@@ -48,6 +49,7 @@ function SettingsPage() {
   const [editValue, setEditValue] = useState("");
   const [newName, setNewName] = useState("");
   const [adding, setAdding] = useState(false);
+  const [pageError, setPageError] = useState<unknown>(null);
 
   const startEdit = (id: number, name: string) => {
     setEditingId(id);
@@ -58,8 +60,13 @@ function SettingsPage() {
     if (editingId === null) return;
     const trimmed = editValue.trim();
     if (trimmed) {
-      await updatePerson({ data: { id: editingId, name: trimmed } });
-      router.invalidate();
+      try {
+        await updatePerson({ data: { id: editingId, name: trimmed } });
+        router.invalidate();
+      } catch (err) {
+        setPageError(err);
+        return;
+      }
     }
     setEditingId(null);
   };
@@ -69,15 +76,23 @@ function SettingsPage() {
   const handleAdd = async () => {
     const trimmed = newName.trim();
     if (!trimmed) return;
-    await createPerson({ data: { name: trimmed } });
-    setNewName("");
-    setAdding(false);
-    router.invalidate();
+    try {
+      await createPerson({ data: { name: trimmed } });
+      setNewName("");
+      setAdding(false);
+      router.invalidate();
+    } catch (err) {
+      setPageError(err);
+    }
   };
 
   const handleDelete = async (id: number) => {
-    await deletePerson({ data: { id } });
-    router.invalidate();
+    try {
+      await deletePerson({ data: { id } });
+      router.invalidate();
+    } catch (err) {
+      setPageError(err);
+    }
   };
 
   return (
@@ -107,6 +122,9 @@ function SettingsPage() {
           Settings
         </h1>
       </div>
+
+      {/* Page-level error */}
+      {!!pageError && <ErrorDisplay error={pageError} onDismiss={() => setPageError(null)} />}
 
       {/* Household people section */}
       <section

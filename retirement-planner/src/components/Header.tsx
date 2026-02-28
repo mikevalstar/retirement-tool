@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import TanChatAIAssistant from "./demo-AIAssistant.tsx";
 import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
@@ -42,8 +41,6 @@ export default function Header() {
               />
             </svg>
           </a>
-          <TanChatAIAssistant />
-
           <ThemeToggle />
         </div>
 
@@ -51,10 +48,18 @@ export default function Header() {
           <Link to="/" className="nav-link" activeProps={{ className: "nav-link is-active" }}>
             Home
           </Link>
-          <Link to="/blog" className="nav-link" activeProps={{ className: "nav-link is-active" }}>
+          <Link
+            // biome-ignore lint/suspicious/noExplicitAny: TanStack Router `to` requires registered routes; unbuilt routes need cast // TODO: remove cast when route is registered
+            to={"/blog" as any}
+            className="nav-link"
+            activeProps={{ className: "nav-link is-active" }}>
             Blog
           </Link>
-          <Link to="/about" className="nav-link" activeProps={{ className: "nav-link is-active" }}>
+          <Link
+            // biome-ignore lint/suspicious/noExplicitAny: TanStack Router `to` requires registered routes; unbuilt routes need cast // TODO: remove cast when route is registered
+            to={"/about" as any}
+            className="nav-link"
+            activeProps={{ className: "nav-link is-active" }}>
             About
           </Link>
           <a href="https://tanstack.com/start/latest/docs/framework/react/overview" className="nav-link" target="_blank" rel="noreferrer">

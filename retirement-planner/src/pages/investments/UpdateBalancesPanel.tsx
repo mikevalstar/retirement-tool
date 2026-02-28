@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { Field } from "#/components/Field";
 import { OwnerBadge } from "#/components/OwnerBadge";
 import { SlidePanel } from "#/components/SlidePanel";
@@ -37,6 +38,7 @@ export function UpdateBalancesPanel({ accounts, onClose, onSaved }: { accounts: 
   const [date, setDate] = useState(today);
   const [values, setValues] = useState<Record<number, string>>({});
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<unknown>(null);
 
   const entries = accounts
     .map((a) => ({ accountId: a.id, balance: Number(values[a.id]) }))
@@ -49,8 +51,14 @@ export function UpdateBalancesPanel({ accounts, onClose, onSaved }: { accounts: 
       return;
     }
     setSaving(true);
-    await createBulkSnapshots({ data: { date, entries } });
-    onSaved();
+    setError(null);
+    try {
+      await createBulkSnapshots({ data: { date, entries } });
+      onSaved();
+    } catch (err) {
+      setError(err);
+      setSaving(false);
+    }
   };
 
   return (
@@ -79,6 +87,13 @@ export function UpdateBalancesPanel({ accounts, onClose, onSaved }: { accounts: 
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={panelInputCls} style={panelInputCSS} />
         </Field>
       </div>
+
+      {/* Error display */}
+      {!!error && (
+        <div className="px-5 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
+          <ErrorDisplay error={error} onDismiss={() => setError(null)} />
+        </div>
+      )}
 
       {/* Account list */}
       <div>
