@@ -12,3 +12,10 @@ model Todo {
   title     String
   createdAt DateTime @default(now())
 }
+
+model Person {
+  id        Int      @id @default(autoincrement())
+  name      String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+}
