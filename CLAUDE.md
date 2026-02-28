@@ -53,6 +53,19 @@ pnpm dlx shadcn@latest add <component>
 
 ---
 
+## TanStack Reference
+
+Full TanStack library documentation index (for LLM context): https://tanstack.com/llms.txt
+
+Key docs used in this project:
+- https://tanstack.com/start/latest/docs/framework/react/overview — TanStack Start (SSR, createServerFn, loaders)
+- https://tanstack.com/router — TanStack Router (file-based routing, type-safe params)
+- https://tanstack.com/form — TanStack Form (useForm, useField, Zod integration)
+- https://tanstack.com/store/latest/docs/overview — TanStack Store (reactive state)
+- https://tanstack.com/ai/latest/docs/getting-started/overview — TanStack AI (adapters, streaming, tools)
+
+---
+
 ## Architecture
 
 ### Stack
