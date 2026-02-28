@@ -2,16 +2,7 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ChevronRight, Plus, Trash2, TrendingUp, X } from "lucide-react";
 import { Fragment, useState } from "react";
 import type { AccountType } from "#/generated/prisma/enums";
-import {
-	createAccount,
-	deleteAccount,
-	deleteReturn,
-	deleteSnapshot,
-	getAccounts,
-	getPeople,
-	getReturns,
-	getSnapshots,
-} from "./accountFns";
+import { createAccount, deleteAccount, deleteReturn, deleteSnapshot, getAccounts, getPeople, getReturns, getSnapshots } from "./accountFns";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -135,9 +126,7 @@ const panelCancelBtn: React.CSSProperties = {
 const panelSaveBtn = (enabled: boolean): React.CSSProperties => ({
 	padding: "7px 16px",
 	borderRadius: 6,
-	background: enabled
-		? `color-mix(in srgb, ${ACCENT_HEX} 20%, transparent)`
-		: "var(--surface-raised)",
+	background: enabled ? `color-mix(in srgb, ${ACCENT_HEX} 20%, transparent)` : "var(--surface-raised)",
 	border: `1px solid ${enabled ? `color-mix(in srgb, ${ACCENT_HEX} 40%, transparent)` : "var(--border)"}`,
 	color: enabled ? ACCENT : "var(--text-dim)",
 	fontSize: 13,
@@ -162,8 +151,7 @@ function OwnerBadge({ name }: { name: string }) {
 				color: "var(--text-muted)",
 				border: "1px solid var(--border)",
 				whiteSpace: "nowrap",
-			}}
-		>
+			}}>
 			{name}
 		</span>
 	);
@@ -171,23 +159,11 @@ function OwnerBadge({ name }: { name: string }) {
 
 // ─── Snapshot Row ─────────────────────────────────────────────────────────────
 
-function SnapshotLine({
-	snap,
-	onDelete,
-}: {
-	snap: SnapshotItem;
-	onDelete: (id: number) => void;
-}) {
+function SnapshotLine({ snap, onDelete }: { snap: SnapshotItem; onDelete: (id: number) => void }) {
 	const [hovered, setHovered] = useState(false);
 	return (
-		<tr
-			onMouseEnter={() => setHovered(true)}
-			onMouseLeave={() => setHovered(false)}
-			style={{ borderTop: "1px solid var(--border)" }}
-		>
-			<td style={{ padding: "6px 8px", color: "var(--text-muted)" }}>
-				{fmtDate(snap.date)}
-			</td>
+		<tr onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{ borderTop: "1px solid var(--border)" }}>
+			<td style={{ padding: "6px 8px", color: "var(--text-muted)" }}>{fmtDate(snap.date)}</td>
 			<td style={{ padding: "6px 8px", textAlign: "right" }} className="num">
 				{fmtCAD(snap.balance)}
 			</td>
@@ -199,17 +175,12 @@ function SnapshotLine({
 					overflow: "hidden",
 					textOverflow: "ellipsis",
 					whiteSpace: "nowrap",
-				}}
-			>
+				}}>
 				{snap.note ?? ""}
 			</td>
 			<td style={{ padding: "6px 4px", width: 24 }}>
 				{hovered && (
-					<button
-						type="button"
-						onClick={() => onDelete(snap.id)}
-						style={iconBtn}
-					>
+					<button type="button" onClick={() => onDelete(snap.id)} style={iconBtn}>
 						<Trash2 size={11} style={{ color: "var(--text-dim)" }} />
 					</button>
 				)}
@@ -220,36 +191,18 @@ function SnapshotLine({
 
 // ─── Return Line ──────────────────────────────────────────────────────────────
 
-function ReturnLine({
-	ret,
-	onDelete,
-}: {
-	ret: ReturnItem;
-	onDelete: (id: number) => void;
-}) {
+function ReturnLine({ ret, onDelete }: { ret: ReturnItem; onDelete: (id: number) => void }) {
 	const [hovered, setHovered] = useState(false);
 	const pct = ret.returnPercent;
 	return (
-		<tr
-			onMouseEnter={() => setHovered(true)}
-			onMouseLeave={() => setHovered(false)}
-			style={{ borderTop: "1px solid var(--border)" }}
-		>
-			<td style={{ padding: "6px 8px", color: "var(--text-muted)" }}>
-				{ret.year}
-			</td>
+		<tr onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{ borderTop: "1px solid var(--border)" }}>
+			<td style={{ padding: "6px 8px", color: "var(--text-muted)" }}>{ret.year}</td>
 			<td style={{ padding: "6px 8px", textAlign: "right" }} className="num">
-				<span style={{ color: pct >= 0 ? "#10b981" : "#ef4444" }}>
-					{fmtReturn(pct)}
-				</span>
+				<span style={{ color: pct >= 0 ? "#10b981" : "#ef4444" }}>{fmtReturn(pct)}</span>
 			</td>
 			<td style={{ padding: "6px 4px", width: 24 }}>
 				{hovered && (
-					<button
-						type="button"
-						onClick={() => onDelete(ret.id)}
-						style={iconBtn}
-					>
+					<button type="button" onClick={() => onDelete(ret.id)} style={iconBtn}>
 						<Trash2 size={11} style={{ color: "var(--text-dim)" }} />
 					</button>
 				)}
@@ -283,8 +236,7 @@ function AccountDetail({
 						padding: "16px 32px 20px 48px",
 						display: "flex",
 						gap: 40,
-					}}
-				>
+					}}>
 					{/* Balance History */}
 					<div style={{ flex: 1, minWidth: 0 }}>
 						<div
@@ -293,8 +245,7 @@ function AccountDetail({
 								alignItems: "center",
 								justifyContent: "space-between",
 								marginBottom: 10,
-							}}
-						>
+							}}>
 							<span
 								style={{
 									fontSize: 11,
@@ -302,8 +253,7 @@ function AccountDetail({
 									color: "var(--text-muted)",
 									textTransform: "uppercase",
 									letterSpacing: "0.07em",
-								}}
-							>
+								}}>
 								Balance History
 							</span>
 							<button type="button" style={stubBtn}>
@@ -318,8 +268,7 @@ function AccountDetail({
 									fontSize: 12,
 									color: "var(--text-dim)",
 									fontStyle: "italic",
-								}}
-							>
+								}}>
 								Loading…
 							</div>
 						) : detail.snapshots.length === 0 ? (
@@ -328,8 +277,7 @@ function AccountDetail({
 									fontSize: 12,
 									color: "var(--text-dim)",
 									fontStyle: "italic",
-								}}
-							>
+								}}>
 								No balance snapshots yet
 							</div>
 						) : (
@@ -338,8 +286,7 @@ function AccountDetail({
 									width: "100%",
 									borderCollapse: "collapse",
 									fontSize: 12,
-								}}
-							>
+								}}>
 								<thead>
 									<tr>
 										<th style={thStyle("left")}>Date</th>
@@ -350,11 +297,7 @@ function AccountDetail({
 								</thead>
 								<tbody>
 									{detail.snapshots.map((snap) => (
-										<SnapshotLine
-											key={snap.id}
-											snap={snap}
-											onDelete={onDeleteSnapshot}
-										/>
+										<SnapshotLine key={snap.id} snap={snap} onDelete={onDeleteSnapshot} />
 									))}
 								</tbody>
 							</table>
@@ -370,8 +313,7 @@ function AccountDetail({
 									alignItems: "center",
 									justifyContent: "space-between",
 									marginBottom: 10,
-								}}
-							>
+								}}>
 								<span
 									style={{
 										fontSize: 11,
@@ -379,8 +321,7 @@ function AccountDetail({
 										color: "var(--text-muted)",
 										textTransform: "uppercase",
 										letterSpacing: "0.07em",
-									}}
-								>
+									}}>
 									Annual Returns
 								</span>
 								<button type="button" style={stubBtn}>
@@ -395,8 +336,7 @@ function AccountDetail({
 										fontSize: 12,
 										color: "var(--text-dim)",
 										fontStyle: "italic",
-									}}
-								>
+									}}>
 									Loading…
 								</div>
 							) : detail.returns.length === 0 ? (
@@ -405,8 +345,7 @@ function AccountDetail({
 										fontSize: 12,
 										color: "var(--text-dim)",
 										fontStyle: "italic",
-									}}
-								>
+									}}>
 									No returns recorded
 								</div>
 							) : (
@@ -415,8 +354,7 @@ function AccountDetail({
 										width: "100%",
 										borderCollapse: "collapse",
 										fontSize: 12,
-									}}
-								>
+									}}>
 									<thead>
 										<tr>
 											<th style={thStyle("left")}>Year</th>
@@ -426,11 +364,7 @@ function AccountDetail({
 									</thead>
 									<tbody>
 										{detail.returns.map((ret) => (
-											<ReturnLine
-												key={ret.id}
-												ret={ret}
-												onDelete={onDeleteReturn}
-											/>
+											<ReturnLine key={ret.id} ret={ret} onDelete={onDeleteReturn} />
 										))}
 									</tbody>
 								</table>
@@ -461,16 +395,14 @@ function FloatingToc({ accounts }: { accounts: AccountItem[] }) {
 				width: 160,
 				flexShrink: 0,
 				alignSelf: "flex-start",
-			}}
-		>
+			}}>
 			<div
 				style={{
 					background: "var(--surface)",
 					border: "1px solid var(--border)",
 					borderRadius: 8,
 					padding: "10px 0",
-				}}
-			>
+				}}>
 				<div
 					style={{
 						fontSize: 10,
@@ -479,8 +411,7 @@ function FloatingToc({ accounts }: { accounts: AccountItem[] }) {
 						letterSpacing: "0.07em",
 						color: "var(--text-dim)",
 						padding: "0 12px 8px",
-					}}
-				>
+					}}>
 					Jump to
 				</div>
 				{[...groups.entries()].map(([owner, accs]) => (
@@ -493,8 +424,7 @@ function FloatingToc({ accounts }: { accounts: AccountItem[] }) {
 								padding: "4px 12px 2px",
 								textTransform: "uppercase",
 								letterSpacing: "0.05em",
-							}}
-						>
+							}}>
 							{owner}
 						</div>
 						{accs.map((a) => (
@@ -505,16 +435,14 @@ function FloatingToc({ accounts }: { accounts: AccountItem[] }) {
 									display: "block",
 									padding: "3px 12px",
 									fontSize: 12,
-									color:
-										hoveredId === a.id ? "var(--text)" : "var(--text-muted)",
+									color: hoveredId === a.id ? "var(--text)" : "var(--text-muted)",
 									textDecoration: "none",
 									overflow: "hidden",
 									textOverflow: "ellipsis",
 									whiteSpace: "nowrap",
 								}}
 								onMouseEnter={() => setHoveredId(a.id)}
-								onMouseLeave={() => setHoveredId(null)}
-							>
+								onMouseLeave={() => setHoveredId(null)}>
 								{a.name}
 							</a>
 						))}
@@ -540,8 +468,7 @@ function EmptyState() {
 				flexDirection: "column",
 				alignItems: "center",
 				gap: 12,
-			}}
-		>
+			}}>
 			<div
 				style={{
 					width: 44,
@@ -551,29 +478,18 @@ function EmptyState() {
 					display: "flex",
 					alignItems: "center",
 					justifyContent: "center",
-				}}
-			>
+				}}>
 				<TrendingUp size={20} style={{ color: ACCENT }} />
 			</div>
-			<div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }}>
-				No accounts yet
-			</div>
-			<div style={{ fontSize: 13, color: "var(--text-muted)" }}>
-				Click "Add Account" to add your first investment account.
-			</div>
+			<div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }}>No accounts yet</div>
+			<div style={{ fontSize: 13, color: "var(--text-muted)" }}>Click "Add Account" to add your first investment account.</div>
 		</div>
 	);
 }
 
 // ─── Panel Field Wrapper ──────────────────────────────────────────────────────
 
-function Field({
-	label,
-	children,
-}: {
-	label: string;
-	children: React.ReactNode;
-}) {
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
 	return (
 		<div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
 			<label
@@ -583,8 +499,7 @@ function Field({
 					color: "var(--text-muted)",
 					textTransform: "uppercase",
 					letterSpacing: "0.05em",
-				}}
-			>
+				}}>
 				{label}
 			</label>
 			{children}
@@ -594,15 +509,7 @@ function Field({
 
 // ─── Add Account Panel ────────────────────────────────────────────────────────
 
-function AddAccountPanel({
-	people,
-	onClose,
-	onSaved,
-}: {
-	people: PersonItem[];
-	onClose: () => void;
-	onSaved: () => void;
-}) {
+function AddAccountPanel({ people, onClose, onSaved }: { people: PersonItem[]; onClose: () => void; onSaved: () => void }) {
 	const today = new Date().toISOString().slice(0, 10);
 	const [name, setName] = useState("");
 	const [type, setType] = useState<AccountType>("TFSA");
@@ -654,8 +561,7 @@ function AddAccountPanel({
 					zIndex: 101,
 					display: "flex",
 					flexDirection: "column",
-				}}
-			>
+				}}>
 				{/* Header */}
 				<div
 					style={{
@@ -664,16 +570,14 @@ function AddAccountPanel({
 						display: "flex",
 						alignItems: "center",
 						justifyContent: "space-between",
-					}}
-				>
+					}}>
 					<h2
 						style={{
 							margin: 0,
 							fontSize: 15,
 							fontWeight: 600,
 							color: "var(--text)",
-						}}
-					>
+						}}>
 						Add Account
 					</h2>
 					<button type="button" onClick={onClose} style={iconBtn}>
@@ -690,8 +594,7 @@ function AddAccountPanel({
 						gap: 16,
 						flex: 1,
 						overflowY: "auto",
-					}}
-				>
+					}}>
 					<Field label="Name">
 						<input
 							autoFocus
@@ -704,11 +607,7 @@ function AddAccountPanel({
 					</Field>
 
 					<Field label="Type">
-						<select
-							value={type}
-							onChange={(e) => setType(e.target.value as AccountType)}
-							style={panelInputStyle}
-						>
+						<select value={type} onChange={(e) => setType(e.target.value as AccountType)} style={panelInputStyle}>
 							<option value="TFSA">TFSA</option>
 							<option value="RRSP">RRSP</option>
 							<option value="RRIF">RRIF</option>
@@ -718,11 +617,7 @@ function AddAccountPanel({
 					</Field>
 
 					<Field label="Owner">
-						<select
-							value={ownerId}
-							onChange={(e) => setOwnerId(Number(e.target.value))}
-							style={panelInputStyle}
-						>
+						<select value={ownerId} onChange={(e) => setOwnerId(Number(e.target.value))} style={panelInputStyle}>
 							{people.map((p) => (
 								<option key={p.id} value={p.id}>
 									{p.name}
@@ -732,23 +627,11 @@ function AddAccountPanel({
 					</Field>
 
 					<Field label="Initial Balance (optional)">
-						<input
-							type="number"
-							value={balance}
-							onChange={(e) => setBalance(e.target.value)}
-							placeholder="0"
-							className="num"
-							style={panelInputStyle}
-						/>
+						<input type="number" value={balance} onChange={(e) => setBalance(e.target.value)} placeholder="0" className="num" style={panelInputStyle} />
 					</Field>
 
 					<Field label="As of Date">
-						<input
-							type="date"
-							value={date}
-							onChange={(e) => setDate(e.target.value)}
-							style={panelInputStyle}
-						/>
+						<input type="date" value={date} onChange={(e) => setDate(e.target.value)} style={panelInputStyle} />
 					</Field>
 				</div>
 
@@ -760,17 +643,11 @@ function AddAccountPanel({
 						display: "flex",
 						gap: 8,
 						justifyContent: "flex-end",
-					}}
-				>
+					}}>
 					<button type="button" onClick={onClose} style={panelCancelBtn}>
 						Cancel
 					</button>
-					<button
-						type="button"
-						onClick={handleSave}
-						disabled={!canSave}
-						style={panelSaveBtn(canSave)}
-					>
+					<button type="button" onClick={handleSave} disabled={!canSave} style={panelSaveBtn(canSave)}>
 						{saving ? "Saving…" : "Save Account"}
 					</button>
 				</div>
@@ -800,10 +677,7 @@ function InvestmentsPage() {
 				...prev,
 				[id]: { snapshots: [], returns: [], loading: true },
 			}));
-			const [snaps, rets] = await Promise.all([
-				getSnapshots({ data: { accountId: id } }),
-				getReturns({ data: { accountId: id } }),
-			]);
+			const [snaps, rets] = await Promise.all([getSnapshots({ data: { accountId: id } }), getReturns({ data: { accountId: id } })]);
 			setDetails((prev) => ({
 				...prev,
 				[id]: { snapshots: snaps, returns: rets, loading: false },
@@ -812,10 +686,7 @@ function InvestmentsPage() {
 	};
 
 	const refreshDetail = async (id: number) => {
-		const [snaps, rets] = await Promise.all([
-			getSnapshots({ data: { accountId: id } }),
-			getReturns({ data: { accountId: id } }),
-		]);
+		const [snaps, rets] = await Promise.all([getSnapshots({ data: { accountId: id } }), getReturns({ data: { accountId: id } })]);
 		setDetails((prev) => ({
 			...prev,
 			[id]: { snapshots: snaps, returns: rets, loading: false },
@@ -853,16 +724,14 @@ function InvestmentsPage() {
 						display: "flex",
 						flexDirection: "column",
 						gap: 20,
-					}}
-				>
+					}}>
 					{/* Header */}
 					<div
 						style={{
 							display: "flex",
 							alignItems: "center",
 							justifyContent: "space-between",
-						}}
-					>
+						}}>
 						<div style={{ display: "flex", alignItems: "center", gap: 10 }}>
 							<div
 								style={{
@@ -879,8 +748,7 @@ function InvestmentsPage() {
 									fontWeight: 600,
 									color: "var(--text)",
 									letterSpacing: "-0.02em",
-								}}
-							>
+								}}>
 								Investment Accounts
 							</h1>
 						</div>
@@ -901,8 +769,7 @@ function InvestmentsPage() {
 								fontWeight: 500,
 								fontFamily: "inherit",
 								cursor: "pointer",
-							}}
-						>
+							}}>
 							<Plus size={13} />
 							Add Account
 						</button>
@@ -918,15 +785,13 @@ function InvestmentsPage() {
 								border: "1px solid var(--border)",
 								borderRadius: 8,
 								overflow: "hidden",
-							}}
-						>
+							}}>
 							<table
 								style={{
 									width: "100%",
 									borderCollapse: "collapse",
 									fontSize: 13,
-								}}
-							>
+								}}>
 								<thead>
 									<tr style={{ borderBottom: "1px solid var(--border)" }}>
 										<th style={thStyle("left")}>Account</th>
@@ -965,8 +830,7 @@ function InvestmentsPage() {
 																? "var(--surface-raised)"
 																: "transparent",
 														transition: "background 0.1s",
-													}}
-												>
+													}}>
 													{/* Name + chevron */}
 													<td style={{ padding: "10px 12px" }}>
 														<div
@@ -974,15 +838,12 @@ function InvestmentsPage() {
 																display: "flex",
 																alignItems: "center",
 																gap: 8,
-															}}
-														>
+															}}>
 															<ChevronRight
 																size={13}
 																style={{
 																	color: "var(--text-dim)",
-																	transform: isExpanded
-																		? "rotate(90deg)"
-																		: "none",
+																	transform: isExpanded ? "rotate(90deg)" : "none",
 																	transition: "transform 0.15s",
 																	flexShrink: 0,
 																}}
@@ -991,8 +852,7 @@ function InvestmentsPage() {
 																style={{
 																	color: "var(--text)",
 																	fontWeight: 500,
-																}}
-															>
+																}}>
 																{account.name}
 															</span>
 														</div>
@@ -1003,8 +863,7 @@ function InvestmentsPage() {
 														style={{
 															padding: "10px 12px",
 															color: "var(--text-muted)",
-														}}
-													>
+														}}>
 														{TYPE_LABEL[account.type]}
 													</td>
 
@@ -1014,19 +873,8 @@ function InvestmentsPage() {
 													</td>
 
 													{/* Balance */}
-													<td
-														style={{ padding: "10px 12px", textAlign: "right" }}
-														className="num"
-													>
-														{snap ? (
-															<span style={{ color: "var(--text)" }}>
-																{fmtCAD(snap.balance)}
-															</span>
-														) : (
-															<span style={{ color: "var(--text-dim)" }}>
-																—
-															</span>
-														)}
+													<td style={{ padding: "10px 12px", textAlign: "right" }} className="num">
+														{snap ? <span style={{ color: "var(--text)" }}>{fmtCAD(snap.balance)}</span> : <span style={{ color: "var(--text-dim)" }}>—</span>}
 													</td>
 
 													{/* Last Updated */}
@@ -1034,31 +882,21 @@ function InvestmentsPage() {
 														style={{
 															padding: "10px 12px",
 															color: "var(--text-muted)",
-														}}
-													>
+														}}>
 														{snap ? fmtDate(snap.date) : "—"}
 													</td>
 
 													{/* Return % */}
-													<td
-														style={{ padding: "10px 12px", textAlign: "right" }}
-														className="num"
-													>
+													<td style={{ padding: "10px 12px", textAlign: "right" }} className="num">
 														{ret && !NO_RETURNS.has(account.type) ? (
 															<span
 																style={{
-																	color:
-																		ret.returnPercent >= 0
-																			? "#10b981"
-																			: "#ef4444",
-																}}
-															>
+																	color: ret.returnPercent >= 0 ? "#10b981" : "#ef4444",
+																}}>
 																{fmtReturn(ret.returnPercent)}
 															</span>
 														) : (
-															<span style={{ color: "var(--text-dim)" }}>
-																—
-															</span>
+															<span style={{ color: "var(--text-dim)" }}>—</span>
 														)}
 													</td>
 
@@ -1071,12 +909,8 @@ function InvestmentsPage() {
 																	e.stopPropagation();
 																	handleDeleteAccount(account.id);
 																}}
-																style={iconBtn}
-															>
-																<Trash2
-																	size={13}
-																	style={{ color: "var(--text-dim)" }}
-																/>
+																style={iconBtn}>
+																<Trash2 size={13} style={{ color: "var(--text-dim)" }} />
 															</button>
 														)}
 													</td>
@@ -1087,12 +921,8 @@ function InvestmentsPage() {
 													<AccountDetail
 														account={account}
 														detail={detail}
-														onDeleteSnapshot={(snapId) =>
-															handleDeleteSnapshot(snapId, account.id)
-														}
-														onDeleteReturn={(retId) =>
-															handleDeleteReturn(retId, account.id)
-														}
+														onDeleteSnapshot={(snapId) => handleDeleteSnapshot(snapId, account.id)}
+														onDeleteReturn={(retId) => handleDeleteReturn(retId, account.id)}
 													/>
 												)}
 											</Fragment>

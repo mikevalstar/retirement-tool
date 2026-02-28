@@ -29,20 +29,18 @@ export const getPeople = createServerFn({ method: "GET" }).handler(async () => {
  * recent return entry — everything needed to render the accounts table.
  * Ordered by owner sort order then account name.
  */
-export const getAccounts = createServerFn({ method: "GET" }).handler(
-	async () => {
-		return prisma.account.findMany({
-			include: {
-				owner: true,
-				// Most recent snapshot by date — this is the "current balance"
-				snapshots: { orderBy: { date: "desc" }, take: 1 },
-				// Most recent return year — shown in the accounts table
-				returns: { orderBy: { year: "desc" }, take: 1 },
-			},
-			orderBy: [{ owner: { sortOrder: "asc" } }, { name: "asc" }],
-		});
-	},
-);
+export const getAccounts = createServerFn({ method: "GET" }).handler(async () => {
+	return prisma.account.findMany({
+		include: {
+			owner: true,
+			// Most recent snapshot by date — this is the "current balance"
+			snapshots: { orderBy: { date: "desc" }, take: 1 },
+			// Most recent return year — shown in the accounts table
+			returns: { orderBy: { year: "desc" }, take: 1 },
+		},
+		orderBy: [{ owner: { sortOrder: "asc" } }, { name: "asc" }],
+	});
+});
 
 /**
  * Fetch all snapshots for a single account, newest date first.
@@ -107,10 +105,7 @@ export const createAccount = createServerFn({ method: "POST" })
 
 /** Update mutable account fields (name, type, owner). */
 export const updateAccount = createServerFn({ method: "POST" })
-	.inputValidator(
-		(data: { id: number; name: string; type: AccountType; ownerId: number }) =>
-			data,
-	)
+	.inputValidator((data: { id: number; name: string; type: AccountType; ownerId: number }) => data)
 	.handler(async ({ data }) => {
 		return prisma.account.update({
 			where: { id: data.id },
@@ -132,14 +127,7 @@ export const deleteAccount = createServerFn({ method: "POST" })
 
 /** Add a dated balance snapshot to an account. */
 export const createSnapshot = createServerFn({ method: "POST" })
-	.inputValidator(
-		(data: {
-			accountId: number;
-			date: string;
-			balance: number;
-			note?: string;
-		}) => data,
-	)
+	.inputValidator((data: { accountId: number; date: string; balance: number; note?: string }) => data)
 	.handler(async ({ data }) => {
 		return prisma.balanceSnapshot.create({
 			data: {
@@ -166,12 +154,7 @@ export const deleteSnapshot = createServerFn({ method: "POST" })
  * Calls createSnapshot in a loop to keep the logic in one place.
  */
 export const createBulkSnapshots = createServerFn({ method: "POST" })
-	.inputValidator(
-		(data: {
-			date: string;
-			entries: Array<{ accountId: number; balance: number }>;
-		}) => data,
-	)
+	.inputValidator((data: { date: string; entries: Array<{ accountId: number; balance: number }> }) => data)
 	.handler(async ({ data }) => {
 		for (const entry of data.entries) {
 			await createSnapshot({
@@ -192,9 +175,7 @@ export const createBulkSnapshots = createServerFn({ method: "POST" })
  * The UI should delete the existing row before allowing re-entry.
  */
 export const createReturn = createServerFn({ method: "POST" })
-	.inputValidator(
-		(data: { accountId: number; year: number; returnPercent: number }) => data,
-	)
+	.inputValidator((data: { accountId: number; year: number; returnPercent: number }) => data)
 	.handler(async ({ data }) => {
 		return prisma.returnEntry.create({
 			data: {
