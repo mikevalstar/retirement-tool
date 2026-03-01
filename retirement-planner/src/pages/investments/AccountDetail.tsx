@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import type { AccountType } from "#/generated/prisma/enums";
-import type { getAccounts, getReturns, getSnapshots } from "#/routes/investments/accountFns";
+import type { getAccounts, getReturns, getSnapshots } from "#/serverFns/investments/accountFns";
 import { AddReturnRow } from "./AddReturnRow";
 import { AddSnapshotRow } from "./AddSnapshotRow";
 import { ReturnLine } from "./ReturnLine";

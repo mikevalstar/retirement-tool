@@ -11,8 +11,47 @@
  */
 
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { prisma } from "#/db";
-import type { AccountType } from "#/generated/prisma/enums";
+import { AccountType } from "#/generated/prisma/enums";
+
+// ─── Input Schemas ────────────────────────────────────────────────────────────
+
+const IdInput = z.object({ id: z.number().int().positive() });
+const AccountIdInput = z.object({ accountId: z.number().int().positive() });
+
+export const CreateAccountInput = z.object({
+  name: z.string().min(1),
+  type: z.nativeEnum(AccountType),
+  ownerId: z.number().int().positive(),
+  initialBalance: z.number().optional(),
+  initialDate: z.string().optional(),
+});
+
+export const UpdateAccountInput = z.object({
+  id: z.number().int().positive(),
+  name: z.string().min(1),
+  type: z.nativeEnum(AccountType),
+  ownerId: z.number().int().positive(),
+});
+
+export const CreateSnapshotInput = z.object({
+  accountId: z.number().int().positive(),
+  date: z.string().min(1),
+  balance: z.number(),
+  note: z.string().optional(),
+});
+
+export const CreateBulkSnapshotsInput = z.object({
+  date: z.string().min(1),
+  entries: z.array(z.object({ accountId: z.number().int().positive(), balance: z.number() })),
+});
+
+export const CreateReturnInput = z.object({
+  accountId: z.number().int().positive(),
+  year: z.number().int(),
+  returnPercent: z.number(),
+});
 
 // ─── People (for owner dropdown) ──────────────────────────────────────────────
 
@@ -47,7 +86,7 @@ export const getAccounts = createServerFn({ method: "GET" }).handler(async () =>
  * Used when expanding an account row to show balance history.
  */
 export const getSnapshots = createServerFn({ method: "GET" })
-  .inputValidator((data: { accountId: number }) => data)
+  .inputValidator(AccountIdInput.parse)
   .handler(async ({ data }) => {
     return prisma.balanceSnapshot.findMany({
       where: { accountId: data.accountId },
@@ -60,7 +99,7 @@ export const getSnapshots = createServerFn({ method: "GET" })
  * Used when expanding an account row to show return history.
  */
 export const getReturns = createServerFn({ method: "GET" })
-  .inputValidator((data: { accountId: number }) => data)
+  .inputValidator(AccountIdInput.parse)
   .handler(async ({ data }) => {
     return prisma.returnEntry.findMany({
       where: { accountId: data.accountId },
@@ -74,15 +113,7 @@ export const getReturns = createServerFn({ method: "GET" })
  * immediately after being added.
  */
 export const createAccount = createServerFn({ method: "POST" })
-  .inputValidator(
-    (data: {
-      name: string;
-      type: AccountType;
-      ownerId: number;
-      initialBalance?: number;
-      initialDate?: string; // ISO date string, e.g. "2025-01-15"
-    }) => data,
-  )
+  .inputValidator(CreateAccountInput.parse)
   .handler(async ({ data }) => {
     return prisma.$transaction(async (tx) => {
       const account = await tx.account.create({
@@ -105,7 +136,7 @@ export const createAccount = createServerFn({ method: "POST" })
 
 /** Update mutable account fields (name, type, owner). */
 export const updateAccount = createServerFn({ method: "POST" })
-  .inputValidator((data: { id: number; name: string; type: AccountType; ownerId: number }) => data)
+  .inputValidator(UpdateAccountInput.parse)
   .handler(async ({ data }) => {
     return prisma.account.update({
       where: { id: data.id },
@@ -118,7 +149,7 @@ export const updateAccount = createServerFn({ method: "POST" })
  * Cascade is configured in the schema — no manual cleanup needed.
  */
 export const deleteAccount = createServerFn({ method: "POST" })
-  .inputValidator((data: { id: number }) => data)
+  .inputValidator(IdInput.parse)
   .handler(async ({ data }) => {
     return prisma.account.delete({ where: { id: data.id } });
   });
@@ -127,7 +158,7 @@ export const deleteAccount = createServerFn({ method: "POST" })
 
 /** Add a dated balance snapshot to an account. */
 export const createSnapshot = createServerFn({ method: "POST" })
-  .inputValidator((data: { accountId: number; date: string; balance: number; note?: string }) => data)
+  .inputValidator(CreateSnapshotInput.parse)
   .handler(async ({ data }) => {
     return prisma.balanceSnapshot.create({
       data: {
@@ -141,7 +172,7 @@ export const createSnapshot = createServerFn({ method: "POST" })
 
 /** Delete a single snapshot by id. No confirmation — UI handles that. */
 export const deleteSnapshot = createServerFn({ method: "POST" })
-  .inputValidator((data: { id: number }) => data)
+  .inputValidator(IdInput.parse)
   .handler(async ({ data }) => {
     return prisma.balanceSnapshot.delete({ where: { id: data.id } });
   });
@@ -154,7 +185,7 @@ export const deleteSnapshot = createServerFn({ method: "POST" })
  * Calls createSnapshot in a loop to keep the logic in one place.
  */
 export const createBulkSnapshots = createServerFn({ method: "POST" })
-  .inputValidator((data: { date: string; entries: Array<{ accountId: number; balance: number }> }) => data)
+  .inputValidator(CreateBulkSnapshotsInput.parse)
   .handler(async ({ data }) => {
     for (const entry of data.entries) {
       await createSnapshot({
@@ -175,7 +206,7 @@ export const createBulkSnapshots = createServerFn({ method: "POST" })
  * The UI should delete the existing row before allowing re-entry.
  */
 export const createReturn = createServerFn({ method: "POST" })
-  .inputValidator((data: { accountId: number; year: number; returnPercent: number }) => data)
+  .inputValidator(CreateReturnInput.parse)
   .handler(async ({ data }) => {
     return prisma.returnEntry.create({
       data: {
@@ -188,7 +219,7 @@ export const createReturn = createServerFn({ method: "POST" })
 
 /** Delete a single return entry by id. */
 export const deleteReturn = createServerFn({ method: "POST" })
-  .inputValidator((data: { id: number }) => data)
+  .inputValidator(IdInput.parse)
   .handler(async ({ data }) => {
     return prisma.returnEntry.delete({ where: { id: data.id } });
   });

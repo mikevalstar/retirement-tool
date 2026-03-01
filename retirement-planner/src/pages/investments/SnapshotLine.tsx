@@ -1,6 +1,6 @@
 import { Trash2 } from "lucide-react";
 import { IconButton } from "#/components/IconButton";
-import type { getSnapshots } from "#/routes/investments/accountFns";
+import type { getSnapshots } from "#/serverFns/investments/accountFns";
 
 type SnapshotItem = Awaited<ReturnType<typeof getSnapshots>>[number];
 

@@ -3,7 +3,7 @@ import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { Field } from "#/components/Field";
 import { SlidePanel } from "#/components/SlidePanel";
 import type { AccountType } from "#/generated/prisma/enums";
-import { createAccount, type getPeople } from "#/routes/investments/accountFns";
+import { createAccount, type getPeople } from "#/serverFns/investments/accountFns";
 
 type PersonItem = Awaited<ReturnType<typeof getPeople>>[number];
 

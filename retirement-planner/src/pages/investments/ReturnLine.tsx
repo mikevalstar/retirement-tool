@@ -1,6 +1,6 @@
 import { Trash2 } from "lucide-react";
 import { IconButton } from "#/components/IconButton";
-import type { getReturns } from "#/routes/investments/accountFns";
+import type { getReturns } from "#/serverFns/investments/accountFns";
 
 type ReturnItem = Awaited<ReturnType<typeof getReturns>>[number];
 

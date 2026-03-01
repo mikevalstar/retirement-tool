@@ -3,7 +3,7 @@ import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { Field } from "#/components/Field";
 import { OwnerBadge } from "#/components/OwnerBadge";
 import { SlidePanel } from "#/components/SlidePanel";
-import { createBulkSnapshots, type getAccounts } from "#/routes/investments/accountFns";
+import { createBulkSnapshots, type getAccounts } from "#/serverFns/investments/accountFns";
 
 type AccountItem = Awaited<ReturnType<typeof getAccounts>>[number];
 

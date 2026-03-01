@@ -11,7 +11,7 @@ import { AccountDetail } from "#/pages/investments/AccountDetail";
 import { AddAccountPanel } from "#/pages/investments/AddAccountPanel";
 import { FloatingToc } from "#/pages/investments/FloatingToc";
 import { UpdateBalancesPanel } from "#/pages/investments/UpdateBalancesPanel";
-import { deleteAccount, deleteReturn, deleteSnapshot, getAccounts, getPeople, getReturns, getSnapshots } from "./accountFns";
+import { deleteAccount, deleteReturn, deleteSnapshot, getAccounts, getPeople, getReturns, getSnapshots } from "#/serverFns/investments/accountFns";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { getAccounts } from "#/routes/investments/accountFns";
+import type { getAccounts } from "#/serverFns/investments/accountFns";
 
 type AccountItem = Awaited<ReturnType<typeof getAccounts>>[number];
 

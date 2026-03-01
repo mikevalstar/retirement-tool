@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 import { Fragment, useState } from "react";
 import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { IconButton } from "#/components/IconButton";
-import { createSnapshot } from "#/routes/investments/accountFns";
+import { createSnapshot } from "#/serverFns/investments/accountFns";
 
 const ACCENT = "var(--section-investments)";
 
