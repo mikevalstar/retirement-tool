@@ -2,12 +2,13 @@ import { X } from "lucide-react";
 import { Fragment, useState } from "react";
 import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { IconButton } from "#/components/IconButton";
+import { DATE_FORMATS, dayjs } from "#/lib/date";
 import { SECTION_ACCENT } from "#/lib/formatters";
 import { inlineInputCls, inlineInputCSS } from "#/lib/panelStyles";
 import { createSnapshot } from "#/serverFns/investments/accountFns";
 
 export function AddSnapshotRow({ accountId, onSaved, onCancel }: { accountId: number; onSaved: () => void; onCancel: () => void }) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = dayjs().format(DATE_FORMATS.ISO);
   const [date, setDate] = useState(today);
   const [balance, setBalance] = useState("");
   const [note, setNote] = useState("");

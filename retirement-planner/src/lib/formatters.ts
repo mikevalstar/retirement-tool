@@ -1,4 +1,5 @@
 import type { AccountType } from "#/generated/prisma/enums";
+import { DATE_FORMATS, dayjs } from "./date";
 
 export const SECTION_ACCENT = "var(--section-investments)";
 
@@ -11,11 +12,6 @@ export const fmtCAD = (n: number) =>
     maximumFractionDigits: 0,
   }).format(n);
 
-export const fmtDate = (d: Date | string) =>
-  new Date(d).toLocaleDateString("en-CA", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+export const fmtDate = (d: Date | string) => dayjs(d).format(DATE_FORMATS.DISPLAY);
 
 export const fmtReturn = (pct: number) => `${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%`;

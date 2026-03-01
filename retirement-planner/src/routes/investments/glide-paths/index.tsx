@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { SlidePanel } from "#/components/SlidePanel";
+import { dayjs } from "#/lib/date";
 import { SECTION_ACCENT } from "#/lib/formatters";
 import { panelCancelBtnCls, panelCancelBtnCSS, panelInputCls, panelInputCSS, panelSaveBtnCls, panelSaveBtnCSS } from "#/lib/panelStyles";
 import { thCls, thCSS } from "#/lib/tableStyles";
@@ -208,7 +209,7 @@ interface TableProps {
 }
 
 function WaypointTable({ waypoints, onDelete }: TableProps) {
-  const currentYear = new Date().getFullYear();
+  const currentYear = dayjs().year();
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
@@ -394,7 +395,7 @@ function ChartTooltip({ active, payload, label }: CustomTooltipProps) {
 }
 
 function GlidePathChart({ waypoints }: { waypoints: Waypoint[] }) {
-  const currentYear = new Date().getFullYear();
+  const currentYear = dayjs().year();
   const data = buildChartData(waypoints, currentYear);
 
   return (

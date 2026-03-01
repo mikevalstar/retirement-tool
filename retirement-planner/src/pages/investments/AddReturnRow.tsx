@@ -2,12 +2,13 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { IconButton } from "#/components/IconButton";
+import { dayjs } from "#/lib/date";
 import { SECTION_ACCENT } from "#/lib/formatters";
 import { inlineInputCls, inlineInputCSS } from "#/lib/panelStyles";
 import { createReturn } from "#/serverFns/investments/accountFns";
 
 export function AddReturnRow({ accountId, onSaved, onCancel }: { accountId: number; onSaved: () => void; onCancel: () => void }) {
-  const [year, setYear] = useState(String(new Date().getFullYear() - 1));
+  const [year, setYear] = useState(String(dayjs().year() - 1));
   const [returnPct, setReturnPct] = useState("");
   const [showCalc, setShowCalc] = useState(false);
   const [calcStart, setCalcStart] = useState("");

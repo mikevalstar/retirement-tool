@@ -3,6 +3,7 @@ import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { Field } from "#/components/Field";
 import { OwnerBadge } from "#/components/OwnerBadge";
 import { SlidePanel } from "#/components/SlidePanel";
+import { DATE_FORMATS, dayjs } from "#/lib/date";
 import { fmtCAD, fmtDate } from "#/lib/formatters";
 import { panelCancelBtnCls, panelCancelBtnCSS, panelInputCls, panelInputCSS, panelSaveBtnCls, panelSaveBtnCSS } from "#/lib/panelStyles";
 import { createBulkSnapshots, type getAccounts } from "#/serverFns/investments/accountFns";
@@ -10,7 +11,7 @@ import { createBulkSnapshots, type getAccounts } from "#/serverFns/investments/a
 type AccountItem = Awaited<ReturnType<typeof getAccounts>>[number];
 
 export function UpdateBalancesPanel({ accounts, onClose, onSaved }: { accounts: AccountItem[]; onClose: () => void; onSaved: () => void }) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = dayjs().format(DATE_FORMATS.ISO);
   const [date, setDate] = useState(today);
   const [values, setValues] = useState<Record<number, string>>({});
   const [saving, setSaving] = useState(false);

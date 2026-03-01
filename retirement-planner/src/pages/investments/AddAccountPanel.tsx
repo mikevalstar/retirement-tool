@@ -3,13 +3,14 @@ import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { Field } from "#/components/Field";
 import { SlidePanel } from "#/components/SlidePanel";
 import type { AccountType } from "#/generated/prisma/enums";
+import { DATE_FORMATS, dayjs } from "#/lib/date";
 import { panelCancelBtnCls, panelCancelBtnCSS, panelInputCls, panelInputCSS, panelSaveBtnCls, panelSaveBtnCSS } from "#/lib/panelStyles";
 import { createAccount, type getPeople } from "#/serverFns/investments/accountFns";
 
 type PersonItem = Awaited<ReturnType<typeof getPeople>>[number];
 
 export function AddAccountPanel({ people, onClose, onSaved }: { people: PersonItem[]; onClose: () => void; onSaved: () => void }) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = dayjs().format(DATE_FORMATS.ISO);
   const [name, setName] = useState("");
   const [type, setType] = useState<AccountType>("TFSA");
   const [ownerId, setOwnerId] = useState<number>(people[0]?.id ?? 0);
