@@ -38,6 +38,10 @@
   --section-scenarios:   #8b5cf6;
   --section-simulation:  #00e5ff;
 
+  /* ── Chart colors ── */
+  --chart-fixed-income:  #6b9cc8;   /* muted blue for fixed income line */
+  --chart-cash:          #94a3b8;   /* muted gray for cash line */
+
   /* ── Semantic colors ── */
   --color-positive:      #10b981;
   --color-negative:      #ef4444;
