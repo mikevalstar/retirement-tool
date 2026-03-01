@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { Calendar, LineChart as LineChartIcon, RefreshCw, TrendingUp, Users } from "lucide-react";
-import { useState } from "react";
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useMemo, useState } from "react";
+import { Area, CartesianGrid, ComposedChart, Label, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { EmptyState } from "#/components/EmptyState";
 import type { AccountType } from "#/generated/prisma/enums";
 import { dayjs } from "#/lib/date";
@@ -155,6 +155,227 @@ function PortfolioHistoryChart({ data }: { data: PortfolioChartData }) {
           <div className="w-3 h-[2px]" style={{ backgroundColor: "var(--text)", opacity: 0.5 }} />
           Total
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Projection Chart ─────────────────────────────────────────────────────────
+
+type ProjectionPoint = {
+  year: number;
+  pessimistic: number;
+  base: number;
+  optimistic: number;
+  bandBase: number;
+  bandWidth: number;
+};
+
+function generateProjectionData(startBalance: number, baseRatePct: number, annualContribution: number): ProjectionPoint[] {
+  const pessimisticRate = (baseRatePct - 3) / 100;
+  const baseRate = baseRatePct / 100;
+  const optimisticRate = (baseRatePct + 3) / 100;
+  const currentYear = new Date().getFullYear();
+  const points: ProjectionPoint[] = [];
+  let pVal = startBalance;
+  let bVal = startBalance;
+  let oVal = startBalance;
+
+  for (let i = 0; i <= 20; i++) {
+    points.push({
+      year: currentYear + i,
+      pessimistic: Math.round(pVal),
+      base: Math.round(bVal),
+      optimistic: Math.round(oVal),
+      bandBase: Math.round(pVal),
+      bandWidth: Math.round(Math.max(0, oVal - pVal)),
+    });
+    pVal = pVal * (1 + pessimisticRate) + annualContribution;
+    bVal = bVal * (1 + baseRate) + annualContribution;
+    oVal = oVal * (1 + optimisticRate) + annualContribution;
+  }
+  return points;
+}
+
+interface ProjectionTooltipProps {
+  active?: boolean;
+  payload?: Array<{ value: number; dataKey: string }>;
+  label?: number;
+}
+
+function ProjectionTooltip({ active, payload, label }: ProjectionTooltipProps) {
+  if (!active || !payload?.length || label == null) return null;
+  const base = payload.find((p) => p.dataKey === "base");
+  const pessimistic = payload.find((p) => p.dataKey === "pessimistic");
+  const optimistic = payload.find((p) => p.dataKey === "optimistic");
+  return (
+    <div className="rounded-md px-3 py-2 text-[12px]" style={{ background: "var(--surface-raised)", border: "1px solid var(--border-strong)" }}>
+      <div className="font-medium mb-2" style={{ color: "var(--text-muted)" }}>
+        {label}
+      </div>
+      {optimistic && (
+        <div className="flex justify-between gap-4 mb-0.5">
+          <span style={{ color: "var(--text-dim)" }}>Optimistic</span>
+          <span className="num" style={{ color: "var(--text)" }}>
+            {fmtCAD(optimistic.value)}
+          </span>
+        </div>
+      )}
+      {base && (
+        <div className="flex justify-between gap-4 mb-0.5">
+          <span style={{ color: "var(--section-investments)" }}>Base</span>
+          <span className="num" style={{ color: "var(--text)" }}>
+            {fmtCAD(base.value)}
+          </span>
+        </div>
+      )}
+      {pessimistic && (
+        <div className="flex justify-between gap-4">
+          <span style={{ color: "var(--text-dim)" }}>Pessimistic</span>
+          <span className="num" style={{ color: "var(--text)" }}>
+            {fmtCAD(pessimistic.value)}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function yAxisFmt(v: number) {
+  if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(1)}M`;
+  return `$${(v / 1000).toFixed(0)}k`;
+}
+
+type RetirementMarker = { year: number; name: string };
+
+function PortfolioProjectionChart({ currentTotal, retirementMarkers }: { currentTotal: number; retirementMarkers: RetirementMarker[] }) {
+  const [baseRate, setBaseRate] = useState(6);
+  const [annualContribution, setAnnualContribution] = useState(0);
+
+  const data = useMemo(() => generateProjectionData(currentTotal, baseRate, annualContribution), [currentTotal, baseRate, annualContribution]);
+
+  const last = data[data.length - 1];
+  const currentYear = new Date().getFullYear();
+  const visibleMarkers = retirementMarkers.filter((m) => m.year > currentYear && m.year <= currentYear + 20);
+
+  return (
+    <div className="rounded-lg px-4 pt-4 pb-3" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+      {/* Header + controls */}
+      <div className="flex items-center gap-6 mb-4 flex-wrap">
+        <div className="text-[11px] uppercase tracking-wide font-medium mr-auto" style={{ color: "var(--text-dim)" }}>
+          20-Year Projection
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[11px]" style={{ color: "var(--text-dim)" }}>
+            Rate
+          </span>
+          <input
+            type="range"
+            min={2}
+            max={12}
+            step={0.5}
+            value={baseRate}
+            onChange={(e) => setBaseRate(Number(e.target.value))}
+            style={{ accentColor: "var(--section-investments)", width: 100 }}
+          />
+          <span className="num text-[12px]" style={{ color: "var(--text)", minWidth: 32, textAlign: "right" }}>
+            {baseRate}%
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="text-[11px]" style={{ color: "var(--text-dim)" }}>
+            Annual contrib
+          </span>
+          <span className="text-[12px]" style={{ color: "var(--text-dim)" }}>
+            $
+          </span>
+          <input
+            type="number"
+            value={annualContribution}
+            onChange={(e) => setAnnualContribution(Number(e.target.value))}
+            step={1000}
+            className="num text-[12px] text-right"
+            style={{
+              background: "var(--surface-raised)",
+              border: "1px solid var(--border)",
+              color: "var(--text)",
+              borderRadius: 4,
+              padding: "2px 6px",
+              width: 90,
+            }}
+          />
+        </div>
+      </div>
+
+      <ResponsiveContainer width="100%" height={200}>
+        <ComposedChart data={data} margin={{ top: 4, right: 16, left: 0, bottom: 4 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+          <XAxis dataKey="year" tick={{ fill: "var(--text-dim)", fontSize: 11 }} axisLine={{ stroke: "var(--border)" }} tickLine={false} tickCount={6} />
+          <YAxis tickFormatter={yAxisFmt} tick={{ fill: "var(--text-dim)", fontSize: 11 }} axisLine={false} tickLine={false} width={55} />
+          <Tooltip content={<ProjectionTooltip />} />
+          {/* Shaded band between pessimistic and optimistic */}
+          <Area type="monotone" dataKey="bandBase" stackId="band" stroke="none" fill="transparent" legendType="none" isAnimationActive={false} />
+          <Area
+            type="monotone"
+            dataKey="bandWidth"
+            stackId="band"
+            stroke="none"
+            fill="var(--section-investments)"
+            fillOpacity={0.15}
+            legendType="none"
+            isAnimationActive={false}
+          />
+          {/* Scenario lines */}
+          <Line
+            type="monotone"
+            dataKey="pessimistic"
+            stroke="var(--section-investments)"
+            strokeWidth={1.5}
+            strokeDasharray="4 3"
+            strokeOpacity={0.5}
+            dot={false}
+            isAnimationActive={false}
+          />
+          <Line type="monotone" dataKey="base" stroke="var(--section-investments)" strokeWidth={2.5} dot={false} isAnimationActive={false} />
+          <Line
+            type="monotone"
+            dataKey="optimistic"
+            stroke="var(--section-investments)"
+            strokeWidth={1.5}
+            strokeDasharray="4 3"
+            strokeOpacity={0.5}
+            dot={false}
+            isAnimationActive={false}
+          />
+          {/* Retirement year markers */}
+          {visibleMarkers.map((m) => (
+            <ReferenceLine key={`${m.name}-${m.year}`} x={m.year} stroke="var(--text-muted)" strokeDasharray="4 3" strokeOpacity={0.7}>
+              <Label value={m.name} fill="var(--text-muted)" fontSize={10} position="insideTopRight" offset={4} />
+            </ReferenceLine>
+          ))}
+        </ComposedChart>
+      </ResponsiveContainer>
+
+      {/* Summary footer */}
+      <div className="flex justify-between mt-3 text-[11px]" style={{ color: "var(--text-dim)" }}>
+        <span>
+          Pessimistic ({baseRate - 3}%){" "}
+          <span className="num" style={{ color: "var(--text-muted)" }}>
+            {fmtCAD(last.pessimistic)}
+          </span>
+        </span>
+        <span>
+          Base ({baseRate}%){" "}
+          <span className="num font-medium" style={{ color: "var(--section-investments)" }}>
+            {fmtCAD(last.base)}
+          </span>
+        </span>
+        <span>
+          Optimistic ({baseRate + 3}%){" "}
+          <span className="num" style={{ color: "var(--text-muted)" }}>
+            {fmtCAD(last.optimistic)}
+          </span>
+        </span>
       </div>
     </div>
   );
@@ -418,6 +639,16 @@ function InvestmentsDashboardPage() {
 
             {/* ── Portfolio History Chart ── */}
             {chartData.series.length > 1 && <PortfolioHistoryChart data={chartData} />}
+
+            {/* ── Portfolio Projection Chart ── */}
+            {hasAnyBalance && (
+              <PortfolioProjectionChart
+                currentTotal={totalPortfolio}
+                retirementMarkers={people.flatMap((p) =>
+                  p.birthYear != null && p.retirementAge != null ? [{ year: p.birthYear + p.retirementAge, name: p.name }] : [],
+                )}
+              />
+            )}
 
             {/* ── Section links ── */}
             <div>

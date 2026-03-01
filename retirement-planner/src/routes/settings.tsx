@@ -20,9 +20,12 @@ const createPerson = createServerFn({ method: "POST" })
   });
 
 const updatePerson = createServerFn({ method: "POST" })
-  .inputValidator((data: { id: number; name: string; birthYear: number | null }) => data)
+  .inputValidator((data: { id: number; name: string; birthYear: number | null; retirementAge: number | null }) => data)
   .handler(async ({ data }) => {
-    return await prisma.person.update({ where: { id: data.id }, data: { name: data.name, birthYear: data.birthYear } });
+    return await prisma.person.update({
+      where: { id: data.id },
+      data: { name: data.name, birthYear: data.birthYear, retirementAge: data.retirementAge },
+    });
   });
 
 const deletePerson = createServerFn({ method: "POST" })
@@ -49,6 +52,7 @@ function SettingsPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editName, setEditName] = useState("");
   const [editBirthYear, setEditBirthYear] = useState("");
+  const [editRetirementAge, setEditRetirementAge] = useState("");
   const [newName, setNewName] = useState("");
   const [adding, setAdding] = useState(false);
   const [pageError, setPageError] = useState<unknown>(null);
@@ -57,10 +61,11 @@ function SettingsPage() {
   const minBirthYear = 1920;
   const maxBirthYear = currentYear - 18;
 
-  const startEdit = (id: number, name: string, birthYear: number | null) => {
+  const startEdit = (id: number, name: string, birthYear: number | null, retirementAge: number | null) => {
     setEditingId(id);
     setEditName(name);
     setEditBirthYear(birthYear?.toString() ?? "");
+    setEditRetirementAge(retirementAge?.toString() ?? "");
   };
 
   const commitEdit = async () => {
@@ -73,9 +78,10 @@ function SettingsPage() {
       setPageError(new Error(`Birth year must be between ${minBirthYear} and ${maxBirthYear}`));
       return;
     }
+    const retirementAgeNum = editRetirementAge.trim() ? Number.parseInt(editRetirementAge, 10) : null;
 
     try {
-      await updatePerson({ data: { id: editingId, name: trimmedName, birthYear: birthYearNum } });
+      await updatePerson({ data: { id: editingId, name: trimmedName, birthYear: birthYearNum, retirementAge: retirementAgeNum } });
       router.invalidate();
     } catch (err) {
       setPageError(err);
@@ -210,6 +216,7 @@ function SettingsPage() {
               <div style={{ width: 13 }} />
               <div style={{ flex: 1 }}>Name</div>
               <div style={{ width: 80, textAlign: "right" }}>Birth Year</div>
+              <div style={{ width: 80, textAlign: "right" }}>Retire Age</div>
               <div style={{ width: 24 }} />
             </div>
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
@@ -269,6 +276,27 @@ function SettingsPage() {
                           outline: "none",
                         }}
                       />
+                      <input
+                        value={editRetirementAge}
+                        onChange={(e) => setEditRetirementAge(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") commitEdit();
+                          if (e.key === "Escape") cancelEdit();
+                        }}
+                        placeholder="Age"
+                        className="num"
+                        style={{
+                          width: 80,
+                          background: "var(--surface-raised)",
+                          border: "1px solid var(--border)",
+                          borderRadius: 4,
+                          padding: "4px 8px",
+                          fontSize: 13,
+                          color: "var(--text)",
+                          fontFamily: "inherit",
+                          outline: "none",
+                        }}
+                      />
                       <button type="button" onClick={commitEdit} style={iconBtn}>
                         <Check size={13} style={{ color: "var(--color-positive)" }} />
                       </button>
@@ -280,7 +308,7 @@ function SettingsPage() {
                     <>
                       <button
                         type="button"
-                        onClick={() => startEdit(person.id, person.name, person.birthYear)}
+                        onClick={() => startEdit(person.id, person.name, person.birthYear, person.retirementAge)}
                         style={{
                           flex: 1,
                           fontSize: 13,
@@ -303,6 +331,16 @@ function SettingsPage() {
                           textAlign: "right",
                         }}>
                         {person.birthYear ?? "—"}
+                      </span>
+                      <span
+                        className="num"
+                        style={{
+                          fontSize: 12,
+                          color: person.retirementAge ? "var(--text-muted)" : "var(--text-dim)",
+                          width: 80,
+                          textAlign: "right",
+                        }}>
+                        {person.retirementAge ?? "—"}
                       </span>
                       <button type="button" onClick={() => handleDelete(person.id)} style={iconBtn}>
                         <Trash2 size={13} style={{ color: "var(--text-dim)" }} />

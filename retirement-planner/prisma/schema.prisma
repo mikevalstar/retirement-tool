@@ -16,8 +16,9 @@ model Todo {
 model Person {
   id        Int       @id @default(autoincrement())
   name      String
-  birthYear Int?      // 4-digit year, optional (used for glide path recommendations)
-  sortOrder Int       @default(0)
+  birthYear     Int?  // 4-digit year, optional (used for glide path recommendations)
+  retirementAge Int?  // target retirement age, optional (used for projection chart markers)
+  sortOrder     Int   @default(0)
   createdAt DateTime  @default(now())
   // Restrict (Prisma default) — cannot delete a Person who owns accounts.
   // This prevents accidentally nuking investment history via Settings.
