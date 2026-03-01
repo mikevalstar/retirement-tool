@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { useState } from "react";
-import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { IconButton } from "#/components/IconButton";
+import { InlineError } from "#/components/InlineError";
 import { dayjs } from "#/lib/date";
 import { SECTION_ACCENT } from "#/lib/formatters";
 import { inlineInputCls, inlineInputCSS } from "#/lib/panelStyles";
@@ -158,7 +158,7 @@ export function AddReturnRow({ accountId, onSaved, onCancel }: { accountId: numb
       {!!error && (
         <tr>
           <td colSpan={3} className="px-2 pb-2">
-            <ErrorDisplay error={error} onDismiss={() => setError(null)} />
+            <InlineError error={error} onDismiss={() => setError(null)} />
           </td>
         </tr>
       )}

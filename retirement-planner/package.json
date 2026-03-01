@@ -43,6 +43,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.19",
+    "error-stack-parser-es": "^1.0.5",
     "highlight.js": "^11.11.1",
     "jotai": "^2.18.0",
     "lucide-react": "^0.561.0",

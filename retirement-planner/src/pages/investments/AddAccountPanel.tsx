@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { Field } from "#/components/Field";
+import { InlineError } from "#/components/InlineError";
 import { SlidePanel } from "#/components/SlidePanel";
 import type { AccountType } from "#/generated/prisma/enums";
 import { DATE_FORMATS, dayjs } from "#/lib/date";
@@ -105,7 +105,7 @@ export function AddAccountPanel({ people, onClose, onSaved }: { people: PersonIt
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={panelInputCls} style={panelInputCSS} />
         </Field>
 
-        {!!error && <ErrorDisplay error={error} onDismiss={() => setError(null)} />}
+        {!!error && <InlineError error={error} onDismiss={() => setError(null)} />}
       </div>
     </SlidePanel>
   );

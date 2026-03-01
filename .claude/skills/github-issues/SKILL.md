@@ -132,6 +132,8 @@ gh issue edit 42 --add-assignee "@me"
 After a planning session (`/project-planner`), break the approved plan into
 GitHub issues. Each issue should map to a user-facing behavior from the plan.
 
+Make sure to add in a link to plan documents in the repo that the task is associated with. it can be relative to the root of the repo.
+
 Pattern:
 1. Draft issues as markdown in the chat for user review
 2. Ask: "Want me to create these with `gh issue create`?"

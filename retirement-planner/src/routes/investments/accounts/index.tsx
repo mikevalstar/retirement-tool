@@ -2,9 +2,9 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Plus, RefreshCw, Trash2, TrendingUp } from "lucide-react";
 import { Fragment, useState } from "react";
 import { EmptyState } from "#/components/EmptyState";
-import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { ExpandChevron } from "#/components/ExpandChevron";
 import { IconButton } from "#/components/IconButton";
+import { InlineError } from "#/components/InlineError";
 import { OwnerBadge } from "#/components/OwnerBadge";
 import type { AccountType } from "#/generated/prisma/enums";
 import { fmtCAD, fmtDate, fmtReturn, NO_RETURNS_TYPES, SECTION_ACCENT } from "#/lib/formatters";
@@ -183,7 +183,7 @@ function InvestmentAccountsPage() {
           </div>
 
           {/* Page-level error */}
-          {!!pageError && <ErrorDisplay error={pageError} onDismiss={() => setPageError(null)} />}
+          {!!pageError && <InlineError error={pageError} onDismiss={() => setPageError(null)} />}
 
           {/* Accounts table */}
           {accounts.length === 0 ? (

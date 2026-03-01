@@ -3,8 +3,8 @@ import { PieChart } from "lucide-react";
 import type React from "react";
 import { Fragment, useState } from "react";
 import { EmptyState } from "#/components/EmptyState";
-import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { ExpandChevron } from "#/components/ExpandChevron";
+import { InlineError } from "#/components/InlineError";
 import { OwnerBadge } from "#/components/OwnerBadge";
 import type { AccountType } from "#/generated/prisma/enums";
 import { SECTION_ACCENT } from "#/lib/formatters";
@@ -223,7 +223,7 @@ function AllocationsPage() {
         </h1>
       </div>
 
-      {!!pageError && <ErrorDisplay error={pageError} onDismiss={() => setPageError(null)} />}
+      {!!pageError && <InlineError error={pageError} onDismiss={() => setPageError(null)} />}
 
       {accounts.length === 0 ? (
         <EmptyState

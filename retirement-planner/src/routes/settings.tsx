@@ -2,7 +2,7 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { Check, GripVertical, Plus, Settings, Trash2, X } from "lucide-react";
 import { useState } from "react";
-import { ErrorDisplay } from "#/components/ErrorDisplay";
+import { InlineError } from "#/components/InlineError";
 import { prisma } from "#/db";
 
 // ─── Server functions ─────────────────────────────────────────────────────────
@@ -124,7 +124,7 @@ function SettingsPage() {
       </div>
 
       {/* Page-level error */}
-      {!!pageError && <ErrorDisplay error={pageError} onDismiss={() => setPageError(null)} />}
+      {!!pageError && <InlineError error={pageError} onDismiss={() => setPageError(null)} />}
 
       {/* Household people section */}
       <section

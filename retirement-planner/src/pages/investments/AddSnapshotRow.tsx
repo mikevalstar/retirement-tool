@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { Fragment, useState } from "react";
-import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { IconButton } from "#/components/IconButton";
+import { InlineError } from "#/components/InlineError";
 import { DATE_FORMATS, dayjs } from "#/lib/date";
 import { SECTION_ACCENT } from "#/lib/formatters";
 import { inlineInputCls, inlineInputCSS } from "#/lib/panelStyles";
@@ -84,7 +84,7 @@ export function AddSnapshotRow({ accountId, onSaved, onCancel }: { accountId: nu
       {!!error && (
         <tr>
           <td colSpan={4} className="px-2 pb-2">
-            <ErrorDisplay error={error} onDismiss={() => setError(null)} />
+            <InlineError error={error} onDismiss={() => setError(null)} />
           </td>
         </tr>
       )}

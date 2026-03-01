@@ -2,7 +2,7 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { GitCommitHorizontal, Plus, Trash2, TrendingDown } from "lucide-react";
 import { useState } from "react";
 import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { ErrorDisplay } from "#/components/ErrorDisplay";
+import { InlineError } from "#/components/InlineError";
 import { SlidePanel } from "#/components/SlidePanel";
 import { dayjs } from "#/lib/date";
 import { SECTION_ACCENT } from "#/lib/formatters";
@@ -533,7 +533,7 @@ function GlidePathsPage() {
         )}
       </div>
 
-      {!!pageError && <ErrorDisplay error={pageError} onDismiss={() => setPageError(null)} />}
+      {!!pageError && <InlineError error={pageError} onDismiss={() => setPageError(null)} />}
 
       {/* Explainer — always visible */}
       <ExplainerPanel />

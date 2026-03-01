@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { Field } from "#/components/Field";
+import { InlineError } from "#/components/InlineError";
 import { OwnerBadge } from "#/components/OwnerBadge";
 import { SlidePanel } from "#/components/SlidePanel";
 import { DATE_FORMATS, dayjs } from "#/lib/date";
@@ -68,7 +68,7 @@ export function UpdateBalancesPanel({ accounts, onClose, onSaved }: { accounts: 
       {/* Error display */}
       {!!error && (
         <div className="px-5 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
-          <ErrorDisplay error={error} onDismiss={() => setError(null)} />
+          <InlineError error={error} onDismiss={() => setError(null)} />
         </div>
       )}
 
