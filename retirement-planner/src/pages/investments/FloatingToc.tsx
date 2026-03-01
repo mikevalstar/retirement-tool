@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { getAccounts } from "#/serverFns/investments/accountFns";
 
 type AccountItem = Awaited<ReturnType<typeof getAccounts>>[number];
@@ -7,11 +7,15 @@ const ACCENT = "var(--section-investments)";
 
 export function FloatingToc({ accounts }: { accounts: AccountItem[] }) {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
-  const groups = accounts.reduce<Map<string, AccountItem[]>>((m, a) => {
-    if (!m.has(a.owner.name)) m.set(a.owner.name, []);
-    m.get(a.owner.name)?.push(a);
-    return m;
-  }, new Map());
+  const groups = useMemo(
+    () =>
+      accounts.reduce<Map<string, AccountItem[]>>((m, a) => {
+        if (!m.has(a.owner.name)) m.set(a.owner.name, []);
+        m.get(a.owner.name)?.push(a);
+        return m;
+      }, new Map()),
+    [accounts],
+  );
 
   return (
     <div className="sticky top-5 w-40 shrink-0 self-start">
