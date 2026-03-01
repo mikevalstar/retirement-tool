@@ -25,8 +25,9 @@ model Person {
   createdAt DateTime  @default(now())
   // Restrict (Prisma default) — cannot delete a Person who owns accounts.
   // This prevents accidentally nuking investment history via Settings.
-  accounts      Account[]
-  incomeSources IncomeSource[]
+  accounts       Account[]
+  incomeSources  IncomeSource[]
+  cppOasSettings ScenarioCppOas[]
 }
 
 // ─── Account Types ────────────────────────────────────────────────────────────
@@ -150,4 +151,80 @@ model Property {
   mortgageTermRemainingMonths Int?    // Months remaining on mortgage term. Nullable for paid-off properties.
   sortOrder                 Int      @default(0)
   createdAt                 DateTime @default(now())
+
+  housingEvents ScenarioHousingEvent[]
+}
+
+// ─── Scenarios ────────────────────────────────────────────────────────────────
+// A scenario is a named "what-if future" layered on top of today's financial data.
+// Multiple scenarios can be compared side by side and fed to the simulation engine.
+
+model Scenario {
+  id              Int      @id @default(autoincrement())
+  name            String   // e.g. "Conservative", "Retire at 60"
+  retirementYear  Int      // Household retirement year (last person retires)
+  planningEndYear Int      // Year simulation ends (expected end of life for longer-lived person)
+  inflationRate   Float    @default(3.0) // Annual inflation rate (%)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  phases         ScenarioPhase[]
+  contributions  ScenarioContribution[]
+  housingEvents  ScenarioHousingEvent[]
+  cppOasSettings ScenarioCppOas[]
+}
+
+// Ordered spending phases post-retirement. First phase starts at retirementYear.
+// Amounts are in today's dollars — simulation applies inflation.
+model ScenarioPhase {
+  id            Int      @id @default(autoincrement())
+  scenarioId    Int
+  scenario      Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  name          String   // e.g. "Go-Go", "Slow-Go", "No-Go"
+  startYear     Int      // Calendar year this phase begins
+  monthlyAmount Float    // Monthly spending target (today's dollars)
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+}
+
+// Pre-retirement savings contribution waypoints. Step-function: amount stays flat
+// between waypoints. System treats amount as $0 from retirementYear onward.
+model ScenarioContribution {
+  id           Int      @id @default(autoincrement())
+  scenarioId   Int
+  scenario     Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  year         Int      // Calendar year this amount takes effect
+  annualAmount Float    // Total household annual savings contribution (CAD)
+  createdAt    DateTime @default(now())
+
+  @@unique([scenarioId, year])
+}
+
+// Planned property sale event. One per property per scenario.
+model ScenarioHousingEvent {
+  id          Int      @id @default(autoincrement())
+  scenarioId  Int
+  scenario    Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  propertyId  Int
+  property    Property @relation(fields: [propertyId], references: [id])
+  saleYear    Int      // Calendar year of sale
+  netProceeds Float    // Expected net proceeds (CAD)
+  createdAt   DateTime @default(now())
+
+  @@unique([scenarioId, propertyId])
+}
+
+// Per-person CPP and OAS claiming ages within a scenario.
+// CPP: claimable 60–70. OAS: claimable 65–70.
+model ScenarioCppOas {
+  id          Int      @id @default(autoincrement())
+  scenarioId  Int
+  scenario    Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  personId    Int
+  person      Person   @relation(fields: [personId], references: [id])
+  cppClaimAge Int      @default(65) // Age to start CPP (60–70)
+  oasClaimAge Int      @default(65) // Age to start OAS (65–70)
+  createdAt   DateTime @default(now())
+
+  @@unique([scenarioId, personId])
 }

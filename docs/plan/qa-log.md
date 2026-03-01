@@ -182,3 +182,31 @@ A: No — properties are standalone, no owner assignment. Simpler model for this
 
 **Q: What fields for each property?**
 A: Name (free text), estimated value (CAD), mortgage balance (CAD), mortgage rate (% optional — nullable for paid-off properties).
+
+---
+
+## Scenarios - 2026-03-01
+
+**Q: What is a scenario?**
+A: A named "what-if future" layered on top of today's data. Contains: household retirement year, planning end year, inflation rate, savings contribution waypoints (pre-retirement), retirement spending phases (post-retirement), CPP/OAS claiming ages per person, and housing sale events.
+
+**Q: Is there a base/default scenario or must they all be created manually?**
+A: All scenarios are user-created. The simulation always starts from today's data (current account balances, house values) as the shared foundation. Scenarios define future assumptions layered on top.
+
+**Q: Two separate retirement years (one per person) or one household retirement year?**
+A: One household retirement year — the year both people are fully retired. If they retire at different times, use the later date.
+
+**Q: How granular are savings contributions?**
+A: Year-keyed waypoints (sparse step function). User enters 3–4 year/amount pairs representing when contributions change. Stays flat between waypoints. System automatically adds $0 at the retirement year.
+
+**Q: One inflation rate or per-category?**
+A: One global inflation rate per scenario. Applies to spending phase amounts during simulation.
+
+**Q: Do spending phase amounts represent today's dollars or future dollars?**
+A: Today's dollars. The simulation applies inflation when projecting year-by-year spending.
+
+**Q: How many scenarios can be compared at once?**
+A: Exactly two — keeps the compare view simple.
+
+**Q: Is birth year required in Settings for the scenario form?**
+A: Yes — birth year is required in Settings. The CPP/OAS section of the scenario form is blocked (not just prompted) if birth year is missing.

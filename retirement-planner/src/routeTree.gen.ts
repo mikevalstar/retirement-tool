@@ -12,10 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ScenariosIndexRouteImport } from './routes/scenarios/index'
 import { Route as InvestmentsIndexRouteImport } from './routes/investments/index'
 import { Route as IncomeIndexRouteImport } from './routes/income/index'
 import { Route as HousingIndexRouteImport } from './routes/housing/index'
 import { Route as ExpensesIndexRouteImport } from './routes/expenses/index'
+import { Route as ScenariosCompareIndexRouteImport } from './routes/scenarios/compare/index'
+import { Route as ScenariosScenarioIdIndexRouteImport } from './routes/scenarios/$scenarioId/index'
 import { Route as InvestmentsGlidePathsIndexRouteImport } from './routes/investments/glide-paths/index'
 import { Route as InvestmentsAllocationsIndexRouteImport } from './routes/investments/allocations/index'
 import { Route as InvestmentsAccountsIndexRouteImport } from './routes/investments/accounts/index'
@@ -35,6 +38,11 @@ const RssDotxmlRoute = RssDotxmlRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScenariosIndexRoute = ScenariosIndexRouteImport.update({
+  id: '/scenarios/',
+  path: '/scenarios/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InvestmentsIndexRoute = InvestmentsIndexRouteImport.update({
@@ -57,6 +65,17 @@ const ExpensesIndexRoute = ExpensesIndexRouteImport.update({
   path: '/expenses/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ScenariosCompareIndexRoute = ScenariosCompareIndexRouteImport.update({
+  id: '/scenarios/compare/',
+  path: '/scenarios/compare/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScenariosScenarioIdIndexRoute =
+  ScenariosScenarioIdIndexRouteImport.update({
+    id: '/scenarios/$scenarioId/',
+    path: '/scenarios/$scenarioId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const InvestmentsGlidePathsIndexRoute =
   InvestmentsGlidePathsIndexRouteImport.update({
     id: '/investments/glide-paths/',
@@ -94,11 +113,14 @@ export interface FileRoutesByFullPath {
   '/housing/': typeof HousingIndexRoute
   '/income/': typeof IncomeIndexRoute
   '/investments/': typeof InvestmentsIndexRoute
+  '/scenarios/': typeof ScenariosIndexRoute
   '/expenses/categories/': typeof ExpensesCategoriesIndexRoute
   '/income/sources/': typeof IncomeSourcesIndexRoute
   '/investments/accounts/': typeof InvestmentsAccountsIndexRoute
   '/investments/allocations/': typeof InvestmentsAllocationsIndexRoute
   '/investments/glide-paths/': typeof InvestmentsGlidePathsIndexRoute
+  '/scenarios/$scenarioId/': typeof ScenariosScenarioIdIndexRoute
+  '/scenarios/compare/': typeof ScenariosCompareIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -108,11 +130,14 @@ export interface FileRoutesByTo {
   '/housing': typeof HousingIndexRoute
   '/income': typeof IncomeIndexRoute
   '/investments': typeof InvestmentsIndexRoute
+  '/scenarios': typeof ScenariosIndexRoute
   '/expenses/categories': typeof ExpensesCategoriesIndexRoute
   '/income/sources': typeof IncomeSourcesIndexRoute
   '/investments/accounts': typeof InvestmentsAccountsIndexRoute
   '/investments/allocations': typeof InvestmentsAllocationsIndexRoute
   '/investments/glide-paths': typeof InvestmentsGlidePathsIndexRoute
+  '/scenarios/$scenarioId': typeof ScenariosScenarioIdIndexRoute
+  '/scenarios/compare': typeof ScenariosCompareIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -123,11 +148,14 @@ export interface FileRoutesById {
   '/housing/': typeof HousingIndexRoute
   '/income/': typeof IncomeIndexRoute
   '/investments/': typeof InvestmentsIndexRoute
+  '/scenarios/': typeof ScenariosIndexRoute
   '/expenses/categories/': typeof ExpensesCategoriesIndexRoute
   '/income/sources/': typeof IncomeSourcesIndexRoute
   '/investments/accounts/': typeof InvestmentsAccountsIndexRoute
   '/investments/allocations/': typeof InvestmentsAllocationsIndexRoute
   '/investments/glide-paths/': typeof InvestmentsGlidePathsIndexRoute
+  '/scenarios/$scenarioId/': typeof ScenariosScenarioIdIndexRoute
+  '/scenarios/compare/': typeof ScenariosCompareIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -139,11 +167,14 @@ export interface FileRouteTypes {
     | '/housing/'
     | '/income/'
     | '/investments/'
+    | '/scenarios/'
     | '/expenses/categories/'
     | '/income/sources/'
     | '/investments/accounts/'
     | '/investments/allocations/'
     | '/investments/glide-paths/'
+    | '/scenarios/$scenarioId/'
+    | '/scenarios/compare/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -153,11 +184,14 @@ export interface FileRouteTypes {
     | '/housing'
     | '/income'
     | '/investments'
+    | '/scenarios'
     | '/expenses/categories'
     | '/income/sources'
     | '/investments/accounts'
     | '/investments/allocations'
     | '/investments/glide-paths'
+    | '/scenarios/$scenarioId'
+    | '/scenarios/compare'
   id:
     | '__root__'
     | '/'
@@ -167,11 +201,14 @@ export interface FileRouteTypes {
     | '/housing/'
     | '/income/'
     | '/investments/'
+    | '/scenarios/'
     | '/expenses/categories/'
     | '/income/sources/'
     | '/investments/accounts/'
     | '/investments/allocations/'
     | '/investments/glide-paths/'
+    | '/scenarios/$scenarioId/'
+    | '/scenarios/compare/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -182,11 +219,14 @@ export interface RootRouteChildren {
   HousingIndexRoute: typeof HousingIndexRoute
   IncomeIndexRoute: typeof IncomeIndexRoute
   InvestmentsIndexRoute: typeof InvestmentsIndexRoute
+  ScenariosIndexRoute: typeof ScenariosIndexRoute
   ExpensesCategoriesIndexRoute: typeof ExpensesCategoriesIndexRoute
   IncomeSourcesIndexRoute: typeof IncomeSourcesIndexRoute
   InvestmentsAccountsIndexRoute: typeof InvestmentsAccountsIndexRoute
   InvestmentsAllocationsIndexRoute: typeof InvestmentsAllocationsIndexRoute
   InvestmentsGlidePathsIndexRoute: typeof InvestmentsGlidePathsIndexRoute
+  ScenariosScenarioIdIndexRoute: typeof ScenariosScenarioIdIndexRoute
+  ScenariosCompareIndexRoute: typeof ScenariosCompareIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -210,6 +250,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scenarios/': {
+      id: '/scenarios/'
+      path: '/scenarios'
+      fullPath: '/scenarios/'
+      preLoaderRoute: typeof ScenariosIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/investments/': {
@@ -238,6 +285,20 @@ declare module '@tanstack/react-router' {
       path: '/expenses'
       fullPath: '/expenses/'
       preLoaderRoute: typeof ExpensesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scenarios/compare/': {
+      id: '/scenarios/compare/'
+      path: '/scenarios/compare'
+      fullPath: '/scenarios/compare/'
+      preLoaderRoute: typeof ScenariosCompareIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scenarios/$scenarioId/': {
+      id: '/scenarios/$scenarioId/'
+      path: '/scenarios/$scenarioId'
+      fullPath: '/scenarios/$scenarioId/'
+      preLoaderRoute: typeof ScenariosScenarioIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/investments/glide-paths/': {
@@ -286,11 +347,14 @@ const rootRouteChildren: RootRouteChildren = {
   HousingIndexRoute: HousingIndexRoute,
   IncomeIndexRoute: IncomeIndexRoute,
   InvestmentsIndexRoute: InvestmentsIndexRoute,
+  ScenariosIndexRoute: ScenariosIndexRoute,
   ExpensesCategoriesIndexRoute: ExpensesCategoriesIndexRoute,
   IncomeSourcesIndexRoute: IncomeSourcesIndexRoute,
   InvestmentsAccountsIndexRoute: InvestmentsAccountsIndexRoute,
   InvestmentsAllocationsIndexRoute: InvestmentsAllocationsIndexRoute,
   InvestmentsGlidePathsIndexRoute: InvestmentsGlidePathsIndexRoute,
+  ScenariosScenarioIdIndexRoute: ScenariosScenarioIdIndexRoute,
+  ScenariosCompareIndexRoute: ScenariosCompareIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

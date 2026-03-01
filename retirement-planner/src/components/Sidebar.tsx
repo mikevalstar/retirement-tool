@@ -27,7 +27,9 @@ type RegisteredNavPath =
   | "/expenses/categories/"
   | "/income/"
   | "/income/sources/"
-  | "/housing/";
+  | "/housing/"
+  | "/scenarios"
+  | "/scenarios/compare";
 
 type NavChild = { label: string; path: RegisteredNavPath } | { label: string; path: string; unregistered: true };
 
@@ -104,11 +106,8 @@ const NAV: NavSection[] = [
     label: "Scenarios",
     icon: GitBranch,
     color: "var(--section-scenarios)",
-    path: "/scenarios",
-    children: [
-      { label: "Configure", path: "/scenarios/configure", unregistered: true },
-      { label: "Compare", path: "/scenarios/compare", unregistered: true },
-    ],
+    path: "/scenarios/",
+    children: [{ label: "Compare", path: "/scenarios/compare" }],
   },
   {
     id: "simulation",
