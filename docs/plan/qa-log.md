@@ -121,3 +121,22 @@ A: "Through" — allocation continues de-risking past retirement, reaching most 
 
 **Q: One glide path or per-account?**
 A: One portfolio-wide glide path.
+
+---
+
+## Error Display (Ignition-style) - 2026-03-01
+
+**Q: IDE integration — single IDE or multiple?**
+A: Multiple IDEs via dropdown selector (VS Code, Cursor, Zed, Windsurf). Preference stored in localStorage, persisted across sessions.
+
+**Q: Should current URL be shown?**
+A: Yes — display current page URL in error header and include it in copied error text. Helps with reproduction and sharing context.
+
+**Q: Source map support strategy?**
+A: Rely on source maps being available in dev. Graceful fallback if unavailable. Use `error-stack-parser-es` or `stacktracey` for parsing.
+
+**Q: React-specific features (component stack)?**
+A: Out of scope for v1. Can be added later.
+
+**Q: Exportability?**
+A: Yes — all code in `src/lib/error-display/` folder, designed for extraction as standalone package later.
