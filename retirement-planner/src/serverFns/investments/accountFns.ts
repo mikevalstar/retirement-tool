@@ -223,3 +223,54 @@ export const deleteReturn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     return prisma.returnEntry.delete({ where: { id: data.id } });
   });
+
+// ─── Portfolio Chart Data ──────────────────────────────────────────────────────
+
+export type PortfolioChartPoint = { date: string; total: number } & Partial<Record<AccountType, number>>;
+export type PortfolioChartData = { series: PortfolioChartPoint[]; types: AccountType[] };
+
+/**
+ * Build portfolio history chart data server-side.
+ * Returns one data point per unique snapshot date across all accounts.
+ * Each point carries a forward-filled balance per account type and a total.
+ * Only account types with at least one snapshot appear in `types`.
+ */
+export const getPortfolioChartData = createServerFn({ method: "GET" }).handler(async (): Promise<PortfolioChartData> => {
+  const accounts = await prisma.account.findMany({
+    select: {
+      type: true,
+      snapshots: { select: { date: true, balance: true }, orderBy: { date: "asc" } },
+    },
+  });
+
+  const dateSet = new Set<string>();
+  for (const account of accounts) {
+    for (const snap of account.snapshots) {
+      dateSet.add(new Date(snap.date).toISOString().slice(0, 10));
+    }
+  }
+
+  const dates = [...dateSet].sort();
+  if (dates.length === 0) return { series: [], types: [] };
+
+  const types = [...new Set(accounts.map((a) => a.type))];
+
+  const series: PortfolioChartPoint[] = dates.map((date) => {
+    const typeBalances: Partial<Record<AccountType, number>> = {};
+    let total = 0;
+    for (const type of types) {
+      let typeTotal = 0;
+      for (const account of accounts) {
+        if (account.type !== type) continue;
+        // Forward-fill: use the most recent snapshot on or before this date
+        const snap = account.snapshots.filter((s) => new Date(s.date).toISOString().slice(0, 10) <= date).at(-1);
+        if (snap) typeTotal += snap.balance;
+      }
+      typeBalances[type] = typeTotal;
+      total += typeTotal;
+    }
+    return { date, total, ...typeBalances } as PortfolioChartPoint;
+  });
+
+  return { series, types };
+});

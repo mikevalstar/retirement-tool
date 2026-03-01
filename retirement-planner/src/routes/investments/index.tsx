@@ -1,11 +1,14 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { Calendar, LineChart, RefreshCw, TrendingUp, Users } from "lucide-react";
+import { Calendar, LineChart as LineChartIcon, RefreshCw, TrendingUp, Users } from "lucide-react";
 import { useState } from "react";
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { EmptyState } from "#/components/EmptyState";
 import type { AccountType } from "#/generated/prisma/enums";
+import { dayjs } from "#/lib/date";
 import { fmtCAD, fmtDate, SECTION_ACCENT } from "#/lib/formatters";
 import { UpdateBalancesPanel } from "#/pages/investments/UpdateBalancesPanel";
-import { getAccounts, getPeople } from "#/serverFns/investments/accountFns";
+import type { PortfolioChartData } from "#/serverFns/investments/accountFns";
+import { getAccounts, getPeople, getPortfolioChartData } from "#/serverFns/investments/accountFns";
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
@@ -20,13 +23,22 @@ const TYPE_LABEL: Record<AccountType, string> = {
 // Type display order for breakdown table
 const TYPE_ORDER: AccountType[] = ["RRSP", "TFSA", "RRIF", "REGULAR_SAVINGS", "CHEQUING"];
 
+// Chart line color per account type — uses design system section CSS vars as a palette
+const TYPE_CHART_COLOR: Record<AccountType, string> = {
+  RRSP: "var(--section-investments)",
+  TFSA: "var(--section-dashboard)",
+  RRIF: "var(--section-income)",
+  REGULAR_SAVINGS: "var(--section-expenses)",
+  CHEQUING: "var(--section-housing)",
+};
+
 // ─── Route ────────────────────────────────────────────────────────────────────
 
 export const Route = createFileRoute("/investments/")({
   component: InvestmentsDashboardPage,
   loader: async () => {
-    const [accounts, people] = await Promise.all([getAccounts(), getPeople()]);
-    return { accounts, people };
+    const [accounts, people, chartData] = await Promise.all([getAccounts(), getPeople(), getPortfolioChartData()]);
+    return { accounts, people, chartData };
   },
 });
 
@@ -42,6 +54,110 @@ function latestBalance(account: AccountItem): number | null {
 
 function latestSnapshotDate(account: AccountItem): Date | null {
   return account.snapshots[0]?.date ?? null;
+}
+
+interface ChartTooltipProps {
+  active?: boolean;
+  payload?: Array<{ value: number; dataKey: string; stroke: string }>;
+  label?: number;
+}
+
+function PortfolioChartTooltip({ active, payload, label }: ChartTooltipProps) {
+  if (!active || !payload?.length || label == null) return null;
+  const typeEntries = payload.filter((p) => p.dataKey !== "total");
+  const totalEntry = payload.find((p) => p.dataKey === "total");
+  return (
+    <div className="rounded-md px-3 py-2 text-[12px]" style={{ background: "var(--surface-raised)", border: "1px solid var(--border-strong)" }}>
+      <div className="font-medium mb-2" style={{ color: "var(--text-muted)" }}>
+        {dayjs(label).format("MMM D, YYYY")}
+      </div>
+      {typeEntries.map((p) => (
+        <div key={p.dataKey} className="flex justify-between gap-4 mb-0.5">
+          <span style={{ color: p.stroke }}>{TYPE_LABEL[p.dataKey as AccountType]}</span>
+          <span className="num" style={{ color: "var(--text)" }}>
+            {fmtCAD(p.value)}
+          </span>
+        </div>
+      ))}
+      {totalEntry && (
+        <div className="flex justify-between gap-4 mt-1 pt-1" style={{ borderTop: "1px solid var(--border)" }}>
+          <span style={{ color: "var(--text-muted)" }}>Total</span>
+          <span className="num font-medium" style={{ color: "var(--text)" }}>
+            {fmtCAD(totalEntry.value)}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PortfolioHistoryChart({ data }: { data: PortfolioChartData }) {
+  if (data.series.length === 0) return null;
+
+  const timestamps = data.series.map((d) => new Date(d.date).getTime());
+  const xMin = Math.min(...timestamps);
+  const xMax = Math.max(...timestamps);
+  const domainMin = Math.max(0, Math.floor(Math.min(...data.series.map((d) => d.total)) * 0.9));
+
+  const chartPoints = data.series.map((d) => ({ ...d, ts: new Date(d.date).getTime() }));
+
+  return (
+    <div className="rounded-lg px-4 pt-4 pb-3" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+      <div className="text-[11px] uppercase tracking-wide font-medium mb-3" style={{ color: "var(--text-dim)" }}>
+        Portfolio History
+      </div>
+      <ResponsiveContainer width="100%" height={200}>
+        <LineChart data={chartPoints} margin={{ top: 4, right: 16, left: 0, bottom: 4 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+          <XAxis
+            dataKey="ts"
+            type="number"
+            domain={[xMin, xMax]}
+            tickFormatter={(v) => dayjs(v).format("MMM YY")}
+            tick={{ fill: "var(--text-dim)", fontSize: 11 }}
+            axisLine={{ stroke: "var(--border)" }}
+            tickLine={false}
+            tickCount={6}
+          />
+          <YAxis
+            domain={[domainMin, "auto"]}
+            tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+            tick={{ fill: "var(--text-dim)", fontSize: 11 }}
+            axisLine={false}
+            tickLine={false}
+            width={50}
+          />
+          <Tooltip content={<PortfolioChartTooltip />} />
+          {data.types.map((type) => (
+            <Line
+              key={type}
+              type="monotone"
+              dataKey={type}
+              stroke={TYPE_CHART_COLOR[type]}
+              strokeWidth={1.5}
+              dot={false}
+              isAnimationActive={false}
+              connectNulls
+            />
+          ))}
+          <Line type="monotone" dataKey="total" stroke="var(--text)" strokeWidth={2} strokeDasharray="5 3" dot={false} isAnimationActive={false} connectNulls />
+        </LineChart>
+      </ResponsiveContainer>
+      {/* Mini legend */}
+      <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3">
+        {data.types.map((type) => (
+          <div key={type} className="flex items-center gap-1.5 text-[11px]" style={{ color: "var(--text-dim)" }}>
+            <div className="w-3 h-[2px]" style={{ backgroundColor: TYPE_CHART_COLOR[type] }} />
+            {TYPE_LABEL[type]}
+          </div>
+        ))}
+        <div className="flex items-center gap-1.5 text-[11px]" style={{ color: "var(--text-dim)" }}>
+          <div className="w-3 h-[2px]" style={{ backgroundColor: "var(--text)", opacity: 0.5 }} />
+          Total
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
@@ -130,7 +246,7 @@ function SectionCard({
 
 function InvestmentsDashboardPage() {
   const router = useRouter();
-  const { accounts, people } = Route.useLoaderData();
+  const { accounts, people, chartData } = Route.useLoaderData();
   const [updatePanelOpen, setUpdatePanelOpen] = useState(false);
 
   // ── Derived totals ──────────────────────────────────────────────────────────
@@ -300,6 +416,9 @@ function InvestmentsDashboardPage() {
               </div>
             )}
 
+            {/* ── Portfolio History Chart ── */}
+            {chartData.series.length > 1 && <PortfolioHistoryChart data={chartData} />}
+
             {/* ── Section links ── */}
             <div>
               <div className="text-[11px] font-medium uppercase tracking-[0.08em] mb-[10px]" style={{ color: "var(--text-dim)" }}>
@@ -316,7 +435,7 @@ function InvestmentsDashboardPage() {
                 />
                 <SectionCard
                   to="/investments/allocations"
-                  icon={LineChart}
+                  icon={LineChartIcon}
                   label="Allocations"
                   sub="Set equity / fixed income / cash targets per account"
                   accent={SECTION_ACCENT}
