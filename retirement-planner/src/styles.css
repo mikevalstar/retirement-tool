@@ -80,6 +80,16 @@ body {
   height: 100%;
 }
 
+/* ─── Number input spinners ──────────────────────────────────────────────── */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 /* ─── Number typography ───────────────────────────────────────────────────── */
 /* Apply to any element showing financial figures */
 .num {
