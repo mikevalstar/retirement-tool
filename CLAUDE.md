@@ -27,6 +27,12 @@ This is a collaborative project — treat the developer as a peer, not a client.
 
 ---
 
+## Shell / Environment Notes
+
+- **Always use absolute paths with `cd`.** The shell has zoxide installed which intercepts `cd` and breaks on multi-segment relative paths (e.g. `cd retirement-planner/src` fails). Use full absolute paths instead: `cd /Users/mikevalstar/projects/retirement-tool/retirement-planner`.
+
+---
+
 ## Commands
 
 All commands run from `retirement-planner/`:
@@ -43,7 +49,7 @@ pnpm check        # Biome lint + format check (run this to catch issues)
 
 **Type-check** (no dedicated script — use tsc directly):
 ```bash
-cd retirement-planner && npx tsc --noEmit
+cd /Users/mikevalstar/projects/retirement-tool/retirement-planner && npx tsc --noEmit
 ```
 
 **Database:**

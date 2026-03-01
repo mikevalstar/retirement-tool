@@ -27,6 +27,11 @@ The app should serve both modes well: fast and frictionless for the monthly rout
   - Simulation → bright cyan (the "payoff" section, visually emphasized)
 - **Typography**: Monospace font for all numbers (easier to scan columns). Proportional font for everything else.
 
+### Browser Identity
+
+- The app uses a non-default favicon to avoid starter-template branding.
+- Favicon style: dark rounded square with a cyan-to-bright-cyan growth line, matching the app's primary accent and "retirement trajectory" mental model.
+
 ---
 
 ## Layout Shell

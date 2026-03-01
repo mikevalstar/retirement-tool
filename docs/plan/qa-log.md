@@ -75,3 +75,49 @@ A: Floating TOC panel on right edge of page — account names as jump links, gro
 
 **Q: Delete behavior?**
 A: Immediate, no confirmation for both accounts and sub-records (snapshots, return entries). Audience of one — no guard rails.
+
+---
+
+## UI Design (Overall) - 2026-03-01
+
+**Q: Should the app keep the default starter favicon?**
+A: No. Use a custom favicon aligned with the dark/cyan visual system: dark rounded tile plus cyan trajectory line to reinforce the app's identity.
+
+---
+
+## Investments Dashboard - 2026-03-01
+
+**Q: Include Chequing accounts in total portfolio value on the dashboard?**
+A: Yes — include all accounts in the total.
+
+**Q: What does the dashboard show?**
+A: Four stat cards (total, Person A, Person B, last updated), account type breakdown table, weighted allocation bar (only if allocations are configured), quick actions (Update Balances button, sub-section links).
+
+---
+
+## Investment Allocations - 2026-03-01
+
+**Q: Allocation granularity — 3 buckets or 5?**
+A: 3 buckets: Equities / Fixed Income / Cash. Simpler, still practical.
+
+**Q: Allocation level — per account or portfolio-wide?**
+A: Per account. Different accounts serve different roles (e.g., RRSP = all equities, savings = all cash).
+
+**Q: Chequing accounts in the allocations page?**
+A: Excluded — implicitly 100% Cash, no configuration needed.
+
+**Q: Are allocations pre-populated or blank when first set?**
+A: Always blank. User enters from scratch.
+
+---
+
+## Investment Glide Paths - 2026-03-01
+
+**Q: Year-based or age-based waypoints?**
+A: Year-based. Stays correct if retirement target year changes.
+
+**Q: "To" retirement or "through" retirement glide path?**
+A: "Through" — allocation continues de-risking past retirement, reaching most conservative point around age 80–85. Matches major Canadian target-date fund approach. Page includes an explainer so the user understands why the path extends beyond retirement.
+
+**Q: One glide path or per-account?**
+A: One portfolio-wide glide path.

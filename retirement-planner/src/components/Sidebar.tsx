@@ -190,7 +190,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         }}>
         {/* App mark */}
         <div className="flex items-center gap-2 min-w-0">
-          <div className="w-5 h-5 rounded shrink-0" style={{ background: "linear-gradient(135deg, var(--section-dashboard) 0%, var(--accent) 100%)" }} />
+          <img src="/favicon.svg" alt="Retirement Planner" className="w-5 h-5 rounded shrink-0" />
           {!collapsed && (
             <span className="text-[12.5px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis tracking-[-0.01em]" style={{ color: "var(--text)" }}>
               Retirement Planner
