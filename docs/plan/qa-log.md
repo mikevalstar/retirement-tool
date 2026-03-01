@@ -153,3 +153,19 @@ A: Out of scope for v1. Can be added later.
 
 **Q: Exportability?**
 A: Yes — all code in `src/lib/error-display/` folder, designed for extraction as standalone package later.
+
+---
+
+## Income - 2026-03-01
+
+**Q: What fields should income sources capture?**
+A: Just name, owner (person), amount, and frequency (Annual/Monthly). Deliberately simple — no dates, no tax treatment, no growth projections.
+
+**Q: How should CPP/OAS projections be determined?**
+A: Auto-calculated from birth year. User can adjust assumed claim age (default 65) in Settings. If birth year not configured, show prompt instead of amounts.
+
+**Q: Should pensions be tracked as income sources?**
+A: No — CPP/OAS projections are dashboard-only. Income sources are for active employment income only.
+
+**Q: What about OAS residence history?**
+A: Full OAS requires 40 years residence. Add optional field on Person for residence years — default to 40 (assume full) if not set.
