@@ -1,7 +1,7 @@
 import { parse } from "error-stack-parser-es";
 import type { ParsedError, StackFrame } from "./types";
 
-const INTERNAL_PATTERNS = [/node_modules/, /__test__/, /\.test\./, /\.spec\./];
+const INTERNAL_PATTERNS = [/node_modules/, /__test__/, /\.test\./, /\.spec\./, /nitro/, /vite/, /@tanstack/, /\.nitro/];
 
 const NATIVE_PATTERNS = [/^native/, /^eval$/, /^\w+$/];
 
@@ -27,6 +27,20 @@ export function extractError(error: unknown): { type: string; message: string; s
   return { type: "Unknown", message: String(error) };
 }
 
+function cleanFilePath(filePath: string): string {
+  if (!filePath) return filePath;
+
+  // Remove full URLs like http://localhost:3000/src/...
+  let cleaned = filePath.replace(/^https?:\/\/[^/]+/, "");
+
+  // Remove leading slashes for display
+  if (cleaned.startsWith("/")) {
+    cleaned = cleaned.slice(1);
+  }
+
+  return cleaned;
+}
+
 export function parseStack(error: Error | undefined): StackFrame[] {
   if (!error) return [];
 
@@ -34,9 +48,10 @@ export function parseStack(error: Error | undefined): StackFrame[] {
     const parsed = parse(error);
 
     return parsed.map((frame) => {
-      const fileName = frame.fileName || "";
-      const isNative = NATIVE_PATTERNS.some((p) => p.test(fileName)) || false;
-      const isInternal = INTERNAL_PATTERNS.some((p) => p.test(fileName));
+      const rawFileName = frame.fileName || "";
+      const fileName = cleanFilePath(rawFileName);
+      const isNative = NATIVE_PATTERNS.some((p) => p.test(rawFileName)) || false;
+      const isInternal = INTERNAL_PATTERNS.some((p) => p.test(rawFileName));
 
       return {
         file: fileName,
@@ -62,12 +77,13 @@ function fallbackParseStack(stack: string | undefined): StackFrame[] {
     const match = line.match(/^\s*at\s+(?:(.+?)\s+\()?(.+?):(\d+):(\d+)\)?$/);
     if (match) {
       const functionName = match[1] || "<anonymous>";
-      const file = match[2] || "";
+      const rawFile = match[2] || "";
+      const file = cleanFilePath(rawFile);
       const lineNum = parseInt(match[3], 10) || 0;
       const col = parseInt(match[4], 10) || 0;
 
-      const isNative = NATIVE_PATTERNS.some((p) => p.test(file));
-      const isInternal = INTERNAL_PATTERNS.some((p) => p.test(file));
+      const isNative = NATIVE_PATTERNS.some((p) => p.test(rawFile));
+      const isInternal = INTERNAL_PATTERNS.some((p) => p.test(rawFile));
 
       frames.push({
         file,

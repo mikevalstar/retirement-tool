@@ -23,10 +23,11 @@ export function StackFrameRow({ frame, isUserCode, projectRoot, onToggle }: Stac
 
   return (
     <div style={isUserCode ? frameRowStyles.userCodeContainer : frameRowStyles.internalContainer}>
-      <button type="button" style={frameRowStyles.header} onClick={handleToggleCode} onKeyDown={(e) => e.key === "Enter" && handleToggleCode()}>
-        <span style={frameRowStyles.expandIcon}>{showCode ? <ChevronDown size={12} /> : <ChevronRight size={12} />}</span>
-        <span style={frameRowStyles.functionName}>{frame.functionName}</span>
-        <span style={frameRowStyles.separator}>at</span>
+      <div style={frameRowStyles.row}>
+        <button type="button" style={frameRowStyles.header} onClick={handleToggleCode} onKeyDown={(e) => e.key === "Enter" && handleToggleCode()}>
+          <span style={frameRowStyles.expandIcon}>{showCode ? <ChevronDown size={12} /> : <ChevronRight size={12} />}</span>
+          <span style={frameRowStyles.functionName}>{frame.functionName}</span>
+        </button>
         {frame.file && (
           <span style={frameRowStyles.fileInfo}>
             <span style={frameRowStyles.filePath}>{displayPath || frame.file}</span>
@@ -34,12 +35,12 @@ export function StackFrameRow({ frame, isUserCode, projectRoot, onToggle }: Stac
           </span>
         )}
         {frame.isNative && <span style={frameRowStyles.nativeLabel}>[native]</span>}
-      </button>
-      {frame.file && frame.line > 0 && (
-        <button type="button" style={frameRowStyles.ideButton} onClick={handleOpenInIDE} title={`Open in ${getStoredIDE()}`}>
-          <ExternalLink size={12} />
-        </button>
-      )}
+        {frame.file && frame.line > 0 && (
+          <button type="button" style={frameRowStyles.ideButton} onClick={handleOpenInIDE} title={`Open in ${getStoredIDE()}`}>
+            <ExternalLink size={12} />
+          </button>
+        )}
+      </div>
       {showCode && frame.file && frame.line > 0 && (
         <div style={frameRowStyles.codeWrapper}>
           <CodeFrame filePath={frame.file} line={frame.line} column={frame.column} />
@@ -52,62 +53,52 @@ export function StackFrameRow({ frame, isUserCode, projectRoot, onToggle }: Stac
 const frameRowStyles = {
   userCodeContainer: {
     borderBottom: "1px solid var(--border)",
-    position: "relative" as const,
-    display: "flex",
-    alignItems: "flex-start",
     background: "transparent",
   },
   internalContainer: {
     borderBottom: "1px solid var(--border)",
-    position: "relative" as const,
-    display: "flex",
-    alignItems: "flex-start",
     background: "var(--surface)",
     opacity: 0.8,
+  },
+  row: {
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    padding: "8px 12px",
+    minWidth: 0,
   },
   header: {
     display: "flex",
     alignItems: "center",
-    gap: 8,
-    padding: "10px 12px",
+    gap: 6,
     cursor: "pointer",
-    transition: "background 0.1s",
     background: "transparent",
     border: "none",
-    flex: 1,
-    textAlign: "left" as const,
+    padding: 0,
     fontFamily: "var(--font-sans)",
     fontSize: "inherit",
     color: "inherit",
-    minWidth: 0,
+    flexShrink: 0,
   },
   expandIcon: {
     color: "var(--text-dim)",
-    flexShrink: 0,
-    width: 12,
     display: "flex",
+    alignItems: "center",
   },
   functionName: {
     fontFamily: "var(--font-mono)",
     fontSize: 12,
     color: "var(--text)",
-    maxWidth: 200,
+    maxWidth: 180,
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap" as const,
-    flexShrink: 0,
-  },
-  separator: {
-    fontSize: 11,
-    color: "var(--text-dim)",
-    flexShrink: 0,
   },
   fileInfo: {
-    display: "inline-flex",
+    display: "flex",
     alignItems: "center",
     fontFamily: "var(--font-mono)",
     fontSize: 12,
-    color: "var(--accent)",
     minWidth: 0,
     flex: 1,
   },
@@ -125,16 +116,14 @@ const frameRowStyles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: "6px 8px",
-    marginTop: 6,
-    marginRight: 8,
+    padding: "4px 6px",
     background: "var(--surface-raised)",
     border: "1px solid var(--border)",
     borderRadius: 4,
     cursor: "pointer",
     color: "var(--text-muted)",
     flexShrink: 0,
-    transition: "background 0.15s, color 0.15s",
+    marginLeft: "auto",
   },
   nativeLabel: {
     fontSize: 10,
@@ -144,7 +133,6 @@ const frameRowStyles = {
     flexShrink: 0,
   },
   codeWrapper: {
-    padding: "0 12px 12px 32px",
-    width: "100%",
+    padding: "0 12px 12px 12px",
   },
 };

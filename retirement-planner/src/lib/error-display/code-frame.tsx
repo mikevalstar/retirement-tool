@@ -11,7 +11,8 @@ export function CodeFrame({ filePath, line, column = 1, sourceCode, contextLines
 
     const fetchSource = async () => {
       try {
-        const response = await fetch(filePath);
+        const url = filePath.startsWith("src/") ? `/${filePath}` : filePath;
+        const response = await fetch(url);
         if (!response.ok) throw new Error("Not found");
         const text = await response.text();
         setCode(text);
@@ -27,7 +28,7 @@ export function CodeFrame({ filePath, line, column = 1, sourceCode, contextLines
 
   if (loading) {
     return (
-      <div style={codeFrameStyles.loading}>
+      <div style={styles.loading}>
         <span>Loading source...</span>
       </div>
     );
@@ -35,7 +36,7 @@ export function CodeFrame({ filePath, line, column = 1, sourceCode, contextLines
 
   if (error || !code) {
     return (
-      <div style={codeFrameStyles.error}>
+      <div style={styles.error}>
         <span>Unable to load source file</span>
       </div>
     );
@@ -45,56 +46,48 @@ export function CodeFrame({ filePath, line, column = 1, sourceCode, contextLines
   const startLine = Math.max(1, line - contextLines);
   const endLine = Math.min(lines.length, line + contextLines);
   const displayLines = lines.slice(startLine - 1, endLine);
-  const lineNumberWidth = String(endLine).length;
 
   return (
-    <div style={codeFrameStyles.container}>
-      <div style={codeFrameStyles.header}>
-        <span style={codeFrameStyles.filePath}>{filePath}</span>
-        <span style={codeFrameStyles.location}>
+    <div style={styles.container}>
+      <div style={styles.header}>
+        <span style={styles.filePath}>{filePath}</span>
+        <span style={styles.location}>
           line {line}, col {column}
         </span>
       </div>
-      <pre style={codeFrameStyles.code}>
-        <code>
-          {displayLines.map((codeLine, idx) => {
-            const lineNum = startLine + idx;
-            const isErrorLine = lineNum === line;
-            return (
-              <div
-                key={lineNum}
-                style={{
-                  ...codeFrameStyles.line,
-                  ...(isErrorLine ? codeFrameStyles.errorLine : {}),
-                }}>
-                <span style={codeFrameStyles.lineNumber(lineNumberWidth)}>{lineNum}</span>
-                <span style={codeFrameStyles.lineContent}>{codeLine || " "}</span>
-              </div>
-            );
-          })}
-        </code>
-      </pre>
+      <div style={styles.codeWrapper}>
+        {displayLines.map((codeLine, idx) => {
+          const lineNum = startLine + idx;
+          const isErrorLine = lineNum === line;
+          return (
+            <div key={lineNum} style={{ ...styles.line, ...(isErrorLine ? styles.errorLine : {}) }}>
+              <span style={styles.lineNum}>{lineNum}</span>
+              <span style={styles.lineContent}>{codeLine || " "}</span>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-const codeFrameStyles = {
+const styles = {
   container: {
     background: "var(--surface)",
-    borderRadius: 4,
+    borderRadius: 6,
     overflow: "hidden",
-    margin: "4px 0",
+    border: "1px solid var(--border)",
   },
   header: {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: "6px 10px",
+    padding: "6px 12px",
     background: "var(--surface-raised)",
     borderBottom: "1px solid var(--border)",
   },
   filePath: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: "var(--font-mono)",
     color: "var(--text-muted)",
     overflow: "hidden",
@@ -108,49 +101,58 @@ const codeFrameStyles = {
     flexShrink: 0,
     marginLeft: 12,
   },
-  code: {
-    margin: 0,
+  codeWrapper: {
     padding: "8px 0",
-    fontSize: 11,
-    fontFamily: "var(--font-mono)",
-    lineHeight: 1.6,
     overflow: "auto",
-    maxHeight: 200,
+    maxHeight: 180,
   },
   line: {
     display: "flex",
-    padding: "0 10px",
-    transition: "background 0.1s",
+    padding: "0 12px",
+    lineHeight: 1.5,
   },
   errorLine: {
-    background: "color-mix(in srgb, var(--color-negative) 12%, transparent)",
-    borderLeft: "3px solid var(--color-negative)",
-    marginLeft: "-3px",
+    background: "color-mix(in srgb, var(--color-negative) 15%, transparent)",
   },
-  lineNumber: (width: number) => ({
-    display: "inline-block",
-    width: width * 8 + 12,
-    minWidth: 24,
+  lineNum: {
+    display: "block",
+    width: 32,
+    minWidth: 32,
     textAlign: "right" as const,
     paddingRight: 12,
+    marginRight: 8,
     color: "var(--text-dim)",
+    fontFamily: "var(--font-mono)",
+    fontSize: 11,
     userSelect: "none" as const,
     flexShrink: 0,
-  }),
+    borderRight: "1px solid var(--border)",
+  },
   lineContent: {
+    fontFamily: "var(--font-mono)",
+    fontSize: 11,
     color: "var(--text)",
     whiteSpace: "pre" as const,
+    minWidth: 0,
   },
   loading: {
-    padding: "12px 16px",
-    fontSize: 11,
+    padding: "16px",
+    fontSize: 12,
     color: "var(--text-dim)",
     fontStyle: "italic" as const,
+    textAlign: "center" as const,
+    background: "var(--surface)",
+    borderRadius: 6,
+    border: "1px solid var(--border)",
   },
   error: {
-    padding: "12px 16px",
-    fontSize: 11,
+    padding: "16px",
+    fontSize: 12,
     color: "var(--text-muted)",
     fontStyle: "italic" as const,
+    textAlign: "center" as const,
+    background: "var(--surface)",
+    borderRadius: 6,
+    border: "1px solid var(--border)",
   },
 };

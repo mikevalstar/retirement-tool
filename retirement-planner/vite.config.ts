@@ -10,13 +10,21 @@ import tsconfigPaths from "vite-tsconfig-paths";
 const config = defineConfig({
   plugins: [
     devtools(),
-    nitro({ rollupConfig: { external: [/^@sentry\//] } }),
+    nitro({
+      rollupConfig: { external: [/^@sentry\//] },
+    }),
     contentCollections(),
     tsconfigPaths({ projects: ["./tsconfig.json"] }),
     tailwindcss(),
     tanstackStart(),
     viteReact(),
   ],
+  build: {
+    sourcemap: true,
+  },
+  server: {
+    sourcemapIgnoreList: false,
+  },
 });
 
 export default config;
