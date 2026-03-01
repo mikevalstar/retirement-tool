@@ -48,6 +48,12 @@ model Account {
   owner     Person      @relation(fields: [ownerId], references: [id])
   createdAt DateTime    @default(now())
 
+  // Target asset allocation — null means not yet configured.
+  // All three should sum to 100 when set. CHEQUING accounts are excluded from allocation UI.
+  equityPct      Float?
+  fixedIncomePct Float?
+  cashPct        Float?
+
   snapshots BalanceSnapshot[]
   returns   ReturnEntry[]
 }
