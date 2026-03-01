@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import type { AccountType } from "#/generated/prisma/enums";
+import { NO_RETURNS_TYPES, SECTION_ACCENT } from "#/lib/formatters";
 import { thCls, thCSS } from "#/lib/tableStyles";
 import type { getAccounts, getReturns, getSnapshots } from "#/serverFns/investments/accountFns";
 import { AddReturnRow } from "./AddReturnRow";
@@ -11,10 +11,6 @@ import { SnapshotLine } from "./SnapshotLine";
 type AccountItem = Awaited<ReturnType<typeof getAccounts>>[number];
 type SnapshotItem = Awaited<ReturnType<typeof getSnapshots>>[number];
 type ReturnItem = Awaited<ReturnType<typeof getReturns>>[number];
-
-const ACCENT = "var(--section-investments)";
-
-const NO_RETURNS = new Set<AccountType>(["CHEQUING", "REGULAR_SAVINGS"]);
 
 const stubBtnCls = "flex items-center gap-1 py-[3px] px-2 rounded text-[11px] bg-transparent cursor-pointer";
 const stubBtnCSS: React.CSSProperties = { border: "1px solid var(--border)", color: "var(--text-dim)", fontFamily: "inherit" };
@@ -40,7 +36,7 @@ export function AccountDetail({
 }) {
   const [showAddSnapshot, setShowAddSnapshot] = useState(false);
   const [showAddReturn, setShowAddReturn] = useState(false);
-  const showReturns = !NO_RETURNS.has(account.type);
+  const showReturns = !NO_RETURNS_TYPES.has(account.type);
 
   return (
     <tr>
@@ -55,7 +51,7 @@ export function AccountDetail({
               <button
                 type="button"
                 className={stubBtnCls}
-                style={{ ...stubBtnCSS, ...(showAddSnapshot ? { color: ACCENT, borderColor: ACCENT } : {}) }}
+                style={{ ...stubBtnCSS, ...(showAddSnapshot ? { color: SECTION_ACCENT, borderColor: SECTION_ACCENT } : {}) }}
                 onClick={() => setShowAddSnapshot((v) => !v)}>
                 <Plus size={10} />
                 Add Snapshot
@@ -115,7 +111,7 @@ export function AccountDetail({
                 <button
                   type="button"
                   className={stubBtnCls}
-                  style={{ ...stubBtnCSS, ...(showAddReturn ? { color: ACCENT, borderColor: ACCENT } : {}) }}
+                  style={{ ...stubBtnCSS, ...(showAddReturn ? { color: SECTION_ACCENT, borderColor: SECTION_ACCENT } : {}) }}
                   onClick={() => setShowAddReturn((v) => !v)}>
                   <Plus size={10} />
                   Add

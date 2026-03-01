@@ -1,12 +1,9 @@
 import { Trash2 } from "lucide-react";
 import { IconButton } from "#/components/IconButton";
+import { fmtCAD, fmtDate } from "#/lib/formatters";
 import type { getSnapshots } from "#/serverFns/investments/accountFns";
 
 type SnapshotItem = Awaited<ReturnType<typeof getSnapshots>>[number];
-
-const fmtCAD = (n: number) => new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 }).format(n);
-
-const fmtDate = (d: Date | string) => new Date(d).toLocaleDateString("en-CA", { month: "short", day: "numeric", year: "numeric" });
 
 export function SnapshotLine({ snap, onDelete }: { snap: SnapshotItem; onDelete: (id: number) => void }) {
   return (

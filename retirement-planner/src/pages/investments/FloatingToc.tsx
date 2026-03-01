@@ -1,9 +1,8 @@
 import { useMemo, useState } from "react";
+import { SECTION_ACCENT } from "#/lib/formatters";
 import type { getAccounts } from "#/serverFns/investments/accountFns";
 
 type AccountItem = Awaited<ReturnType<typeof getAccounts>>[number];
-
-const ACCENT = "var(--section-investments)";
 
 export function FloatingToc({ accounts }: { accounts: AccountItem[] }) {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
@@ -25,7 +24,7 @@ export function FloatingToc({ accounts }: { accounts: AccountItem[] }) {
         </div>
         {[...groups.entries()].map(([owner, accs]) => (
           <div key={owner}>
-            <div className="text-[10px] font-semibold uppercase tracking-[0.05em] px-3 pt-1 pb-0.5" style={{ color: ACCENT }}>
+            <div className="text-[10px] font-semibold uppercase tracking-[0.05em] px-3 pt-1 pb-0.5" style={{ color: SECTION_ACCENT }}>
               {owner}
             </div>
             {accs.map((a) => (

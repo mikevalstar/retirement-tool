@@ -1,10 +1,9 @@
 import { Trash2 } from "lucide-react";
 import { IconButton } from "#/components/IconButton";
+import { fmtReturn } from "#/lib/formatters";
 import type { getReturns } from "#/serverFns/investments/accountFns";
 
 type ReturnItem = Awaited<ReturnType<typeof getReturns>>[number];
-
-const fmtReturn = (pct: number) => `${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%`;
 
 export function ReturnLine({ ret, onDelete }: { ret: ReturnItem; onDelete: (id: number) => void }) {
   const pct = ret.returnPercent;

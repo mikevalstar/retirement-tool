@@ -7,16 +7,13 @@ import { ExpandChevron } from "#/components/ExpandChevron";
 import { IconButton } from "#/components/IconButton";
 import { OwnerBadge } from "#/components/OwnerBadge";
 import type { AccountType } from "#/generated/prisma/enums";
+import { fmtCAD, fmtDate, fmtReturn, NO_RETURNS_TYPES, SECTION_ACCENT } from "#/lib/formatters";
 import { thCls, thCSS } from "#/lib/tableStyles";
 import { AccountDetail } from "#/pages/investments/AccountDetail";
 import { AddAccountPanel } from "#/pages/investments/AddAccountPanel";
 import { FloatingToc } from "#/pages/investments/FloatingToc";
 import { UpdateBalancesPanel } from "#/pages/investments/UpdateBalancesPanel";
 import { deleteAccount, deleteReturn, deleteSnapshot, getAccounts, getPeople, getReturns, getSnapshots } from "#/serverFns/investments/accountFns";
-
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const ACCENT = "var(--section-investments)";
 
 const TYPE_LABEL: Record<AccountType, string> = {
   TFSA: "TFSA",
@@ -25,26 +22,6 @@ const TYPE_LABEL: Record<AccountType, string> = {
   REGULAR_SAVINGS: "Savings",
   CHEQUING: "Chequing",
 };
-
-const NO_RETURNS = new Set<AccountType>(["CHEQUING", "REGULAR_SAVINGS"]);
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const fmtCAD = (n: number) =>
-  new Intl.NumberFormat("en-CA", {
-    style: "currency",
-    currency: "CAD",
-    maximumFractionDigits: 0,
-  }).format(n);
-
-const fmtDate = (d: Date | string) =>
-  new Date(d).toLocaleDateString("en-CA", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-
-const fmtReturn = (pct: number) => `${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%`;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -169,7 +146,7 @@ function InvestmentAccountsPage() {
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-[10px]">
-              <div className="w-1 h-5 rounded-[2px]" style={{ backgroundColor: ACCENT }} />
+              <div className="w-1 h-5 rounded-[2px]" style={{ backgroundColor: SECTION_ACCENT }} />
               <h1 className="m-0 text-lg font-semibold tracking-[-0.02em]" style={{ color: "var(--text)" }}>
                 Investment Accounts
               </h1>
@@ -194,9 +171,9 @@ function InvestmentAccountsPage() {
                 onClick={() => setPanelOpen(true)}
                 className="flex items-center gap-1.5 py-1.5 px-[14px] rounded-md text-[12.5px] font-medium cursor-pointer"
                 style={{
-                  background: `color-mix(in srgb, ${ACCENT} 12%, transparent)`,
-                  border: `1px solid color-mix(in srgb, ${ACCENT} 30%, transparent)`,
-                  color: ACCENT,
+                  background: `color-mix(in srgb, ${SECTION_ACCENT} 12%, transparent)`,
+                  border: `1px solid color-mix(in srgb, ${SECTION_ACCENT} 30%, transparent)`,
+                  color: SECTION_ACCENT,
                   fontFamily: "inherit",
                 }}>
                 <Plus size={13} />
@@ -211,10 +188,10 @@ function InvestmentAccountsPage() {
           {/* Accounts table */}
           {accounts.length === 0 ? (
             <EmptyState
-              icon={<TrendingUp size={20} style={{ color: ACCENT }} />}
+              icon={<TrendingUp size={20} style={{ color: SECTION_ACCENT }} />}
               title="No accounts yet"
               description='Click "Add Account" to add your first investment account.'
-              accent={ACCENT}
+              accent={SECTION_ACCENT}
             />
           ) : (
             <div className="rounded-lg overflow-hidden" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
@@ -267,7 +244,7 @@ function InvestmentAccountsPage() {
                           style={{
                             borderTop: "1px solid var(--border)",
                             background: isExpanded
-                              ? `color-mix(in srgb, ${ACCENT} 6%, transparent)`
+                              ? `color-mix(in srgb, ${SECTION_ACCENT} 6%, transparent)`
                               : hoveredRowId === account.id
                                 ? "var(--surface-raised)"
                                 : "transparent",
@@ -305,7 +282,7 @@ function InvestmentAccountsPage() {
 
                           {/* Return % */}
                           <td className="py-[10px] px-3 text-right num">
-                            {ret && !NO_RETURNS.has(account.type) ? (
+                            {ret && !NO_RETURNS_TYPES.has(account.type) ? (
                               <span style={{ color: ret.returnPercent >= 0 ? "var(--color-positive)" : "var(--color-negative)" }}>
                                 {fmtReturn(ret.returnPercent)}
                               </span>

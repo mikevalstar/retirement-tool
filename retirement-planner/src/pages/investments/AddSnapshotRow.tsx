@@ -2,17 +2,9 @@ import { X } from "lucide-react";
 import { Fragment, useState } from "react";
 import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { IconButton } from "#/components/IconButton";
+import { SECTION_ACCENT } from "#/lib/formatters";
+import { inlineInputCls, inlineInputCSS } from "#/lib/panelStyles";
 import { createSnapshot } from "#/serverFns/investments/accountFns";
-
-const ACCENT = "var(--section-investments)";
-
-const inlineInputCls = "rounded py-1 px-1.5 text-xs outline-none box-border w-full";
-const inlineInputCSS: React.CSSProperties = {
-  background: "var(--app-bg)",
-  border: "1px solid var(--border)",
-  color: "var(--text)",
-  fontFamily: "inherit",
-};
 
 export function AddSnapshotRow({ accountId, onSaved, onCancel }: { accountId: number; onSaved: () => void; onCancel: () => void }) {
   const today = new Date().toISOString().slice(0, 10);
@@ -49,7 +41,7 @@ export function AddSnapshotRow({ accountId, onSaved, onCancel }: { accountId: nu
 
   return (
     <Fragment>
-      <tr style={{ borderTop: "1px solid var(--border)", background: `color-mix(in srgb, ${ACCENT} 5%, transparent)` }}>
+      <tr style={{ borderTop: "1px solid var(--border)", background: `color-mix(in srgb, ${SECTION_ACCENT} 5%, transparent)` }}>
         <td className="py-[5px] px-2">
           <input
             type="date"
