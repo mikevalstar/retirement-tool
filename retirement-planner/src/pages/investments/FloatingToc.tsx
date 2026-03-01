@@ -1,11 +1,10 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { SECTION_ACCENT } from "#/lib/formatters";
 import type { getAccounts } from "#/serverFns/investments/accountFns";
 
 type AccountItem = Awaited<ReturnType<typeof getAccounts>>[number];
 
 export function FloatingToc({ accounts }: { accounts: AccountItem[] }) {
-  const [hoveredId, setHoveredId] = useState<number | null>(null);
   const groups = useMemo(
     () =>
       accounts.reduce<Map<string, AccountItem[]>>((m, a) => {
@@ -31,10 +30,7 @@ export function FloatingToc({ accounts }: { accounts: AccountItem[] }) {
               <a
                 key={a.id}
                 href={`#account-${a.id}`}
-                className="block py-[3px] px-3 text-xs no-underline overflow-hidden text-ellipsis whitespace-nowrap"
-                style={{ color: hoveredId === a.id ? "var(--text)" : "var(--text-muted)" }}
-                onMouseEnter={() => setHoveredId(a.id)}
-                onMouseLeave={() => setHoveredId(null)}>
+                className="block py-[3px] px-3 text-xs no-underline overflow-hidden text-ellipsis whitespace-nowrap text-[var(--text-muted)] hover:text-[var(--text)]">
                 {a.name}
               </a>
             ))}

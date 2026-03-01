@@ -181,7 +181,6 @@ function AllocationsPage() {
   const router = useRouter();
   const { accounts } = Route.useLoaderData();
   const [expandedId, setExpandedId] = useState<number | null>(null);
-  const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
   const [pageError, setPageError] = useState<unknown>(null);
 
   const toggleExpand = (id: number) => setExpandedId((prev) => (prev === id ? null : id));
@@ -269,16 +268,10 @@ function AllocationsPage() {
                       aria-expanded={isExpanded}
                       onClick={() => toggleExpand(account.id)}
                       onKeyDown={(e) => handleRowKeyDown(e, account.id)}
-                      onMouseEnter={() => setHoveredRowId(account.id)}
-                      onMouseLeave={() => setHoveredRowId(null)}
-                      className="cursor-pointer"
+                      className={`cursor-pointer ${!isExpanded && "hover:bg-[var(--surface-raised)]"}`}
                       style={{
                         borderTop: "1px solid var(--border)",
-                        background: isExpanded
-                          ? `color-mix(in srgb, ${SECTION_ACCENT} 6%, transparent)`
-                          : hoveredRowId === account.id
-                            ? "var(--surface-raised)"
-                            : "transparent",
+                        background: isExpanded ? `color-mix(in srgb, ${SECTION_ACCENT} 6%, transparent)` : "transparent",
                         transition: "background 0.1s",
                       }}>
                       <td className="py-[10px] px-3">

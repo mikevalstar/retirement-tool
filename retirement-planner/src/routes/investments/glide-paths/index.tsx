@@ -377,7 +377,6 @@ interface TableProps {
 function WaypointTable({ waypoints, onDelete }: TableProps) {
   const currentYear = dayjs().year();
   const [deletingId, setDeletingId] = useState<number | null>(null);
-  const [hoveredId, setHoveredId] = useState<number | null>(null);
 
   // Nearest future waypoint: smallest year >= currentYear
   const nearestFutureYear = waypoints.find((w) => w.year >= currentYear)?.year ?? null;
@@ -416,17 +415,15 @@ function WaypointTable({ waypoints, onDelete }: TableProps) {
             const isPast = w.year < currentYear;
             const isNearest = w.year === nearestFutureYear;
             const isDeleting = deletingId === w.id;
-            const isHovered = hoveredId === w.id;
 
             return (
               <tr
                 key={w.id}
-                onMouseEnter={() => setHoveredId(w.id)}
-                onMouseLeave={() => setHoveredId(null)}
+                className={`group ${!isNearest ? "hover:bg-[var(--surface-raised)]" : ""}`}
                 style={{
                   borderTop: "1px solid var(--border)",
                   opacity: isPast ? 0.45 : 1,
-                  background: isNearest ? `color-mix(in srgb, ${SECTION_ACCENT} 6%, transparent)` : isHovered ? "var(--surface-raised)" : "transparent",
+                  background: isNearest ? `color-mix(in srgb, ${SECTION_ACCENT} 6%, transparent)` : "transparent",
                   transition: "background 0.1s",
                 }}>
                 <td className="py-[10px] px-3">
@@ -459,9 +456,8 @@ function WaypointTable({ waypoints, onDelete }: TableProps) {
                     onClick={() => handleDelete(w.id)}
                     disabled={isDeleting}
                     title="Delete waypoint"
-                    className="flex items-center justify-center p-1 rounded border-none bg-transparent cursor-pointer ml-auto"
+                    className="flex items-center justify-center p-1 rounded border-none bg-transparent cursor-pointer ml-auto text-[var(--text-dim)] group-hover:text-[var(--color-negative)]"
                     style={{
-                      color: isHovered && !isDeleting ? "var(--color-negative)" : "var(--text-dim)",
                       opacity: isDeleting ? 0.4 : 1,
                       transition: "color 0.15s",
                     }}>
