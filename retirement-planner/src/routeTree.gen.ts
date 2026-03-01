@@ -14,6 +14,7 @@ import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as InvestmentsIndexRouteImport } from './routes/investments/index'
 import { Route as ExpensesIndexRouteImport } from './routes/expenses/index'
+import { Route as InvestmentsGlidePathsIndexRouteImport } from './routes/investments/glide-paths/index'
 import { Route as InvestmentsAllocationsIndexRouteImport } from './routes/investments/allocations/index'
 import { Route as InvestmentsAccountsIndexRouteImport } from './routes/investments/accounts/index'
 
@@ -42,6 +43,12 @@ const ExpensesIndexRoute = ExpensesIndexRouteImport.update({
   path: '/expenses/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InvestmentsGlidePathsIndexRoute =
+  InvestmentsGlidePathsIndexRouteImport.update({
+    id: '/investments/glide-paths/',
+    path: '/investments/glide-paths/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const InvestmentsAllocationsIndexRoute =
   InvestmentsAllocationsIndexRouteImport.update({
     id: '/investments/allocations/',
@@ -63,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/investments/': typeof InvestmentsIndexRoute
   '/investments/accounts/': typeof InvestmentsAccountsIndexRoute
   '/investments/allocations/': typeof InvestmentsAllocationsIndexRoute
+  '/investments/glide-paths/': typeof InvestmentsGlidePathsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -72,6 +80,7 @@ export interface FileRoutesByTo {
   '/investments': typeof InvestmentsIndexRoute
   '/investments/accounts': typeof InvestmentsAccountsIndexRoute
   '/investments/allocations': typeof InvestmentsAllocationsIndexRoute
+  '/investments/glide-paths': typeof InvestmentsGlidePathsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -82,6 +91,7 @@ export interface FileRoutesById {
   '/investments/': typeof InvestmentsIndexRoute
   '/investments/accounts/': typeof InvestmentsAccountsIndexRoute
   '/investments/allocations/': typeof InvestmentsAllocationsIndexRoute
+  '/investments/glide-paths/': typeof InvestmentsGlidePathsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -93,6 +103,7 @@ export interface FileRouteTypes {
     | '/investments/'
     | '/investments/accounts/'
     | '/investments/allocations/'
+    | '/investments/glide-paths/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -102,6 +113,7 @@ export interface FileRouteTypes {
     | '/investments'
     | '/investments/accounts'
     | '/investments/allocations'
+    | '/investments/glide-paths'
   id:
     | '__root__'
     | '/'
@@ -111,6 +123,7 @@ export interface FileRouteTypes {
     | '/investments/'
     | '/investments/accounts/'
     | '/investments/allocations/'
+    | '/investments/glide-paths/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -121,6 +134,7 @@ export interface RootRouteChildren {
   InvestmentsIndexRoute: typeof InvestmentsIndexRoute
   InvestmentsAccountsIndexRoute: typeof InvestmentsAccountsIndexRoute
   InvestmentsAllocationsIndexRoute: typeof InvestmentsAllocationsIndexRoute
+  InvestmentsGlidePathsIndexRoute: typeof InvestmentsGlidePathsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -160,6 +174,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExpensesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/investments/glide-paths/': {
+      id: '/investments/glide-paths/'
+      path: '/investments/glide-paths'
+      fullPath: '/investments/glide-paths/'
+      preLoaderRoute: typeof InvestmentsGlidePathsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/investments/allocations/': {
       id: '/investments/allocations/'
       path: '/investments/allocations'
@@ -185,6 +206,7 @@ const rootRouteChildren: RootRouteChildren = {
   InvestmentsIndexRoute: InvestmentsIndexRoute,
   InvestmentsAccountsIndexRoute: InvestmentsAccountsIndexRoute,
   InvestmentsAllocationsIndexRoute: InvestmentsAllocationsIndexRoute,
+  InvestmentsGlidePathsIndexRoute: InvestmentsGlidePathsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
