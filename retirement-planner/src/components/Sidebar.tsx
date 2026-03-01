@@ -19,7 +19,7 @@ import { useEffect, useState } from "react";
 
 // Registered paths: add a path here once its route file exists. Remove the
 // `unregistered: true` flag from the matching NavChild entry at the same time.
-type RegisteredNavPath = "/investments/accounts";
+type RegisteredNavPath = "/investments/" | "/investments/accounts";
 
 type NavChild = { label: string; path: RegisteredNavPath } | { label: string; path: string; unregistered: true };
 
@@ -45,7 +45,7 @@ const NAV: NavSection[] = [
     label: "Investments",
     icon: TrendingUp,
     color: "var(--section-investments)",
-    path: "/investments",
+    path: "/investments/",
     children: [
       { label: "Accounts", path: "/investments/accounts" },
       { label: "Allocations", path: "/investments/allocations", unregistered: true },

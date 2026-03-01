@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as InvestmentsIndexRouteImport } from './routes/investments/index'
 import { Route as ExpensesIndexRouteImport } from './routes/expenses/index'
 import { Route as InvestmentsAccountsIndexRouteImport } from './routes/investments/accounts/index'
 
@@ -28,6 +29,11 @@ const RssDotxmlRoute = RssDotxmlRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvestmentsIndexRoute = InvestmentsIndexRouteImport.update({
+  id: '/investments/',
+  path: '/investments/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExpensesIndexRoute = ExpensesIndexRouteImport.update({
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/rss.xml': typeof RssDotxmlRoute
   '/settings': typeof SettingsRoute
   '/expenses/': typeof ExpensesIndexRoute
+  '/investments/': typeof InvestmentsIndexRoute
   '/investments/accounts/': typeof InvestmentsAccountsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/rss.xml': typeof RssDotxmlRoute
   '/settings': typeof SettingsRoute
   '/expenses': typeof ExpensesIndexRoute
+  '/investments': typeof InvestmentsIndexRoute
   '/investments/accounts': typeof InvestmentsAccountsIndexRoute
 }
 export interface FileRoutesById {
@@ -62,6 +70,7 @@ export interface FileRoutesById {
   '/rss.xml': typeof RssDotxmlRoute
   '/settings': typeof SettingsRoute
   '/expenses/': typeof ExpensesIndexRoute
+  '/investments/': typeof InvestmentsIndexRoute
   '/investments/accounts/': typeof InvestmentsAccountsIndexRoute
 }
 export interface FileRouteTypes {
@@ -71,15 +80,23 @@ export interface FileRouteTypes {
     | '/rss.xml'
     | '/settings'
     | '/expenses/'
+    | '/investments/'
     | '/investments/accounts/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/rss.xml' | '/settings' | '/expenses' | '/investments/accounts'
+  to:
+    | '/'
+    | '/rss.xml'
+    | '/settings'
+    | '/expenses'
+    | '/investments'
+    | '/investments/accounts'
   id:
     | '__root__'
     | '/'
     | '/rss.xml'
     | '/settings'
     | '/expenses/'
+    | '/investments/'
     | '/investments/accounts/'
   fileRoutesById: FileRoutesById
 }
@@ -88,6 +105,7 @@ export interface RootRouteChildren {
   RssDotxmlRoute: typeof RssDotxmlRoute
   SettingsRoute: typeof SettingsRoute
   ExpensesIndexRoute: typeof ExpensesIndexRoute
+  InvestmentsIndexRoute: typeof InvestmentsIndexRoute
   InvestmentsAccountsIndexRoute: typeof InvestmentsAccountsIndexRoute
 }
 
@@ -114,6 +132,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/investments/': {
+      id: '/investments/'
+      path: '/investments'
+      fullPath: '/investments/'
+      preLoaderRoute: typeof InvestmentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/expenses/': {
       id: '/expenses/'
       path: '/expenses'
@@ -136,6 +161,7 @@ const rootRouteChildren: RootRouteChildren = {
   RssDotxmlRoute: RssDotxmlRoute,
   SettingsRoute: SettingsRoute,
   ExpensesIndexRoute: ExpensesIndexRoute,
+  InvestmentsIndexRoute: InvestmentsIndexRoute,
   InvestmentsAccountsIndexRoute: InvestmentsAccountsIndexRoute,
 }
 export const routeTree = rootRouteImport
