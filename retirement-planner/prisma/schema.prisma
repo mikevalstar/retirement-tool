@@ -94,3 +94,17 @@ model ReturnEntry {
   // to correct a mistake — the UI enforces this with delete-only rows.
   @@unique([accountId, year])
 }
+
+// ─── Glide Path ───────────────────────────────────────────────────────────────
+// Portfolio-wide target allocation waypoints over time. One record per calendar
+// year. The simulation interpolates linearly between waypoints to model how
+// portfolio returns should shift year by year as the user de-risks.
+
+model GlidePathWaypoint {
+  id             Int      @id @default(autoincrement())
+  year           Int      @unique // One waypoint per calendar year
+  equityPct      Float
+  fixedIncomePct Float
+  cashPct        Float
+  createdAt      DateTime @default(now())
+}

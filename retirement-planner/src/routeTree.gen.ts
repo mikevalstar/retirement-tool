@@ -14,6 +14,7 @@ import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as InvestmentsIndexRouteImport } from './routes/investments/index'
 import { Route as ExpensesIndexRouteImport } from './routes/expenses/index'
+import { Route as InvestmentsAllocationsIndexRouteImport } from './routes/investments/allocations/index'
 import { Route as InvestmentsAccountsIndexRouteImport } from './routes/investments/accounts/index'
 
 const SettingsRoute = SettingsRouteImport.update({
@@ -41,6 +42,12 @@ const ExpensesIndexRoute = ExpensesIndexRouteImport.update({
   path: '/expenses/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InvestmentsAllocationsIndexRoute =
+  InvestmentsAllocationsIndexRouteImport.update({
+    id: '/investments/allocations/',
+    path: '/investments/allocations/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const InvestmentsAccountsIndexRoute =
   InvestmentsAccountsIndexRouteImport.update({
     id: '/investments/accounts/',
@@ -55,6 +62,7 @@ export interface FileRoutesByFullPath {
   '/expenses/': typeof ExpensesIndexRoute
   '/investments/': typeof InvestmentsIndexRoute
   '/investments/accounts/': typeof InvestmentsAccountsIndexRoute
+  '/investments/allocations/': typeof InvestmentsAllocationsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -63,6 +71,7 @@ export interface FileRoutesByTo {
   '/expenses': typeof ExpensesIndexRoute
   '/investments': typeof InvestmentsIndexRoute
   '/investments/accounts': typeof InvestmentsAccountsIndexRoute
+  '/investments/allocations': typeof InvestmentsAllocationsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -72,6 +81,7 @@ export interface FileRoutesById {
   '/expenses/': typeof ExpensesIndexRoute
   '/investments/': typeof InvestmentsIndexRoute
   '/investments/accounts/': typeof InvestmentsAccountsIndexRoute
+  '/investments/allocations/': typeof InvestmentsAllocationsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -82,6 +92,7 @@ export interface FileRouteTypes {
     | '/expenses/'
     | '/investments/'
     | '/investments/accounts/'
+    | '/investments/allocations/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -90,6 +101,7 @@ export interface FileRouteTypes {
     | '/expenses'
     | '/investments'
     | '/investments/accounts'
+    | '/investments/allocations'
   id:
     | '__root__'
     | '/'
@@ -98,6 +110,7 @@ export interface FileRouteTypes {
     | '/expenses/'
     | '/investments/'
     | '/investments/accounts/'
+    | '/investments/allocations/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -107,6 +120,7 @@ export interface RootRouteChildren {
   ExpensesIndexRoute: typeof ExpensesIndexRoute
   InvestmentsIndexRoute: typeof InvestmentsIndexRoute
   InvestmentsAccountsIndexRoute: typeof InvestmentsAccountsIndexRoute
+  InvestmentsAllocationsIndexRoute: typeof InvestmentsAllocationsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -146,6 +160,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExpensesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/investments/allocations/': {
+      id: '/investments/allocations/'
+      path: '/investments/allocations'
+      fullPath: '/investments/allocations/'
+      preLoaderRoute: typeof InvestmentsAllocationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/investments/accounts/': {
       id: '/investments/accounts/'
       path: '/investments/accounts'
@@ -163,6 +184,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExpensesIndexRoute: ExpensesIndexRoute,
   InvestmentsIndexRoute: InvestmentsIndexRoute,
   InvestmentsAccountsIndexRoute: InvestmentsAccountsIndexRoute,
+  InvestmentsAllocationsIndexRoute: InvestmentsAllocationsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
