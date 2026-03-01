@@ -3,30 +3,10 @@ import { ErrorDisplay } from "#/components/ErrorDisplay";
 import { Field } from "#/components/Field";
 import { OwnerBadge } from "#/components/OwnerBadge";
 import { SlidePanel } from "#/components/SlidePanel";
+import { panelCancelBtnCls, panelCancelBtnCSS, panelInputCls, panelInputCSS, panelSaveBtnCls, panelSaveBtnCSS } from "#/lib/panelStyles";
 import { createBulkSnapshots, type getAccounts } from "#/serverFns/investments/accountFns";
 
 type AccountItem = Awaited<ReturnType<typeof getAccounts>>[number];
-
-const ACCENT = "var(--section-investments)";
-
-const panelInputCls = "w-full rounded-md py-[7px] px-[10px] text-[13px] outline-none box-border";
-const panelInputCSS: React.CSSProperties = {
-  background: "var(--surface-raised)",
-  border: "1px solid var(--border)",
-  color: "var(--text)",
-  fontFamily: "inherit",
-};
-
-const panelCancelBtnCls = "py-[7px] px-4 rounded-md bg-transparent text-[13px] cursor-pointer";
-const panelCancelBtnCSS: React.CSSProperties = { border: "1px solid var(--border)", color: "var(--text-muted)", fontFamily: "inherit" };
-
-const panelSaveBtnCls = (enabled: boolean) => `py-[7px] px-4 rounded-md text-[13px] font-medium ${enabled ? "cursor-pointer" : "cursor-default"}`;
-const panelSaveBtnCSS = (enabled: boolean): React.CSSProperties => ({
-  background: enabled ? `color-mix(in srgb, ${ACCENT} 20%, transparent)` : "var(--surface-raised)",
-  border: `1px solid ${enabled ? `color-mix(in srgb, ${ACCENT} 40%, transparent)` : "var(--border)"}`,
-  color: enabled ? ACCENT : "var(--text-dim)",
-  fontFamily: "inherit",
-});
 
 const fmtCAD = (n: number) => new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 }).format(n);
 

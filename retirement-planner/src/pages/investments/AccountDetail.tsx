@@ -1,6 +1,7 @@
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import type { AccountType } from "#/generated/prisma/enums";
+import { thCls, thCSS } from "#/lib/tableStyles";
 import type { getAccounts, getReturns, getSnapshots } from "#/serverFns/investments/accountFns";
 import { AddReturnRow } from "./AddReturnRow";
 import { AddSnapshotRow } from "./AddSnapshotRow";
@@ -17,10 +18,6 @@ const NO_RETURNS = new Set<AccountType>(["CHEQUING", "REGULAR_SAVINGS"]);
 
 const stubBtnCls = "flex items-center gap-1 py-[3px] px-2 rounded text-[11px] bg-transparent cursor-pointer";
 const stubBtnCSS: React.CSSProperties = { border: "1px solid var(--border)", color: "var(--text-dim)", fontFamily: "inherit" };
-
-const thCls = (align: "left" | "right") =>
-  `py-2 px-3 text-[11px] font-medium uppercase tracking-[0.05em] whitespace-nowrap ${align === "right" ? "text-right" : "text-left"}`;
-const thCSS: React.CSSProperties = { color: "var(--text-dim)" };
 
 interface DetailState {
   snapshots: SnapshotItem[];

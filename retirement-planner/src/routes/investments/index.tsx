@@ -7,6 +7,7 @@ import { ExpandChevron } from "#/components/ExpandChevron";
 import { IconButton } from "#/components/IconButton";
 import { OwnerBadge } from "#/components/OwnerBadge";
 import type { AccountType } from "#/generated/prisma/enums";
+import { thCls, thCSS } from "#/lib/tableStyles";
 import { AccountDetail } from "#/pages/investments/AccountDetail";
 import { AddAccountPanel } from "#/pages/investments/AddAccountPanel";
 import { FloatingToc } from "#/pages/investments/FloatingToc";
@@ -68,12 +69,6 @@ export const Route = createFileRoute("/investments/")({
     return { accounts, people };
   },
 });
-
-// ─── Shared Styles ────────────────────────────────────────────────────────────
-
-const thCls = (align: "left" | "right") =>
-  `py-2 px-3 text-[11px] font-medium uppercase tracking-[0.05em] whitespace-nowrap ${align === "right" ? "text-right" : "text-left"}`;
-const thCSS: React.CSSProperties = { color: "var(--text-dim)" };
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
