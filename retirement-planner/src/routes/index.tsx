@@ -1,9 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarRange, Clock, Play, RefreshCw, TrendingUp, Upload } from "lucide-react";
+import { Clock, Play, RefreshCw, TrendingUp, Upload, Wallet } from "lucide-react";
+import { fmtCAD } from "#/lib/formatters";
+import { getIncomeSources, getPensionProjections } from "#/serverFns/income/sourceFns";
 
-export const Route = createFileRoute("/")({ component: Dashboard });
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
+export const Route = createFileRoute("/")({
+  component: Dashboard,
+  loader: async () => {
+    const [incomeSources, pensionProjections] = await Promise.all([getIncomeSources(), getPensionProjections()]);
+    return { incomeSources, pensionProjections };
+  },
+});
 
 function StatCard({
   label,
@@ -81,12 +87,17 @@ function QuickAction({
   );
 }
 
-// ─── Dashboard ────────────────────────────────────────────────────────────────
-
 function Dashboard() {
+  const { incomeSources, pensionProjections } = Route.useLoaderData();
+
+  const totalAnnualIncome = incomeSources.reduce((sum, s) => {
+    return sum + (s.frequency === "MONTHLY" ? s.amount * 12 : s.amount);
+  }, 0);
+
+  const hasAnyBirthYear = pensionProjections.some((p) => p.hasBirthYear);
+
   return (
     <div className="max-w-[960px] flex flex-col gap-5">
-      {/* Section heading */}
       <div className="flex items-baseline gap-[10px]">
         <h1 className="m-0 text-lg font-semibold tracking-[-0.02em]" style={{ color: "var(--text)" }}>
           Dashboard
@@ -96,33 +107,81 @@ function Dashboard() {
         </span>
       </div>
 
-      {/* ── Row 1: Key stats ── */}
       <div className="flex gap-3.5">
         <StatCard label="Total Net Worth" value="$0" sub="No account balances recorded" icon={TrendingUp} accent="var(--section-dashboard)" />
+        <StatCard
+          label="Annual Income"
+          value={fmtCAD(totalAnnualIncome)}
+          sub={incomeSources.length === 0 ? "No income sources" : `${incomeSources.length} source${incomeSources.length > 1 ? "s" : ""}`}
+          icon={Wallet}
+          accent="var(--section-income)"
+        />
         <StatCard label="Last Simulation" value="—" sub="Never run · click Run Simulation to start" icon={Clock} accent="var(--section-simulation)" />
-        <StatCard label="Projected Retirement" value="—" sub="Run a simulation to see your range" icon={CalendarRange} accent="var(--section-investments)" />
       </div>
 
-      {/* ── Row 2: Quick actions ── */}
-      <div>
-        <div className="text-[11px] font-medium uppercase tracking-[0.08em] mb-[10px]" style={{ color: "var(--text-dim)" }}>
-          Quick Actions
-        </div>
-        <div className="flex gap-3.5">
-          <QuickAction icon={Upload} label="Import Expenses" sub="Paste or drop a credit card CSV" accent="var(--section-expenses)" to="/expenses" />
-          <QuickAction
-            icon={RefreshCw}
-            label="Update Balances"
-            sub="Tab through accounts, enter new values"
-            accent="var(--section-investments)"
-            to="/investments"
-            search={{ update: true }}
-          />
-          <QuickAction icon={Play} label="Run Simulation" sub="Monte Carlo · generates percentile bands" accent="var(--section-simulation)" to="/simulation" />
-        </div>
+      <div className="flex gap-3.5">
+        <QuickAction icon={Upload} label="Import Expenses" sub="Paste or drop a credit card CSV" accent="var(--section-expenses)" to="/expenses" />
+        <QuickAction
+          icon={RefreshCw}
+          label="Update Balances"
+          sub="Tab through accounts, enter new values"
+          accent="var(--section-investments)"
+          to="/investments"
+          search={{ update: true }}
+        />
+        <QuickAction icon={Play} label="Run Simulation" sub="Monte Carlo · generates percentile bands" accent="var(--section-simulation)" to="/simulation" />
       </div>
 
-      {/* ── Row 3: Net worth timeline chart (placeholder) ── */}
+      {hasAnyBirthYear && (
+        <div className="rounded-lg overflow-hidden" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+          <div className="px-[18px] py-[14px] flex items-center justify-between" style={{ borderBottom: "1px solid var(--border)" }}>
+            <span className="text-[13px] font-medium" style={{ color: "var(--text)" }}>
+              Government Pension Projections
+            </span>
+            <Link to="/income" className="text-[11px] flex items-center gap-1 cursor-pointer no-underline" style={{ color: "var(--section-income)" }}>
+              View details
+            </Link>
+          </div>
+
+          <div className="px-[18px] py-3 flex gap-6">
+            {pensionProjections.map((proj) => {
+              if (!proj.hasBirthYear) return null;
+              return (
+                <div key={proj.person.id} className="flex flex-col gap-1">
+                  <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>
+                    {proj.person.name}
+                  </span>
+                  <div className="flex gap-4">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase tracking-[0.05em]" style={{ color: "var(--text-dim)" }}>
+                        CPP
+                      </span>
+                      <span className="num text-[14px] font-medium" style={{ color: "var(--text)" }}>
+                        {fmtCAD(proj.cpp.annual)}
+                        <span className="text-[10px] font-normal ml-0.5" style={{ color: "var(--text-dim)" }}>
+                          /yr
+                        </span>
+                      </span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase tracking-[0.05em]" style={{ color: "var(--text-dim)" }}>
+                        OAS
+                      </span>
+                      <span className="num text-[14px] font-medium" style={{ color: "var(--text)" }}>
+                        {fmtCAD(proj.oas.annual)}
+                        <span className="text-[10px] font-normal ml-0.5" style={{ color: "var(--text-dim)" }}>
+                          /yr
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <div className="rounded-lg overflow-hidden" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
         <div className="px-[18px] py-[14px] flex items-center justify-between" style={{ borderBottom: "1px solid var(--border)" }}>
           <span className="text-[13px] font-medium" style={{ color: "var(--text)" }}>
@@ -133,9 +192,7 @@ function Dashboard() {
           </span>
         </div>
 
-        {/* Empty state */}
         <div className="h-[220px] flex flex-col items-center justify-center gap-[10px] relative overflow-hidden">
-          {/* Decorative grid lines */}
           {/* biome-ignore lint/a11y/noSvgWithoutTitle: decorative SVG, aria-hidden is correct */}
           <svg aria-hidden className="absolute inset-0 w-full h-full opacity-[0.15]">
             {[0.25, 0.5, 0.75].map((y) => (

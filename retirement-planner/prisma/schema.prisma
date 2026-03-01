@@ -18,11 +18,15 @@ model Person {
   name      String
   birthYear     Int?  // 4-digit year, optional (used for glide path recommendations)
   retirementAge Int?  // target retirement age, optional (used for projection chart markers)
+  // Pension projection fields
+  oasResidenceYears Int? // Years of Canadian residence after age 18 (for OAS calculation). Default assumption = 40 for full pension.
+  pensionClaimAge   Int? // Age at which to claim CPP/OAS. Default 65 for projections.
   sortOrder     Int   @default(0)
   createdAt DateTime  @default(now())
   // Restrict (Prisma default) — cannot delete a Person who owns accounts.
   // This prevents accidentally nuking investment history via Settings.
-  accounts  Account[]
+  accounts      Account[]
+  incomeSources IncomeSource[]
 }
 
 // ─── Account Types ────────────────────────────────────────────────────────────
@@ -36,6 +40,11 @@ enum AccountType {
   RRIF            // Registered Retirement Income Fund — converted from RRSP, mandatory annual drawdowns
   REGULAR_SAVINGS // Non-registered savings — no tax advantages, no contribution limits
   CHEQUING        // Chequing / cash account — liquidity tracking only, no return history
+}
+
+enum IncomeFrequency {
+  ANNUAL  // Annual income amount
+  MONTHLY // Monthly income amount (displayed as annual equivalent: × 12)
 }
 
 // ─── Investment Accounts ──────────────────────────────────────────────────────
@@ -109,4 +118,35 @@ model GlidePathWaypoint {
   fixedIncomePct Float
   cashPct        Float
   createdAt      DateTime @default(now())
+}
+
+// ─── Income Sources ────────────────────────────────────────────────────────────
+// Employment income tracking. Each source belongs to one person.
+// Simple model: name + amount + frequency. No start/end dates — represents
+// current active income only. Career changes are handled by editing or replacing.
+
+model IncomeSource {
+  id        Int             @id @default(autoincrement())
+  name      String          // e.g. "Software Engineer", "Consulting"
+  ownerId   Int
+  owner     Person          @relation(fields: [ownerId], references: [id])
+  amount    Float           // CAD amount as entered
+  frequency IncomeFrequency // ANNUAL or MONTHLY
+  sortOrder Int             @default(0)
+  createdAt DateTime        @default(now())
+}
+
+// ─── Properties (Housing) ───────────────────────────────────────────────────────
+// Real estate properties with mortgage details. Simple model: name, estimated value,
+// mortgage balance, mortgage rate. No owner assignment — properties are standalone.
+// Used for net worth tracking in retirement projections.
+
+model Property {
+  id              Int      @id @default(autoincrement())
+  name            String   // e.g. "Primary Residence", "Cottage"
+  estimatedValue  Float    // Current market value estimate (CAD)
+  mortgageBalance Float    // Remaining mortgage principal (CAD)
+  mortgageRate    Float?   // Annual interest rate (e.g., 5.25). Nullable for paid-off properties.
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
 }

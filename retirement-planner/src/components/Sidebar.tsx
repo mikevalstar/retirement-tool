@@ -19,7 +19,15 @@ import { useEffect, useState } from "react";
 
 // Registered paths: add a path here once its route file exists. Remove the
 // `unregistered: true` flag from the matching NavChild entry at the same time.
-type RegisteredNavPath = "/investments/" | "/investments/accounts" | "/investments/allocations" | "/investments/glide-paths/" | "/expenses/categories/";
+type RegisteredNavPath =
+  | "/investments/"
+  | "/investments/accounts"
+  | "/investments/allocations"
+  | "/investments/glide-paths/"
+  | "/expenses/categories/"
+  | "/income/"
+  | "/income/sources/"
+  | "/housing/";
 
 type NavChild = { label: string; path: RegisteredNavPath } | { label: string; path: string; unregistered: true };
 
@@ -57,12 +65,8 @@ const NAV: NavSection[] = [
     label: "Income",
     icon: Wallet,
     color: "var(--section-income)",
-    path: "/income",
-    children: [
-      { label: "Employment", path: "/income/employment", unregistered: true },
-      { label: "Social Security", path: "/income/social-security", unregistered: true },
-      { label: "Passive Streams", path: "/income/passive-streams", unregistered: true },
-    ],
+    path: "/income/",
+    children: [{ label: "Sources", path: "/income/sources/" }],
   },
   {
     id: "expenses",
@@ -81,12 +85,7 @@ const NAV: NavSection[] = [
     label: "Housing",
     icon: Home,
     color: "var(--section-housing)",
-    path: "/housing",
-    children: [
-      { label: "Mortgage", path: "/housing/mortgage", unregistered: true },
-      { label: "Home Equity", path: "/housing/home-equity", unregistered: true },
-      { label: "Future Events", path: "/housing/future-events", unregistered: true },
-    ],
+    path: "/housing/",
   },
   {
     id: "taxes",

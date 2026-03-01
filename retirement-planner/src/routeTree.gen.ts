@@ -13,10 +13,13 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as InvestmentsIndexRouteImport } from './routes/investments/index'
+import { Route as IncomeIndexRouteImport } from './routes/income/index'
+import { Route as HousingIndexRouteImport } from './routes/housing/index'
 import { Route as ExpensesIndexRouteImport } from './routes/expenses/index'
 import { Route as InvestmentsGlidePathsIndexRouteImport } from './routes/investments/glide-paths/index'
 import { Route as InvestmentsAllocationsIndexRouteImport } from './routes/investments/allocations/index'
 import { Route as InvestmentsAccountsIndexRouteImport } from './routes/investments/accounts/index'
+import { Route as IncomeSourcesIndexRouteImport } from './routes/income/sources/index'
 import { Route as ExpensesCategoriesIndexRouteImport } from './routes/expenses/categories/index'
 
 const SettingsRoute = SettingsRouteImport.update({
@@ -37,6 +40,16 @@ const IndexRoute = IndexRouteImport.update({
 const InvestmentsIndexRoute = InvestmentsIndexRouteImport.update({
   id: '/investments/',
   path: '/investments/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IncomeIndexRoute = IncomeIndexRouteImport.update({
+  id: '/income/',
+  path: '/income/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HousingIndexRoute = HousingIndexRouteImport.update({
+  id: '/housing/',
+  path: '/housing/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExpensesIndexRoute = ExpensesIndexRouteImport.update({
@@ -62,6 +75,11 @@ const InvestmentsAccountsIndexRoute =
     path: '/investments/accounts/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const IncomeSourcesIndexRoute = IncomeSourcesIndexRouteImport.update({
+  id: '/income/sources/',
+  path: '/income/sources/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExpensesCategoriesIndexRoute = ExpensesCategoriesIndexRouteImport.update({
   id: '/expenses/categories/',
   path: '/expenses/categories/',
@@ -73,8 +91,11 @@ export interface FileRoutesByFullPath {
   '/rss.xml': typeof RssDotxmlRoute
   '/settings': typeof SettingsRoute
   '/expenses/': typeof ExpensesIndexRoute
+  '/housing/': typeof HousingIndexRoute
+  '/income/': typeof IncomeIndexRoute
   '/investments/': typeof InvestmentsIndexRoute
   '/expenses/categories/': typeof ExpensesCategoriesIndexRoute
+  '/income/sources/': typeof IncomeSourcesIndexRoute
   '/investments/accounts/': typeof InvestmentsAccountsIndexRoute
   '/investments/allocations/': typeof InvestmentsAllocationsIndexRoute
   '/investments/glide-paths/': typeof InvestmentsGlidePathsIndexRoute
@@ -84,8 +105,11 @@ export interface FileRoutesByTo {
   '/rss.xml': typeof RssDotxmlRoute
   '/settings': typeof SettingsRoute
   '/expenses': typeof ExpensesIndexRoute
+  '/housing': typeof HousingIndexRoute
+  '/income': typeof IncomeIndexRoute
   '/investments': typeof InvestmentsIndexRoute
   '/expenses/categories': typeof ExpensesCategoriesIndexRoute
+  '/income/sources': typeof IncomeSourcesIndexRoute
   '/investments/accounts': typeof InvestmentsAccountsIndexRoute
   '/investments/allocations': typeof InvestmentsAllocationsIndexRoute
   '/investments/glide-paths': typeof InvestmentsGlidePathsIndexRoute
@@ -96,8 +120,11 @@ export interface FileRoutesById {
   '/rss.xml': typeof RssDotxmlRoute
   '/settings': typeof SettingsRoute
   '/expenses/': typeof ExpensesIndexRoute
+  '/housing/': typeof HousingIndexRoute
+  '/income/': typeof IncomeIndexRoute
   '/investments/': typeof InvestmentsIndexRoute
   '/expenses/categories/': typeof ExpensesCategoriesIndexRoute
+  '/income/sources/': typeof IncomeSourcesIndexRoute
   '/investments/accounts/': typeof InvestmentsAccountsIndexRoute
   '/investments/allocations/': typeof InvestmentsAllocationsIndexRoute
   '/investments/glide-paths/': typeof InvestmentsGlidePathsIndexRoute
@@ -109,8 +136,11 @@ export interface FileRouteTypes {
     | '/rss.xml'
     | '/settings'
     | '/expenses/'
+    | '/housing/'
+    | '/income/'
     | '/investments/'
     | '/expenses/categories/'
+    | '/income/sources/'
     | '/investments/accounts/'
     | '/investments/allocations/'
     | '/investments/glide-paths/'
@@ -120,8 +150,11 @@ export interface FileRouteTypes {
     | '/rss.xml'
     | '/settings'
     | '/expenses'
+    | '/housing'
+    | '/income'
     | '/investments'
     | '/expenses/categories'
+    | '/income/sources'
     | '/investments/accounts'
     | '/investments/allocations'
     | '/investments/glide-paths'
@@ -131,8 +164,11 @@ export interface FileRouteTypes {
     | '/rss.xml'
     | '/settings'
     | '/expenses/'
+    | '/housing/'
+    | '/income/'
     | '/investments/'
     | '/expenses/categories/'
+    | '/income/sources/'
     | '/investments/accounts/'
     | '/investments/allocations/'
     | '/investments/glide-paths/'
@@ -143,8 +179,11 @@ export interface RootRouteChildren {
   RssDotxmlRoute: typeof RssDotxmlRoute
   SettingsRoute: typeof SettingsRoute
   ExpensesIndexRoute: typeof ExpensesIndexRoute
+  HousingIndexRoute: typeof HousingIndexRoute
+  IncomeIndexRoute: typeof IncomeIndexRoute
   InvestmentsIndexRoute: typeof InvestmentsIndexRoute
   ExpensesCategoriesIndexRoute: typeof ExpensesCategoriesIndexRoute
+  IncomeSourcesIndexRoute: typeof IncomeSourcesIndexRoute
   InvestmentsAccountsIndexRoute: typeof InvestmentsAccountsIndexRoute
   InvestmentsAllocationsIndexRoute: typeof InvestmentsAllocationsIndexRoute
   InvestmentsGlidePathsIndexRoute: typeof InvestmentsGlidePathsIndexRoute
@@ -180,6 +219,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InvestmentsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/income/': {
+      id: '/income/'
+      path: '/income'
+      fullPath: '/income/'
+      preLoaderRoute: typeof IncomeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/housing/': {
+      id: '/housing/'
+      path: '/housing'
+      fullPath: '/housing/'
+      preLoaderRoute: typeof HousingIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/expenses/': {
       id: '/expenses/'
       path: '/expenses'
@@ -208,6 +261,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InvestmentsAccountsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/income/sources/': {
+      id: '/income/sources/'
+      path: '/income/sources'
+      fullPath: '/income/sources/'
+      preLoaderRoute: typeof IncomeSourcesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/expenses/categories/': {
       id: '/expenses/categories/'
       path: '/expenses/categories'
@@ -223,8 +283,11 @@ const rootRouteChildren: RootRouteChildren = {
   RssDotxmlRoute: RssDotxmlRoute,
   SettingsRoute: SettingsRoute,
   ExpensesIndexRoute: ExpensesIndexRoute,
+  HousingIndexRoute: HousingIndexRoute,
+  IncomeIndexRoute: IncomeIndexRoute,
   InvestmentsIndexRoute: InvestmentsIndexRoute,
   ExpensesCategoriesIndexRoute: ExpensesCategoriesIndexRoute,
+  IncomeSourcesIndexRoute: IncomeSourcesIndexRoute,
   InvestmentsAccountsIndexRoute: InvestmentsAccountsIndexRoute,
   InvestmentsAllocationsIndexRoute: InvestmentsAllocationsIndexRoute,
   InvestmentsGlidePathsIndexRoute: InvestmentsGlidePathsIndexRoute,

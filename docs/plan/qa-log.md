@@ -169,3 +169,16 @@ A: No — CPP/OAS projections are dashboard-only. Income sources are for active 
 
 **Q: What about OAS residence history?**
 A: Full OAS requires 40 years residence. Add optional field on Person for residence years — default to 40 (assume full) if not set.
+
+---
+
+## Housing - 2026-03-01
+
+**Q: Should Housing have sub-navigation like other sections?**
+A: No — simplified to a flat single page. No Mortgage/Home Equity/Future Events sub-pages. Just a properties list with name, estimated value, mortgage balance, and rate.
+
+**Q: Should properties have an owner like accounts/income?**
+A: No — properties are standalone, no owner assignment. Simpler model for this domain.
+
+**Q: What fields for each property?**
+A: Name (free text), estimated value (CAD), mortgage balance (CAD), mortgage rate (% optional — nullable for paid-off properties).
