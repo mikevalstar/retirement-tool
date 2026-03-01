@@ -10,6 +10,7 @@ export function AddPropertyPanel({ onClose, onSaved }: { onClose: () => void; on
   const [estimatedValue, setEstimatedValue] = useState("");
   const [mortgageBalance, setMortgageBalance] = useState("");
   const [mortgageRate, setMortgageRate] = useState("");
+  const [mortgageTermRemainingMonths, setMortgageTermRemainingMonths] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<unknown>(null);
 
@@ -26,6 +27,7 @@ export function AddPropertyPanel({ onClose, onSaved }: { onClose: () => void; on
           estimatedValue: Number(estimatedValue),
           mortgageBalance: Number(mortgageBalance),
           mortgageRate: mortgageRate ? Number(mortgageRate) : null,
+          mortgageTermRemainingMonths: mortgageTermRemainingMonths ? Number(mortgageTermRemainingMonths) : null,
         },
       });
       onSaved();
@@ -92,6 +94,17 @@ export function AddPropertyPanel({ onClose, onSaved }: { onClose: () => void; on
             value={mortgageRate}
             onChange={(e) => setMortgageRate(e.target.value)}
             placeholder="e.g. 5.25 (optional)"
+            className={`num ${panelInputCls}`}
+            style={panelInputCSS}
+          />
+        </Field>
+
+        <Field label="Term Remaining (months)">
+          <input
+            type="number"
+            value={mortgageTermRemainingMonths}
+            onChange={(e) => setMortgageTermRemainingMonths(e.target.value)}
+            placeholder="e.g. 240 (optional)"
             className={`num ${panelInputCls}`}
             style={panelInputCSS}
           />

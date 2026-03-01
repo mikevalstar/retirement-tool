@@ -29,9 +29,17 @@ function HousingPage() {
   const [editEstimatedValue, setEditEstimatedValue] = useState("");
   const [editMortgageBalance, setEditMortgageBalance] = useState("");
   const [editMortgageRate, setEditMortgageRate] = useState("");
+  const [editMortgageTermRemainingMonths, setEditMortgageTermRemainingMonths] = useState("");
   const [saving, setSaving] = useState(false);
 
-  const toggleExpand = (property: { id: number; name: string; estimatedValue: number; mortgageBalance: number; mortgageRate: number | null }) => {
+  const toggleExpand = (property: {
+    id: number;
+    name: string;
+    estimatedValue: number;
+    mortgageBalance: number;
+    mortgageRate: number | null;
+    mortgageTermRemainingMonths: number | null;
+  }) => {
     if (expandedId === property.id) {
       setExpandedId(null);
       return;
@@ -41,6 +49,7 @@ function HousingPage() {
     setEditEstimatedValue(String(property.estimatedValue));
     setEditMortgageBalance(String(property.mortgageBalance));
     setEditMortgageRate(property.mortgageRate !== null ? String(property.mortgageRate) : "");
+    setEditMortgageTermRemainingMonths(property.mortgageTermRemainingMonths !== null ? String(property.mortgageTermRemainingMonths) : "");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent, id: number) => {
@@ -66,6 +75,7 @@ function HousingPage() {
           estimatedValue: Number(editEstimatedValue),
           mortgageBalance: Number(editMortgageBalance),
           mortgageRate: editMortgageRate ? Number(editMortgageRate) : null,
+          mortgageTermRemainingMonths: editMortgageTermRemainingMonths ? Number(editMortgageTermRemainingMonths) : null,
         },
       });
       setExpandedId(null);
@@ -144,6 +154,9 @@ function HousingPage() {
                     Rate
                   </th>
                   <th className={thCls("right")} style={thCSS}>
+                    Term
+                  </th>
+                  <th className={thCls("right")} style={thCSS}>
                     Equity
                   </th>
                   <th className="w-9" />
@@ -188,6 +201,12 @@ function HousingPage() {
                           {property.mortgageRate !== null ? `${property.mortgageRate}%` : "—"}
                         </td>
 
+                        <td className="py-[10px] px-3 text-right num" style={{ color: "var(--text-muted)" }}>
+                          {property.mortgageTermRemainingMonths !== null
+                            ? `${Math.floor(property.mortgageTermRemainingMonths / 12)}y ${property.mortgageTermRemainingMonths % 12}m`
+                            : "—"}
+                        </td>
+
                         <td className="py-[10px] px-3 text-right num font-medium" style={{ color: "var(--text)" }}>
                           {fmtCAD(equity)}
                         </td>
@@ -207,7 +226,7 @@ function HousingPage() {
 
                       {isExpanded && (
                         <tr style={{ background: `color-mix(in srgb, ${SECTION_ACCENT} 6%, transparent)` }}>
-                          <td colSpan={6} className="py-3 px-3" style={{ borderTop: "1px solid var(--border)" }}>
+                          <td colSpan={7} className="py-3 px-3" style={{ borderTop: "1px solid var(--border)" }}>
                             <div className="flex gap-4 items-end flex-wrap">
                               <div className="flex flex-col gap-[5px] min-w-[180px]">
                                 {/* biome-ignore lint/a11y/noLabelWithoutControl: Field is a layout wrapper; association is handled by the caller */}
@@ -270,6 +289,22 @@ function HousingPage() {
                                 />
                               </div>
 
+                              <div className="flex flex-col gap-[5px] min-w-[120px]">
+                                {/* biome-ignore lint/a11y/noLabelWithoutControl: Field is a layout wrapper; association is handled by the caller */}
+                                <label className="text-[11px] font-medium uppercase tracking-[0.05em]" style={{ color: "var(--text-muted)" }}>
+                                  Term (months)
+                                </label>
+                                <input
+                                  type="number"
+                                  value={editMortgageTermRemainingMonths}
+                                  onChange={(e) => setEditMortgageTermRemainingMonths(e.target.value)}
+                                  onKeyDown={(e) => e.key === "Enter" && handleSave(property.id)}
+                                  placeholder="optional"
+                                  className={`num ${inlineInputCls}`}
+                                  style={inlineInputCSS}
+                                />
+                              </div>
+
                               <button
                                 type="button"
                                 onClick={() => handleSave(property.id)}
@@ -306,6 +341,7 @@ function HousingPage() {
                   <td className="py-[10px] px-3 text-right num font-medium" style={{ color: "var(--text)" }}>
                     {fmtCAD(totalMortgage)}
                   </td>
+                  <td className="py-[10px] px-3" />
                   <td className="py-[10px] px-3" />
                   <td className="py-[10px] px-3 text-right num font-medium" style={{ color: "var(--text)" }}>
                     {fmtCAD(totalEquity)}

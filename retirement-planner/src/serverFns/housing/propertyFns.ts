@@ -11,6 +11,7 @@ export const CreatePropertyInput = z.object({
   estimatedValue: z.number().min(0),
   mortgageBalance: z.number().min(0),
   mortgageRate: z.number().min(0).max(30).nullable(),
+  mortgageTermRemainingMonths: z.number().int().min(0).nullable(),
 });
 
 export const UpdatePropertyInput = z.object({
@@ -19,6 +20,7 @@ export const UpdatePropertyInput = z.object({
   estimatedValue: z.number().min(0),
   mortgageBalance: z.number().min(0),
   mortgageRate: z.number().min(0).max(30).nullable(),
+  mortgageTermRemainingMonths: z.number().int().min(0).nullable(),
 });
 
 export const getProperties = createServerFn({ method: "GET" }).handler(async () => {
@@ -40,6 +42,7 @@ export const createProperty = createServerFn({ method: "POST" })
         estimatedValue: data.estimatedValue,
         mortgageBalance: data.mortgageBalance,
         mortgageRate: data.mortgageRate,
+        mortgageTermRemainingMonths: data.mortgageTermRemainingMonths,
         sortOrder,
       },
     });
@@ -55,6 +58,7 @@ export const updateProperty = createServerFn({ method: "POST" })
         estimatedValue: data.estimatedValue,
         mortgageBalance: data.mortgageBalance,
         mortgageRate: data.mortgageRate,
+        mortgageTermRemainingMonths: data.mortgageTermRemainingMonths,
       },
     });
   });
