@@ -59,8 +59,8 @@ interface DetailState {
 
 // ─── Route ────────────────────────────────────────────────────────────────────
 
-export const Route = createFileRoute("/investments/")({
-  component: InvestmentsPage,
+export const Route = createFileRoute("/investments/accounts/")({
+  component: InvestmentAccountsPage,
   validateSearch: (search: Record<string, unknown>) => ({
     update: search.update === true || search.update === "true" ? (true as const) : undefined,
   }),
@@ -72,7 +72,7 @@ export const Route = createFileRoute("/investments/")({
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-function InvestmentsPage() {
+function InvestmentAccountsPage() {
   const router = useRouter();
   const { accounts, people } = Route.useLoaderData();
   const { update } = Route.useSearch();

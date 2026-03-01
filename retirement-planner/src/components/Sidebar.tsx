@@ -17,7 +17,11 @@ import { useEffect, useState } from "react";
 
 // ─── Nav structure ────────────────────────────────────────────────────────────
 
-type NavChild = { label: string; path: string };
+// Registered paths: add a path here once its route file exists. Remove the
+// `unregistered: true` flag from the matching NavChild entry at the same time.
+type RegisteredNavPath = "/investments/accounts";
+
+type NavChild = { label: string; path: RegisteredNavPath } | { label: string; path: string; unregistered: true };
 
 type NavSection = {
   id: string;
@@ -44,8 +48,8 @@ const NAV: NavSection[] = [
     path: "/investments",
     children: [
       { label: "Accounts", path: "/investments/accounts" },
-      { label: "Allocations", path: "/investments/allocations" },
-      { label: "Glide Paths", path: "/investments/glide-paths" },
+      { label: "Allocations", path: "/investments/allocations", unregistered: true },
+      { label: "Glide Paths", path: "/investments/glide-paths", unregistered: true },
     ],
   },
   {
@@ -55,9 +59,9 @@ const NAV: NavSection[] = [
     color: "var(--section-income)",
     path: "/income",
     children: [
-      { label: "Employment", path: "/income/employment" },
-      { label: "Social Security", path: "/income/social-security" },
-      { label: "Passive Streams", path: "/income/passive-streams" },
+      { label: "Employment", path: "/income/employment", unregistered: true },
+      { label: "Social Security", path: "/income/social-security", unregistered: true },
+      { label: "Passive Streams", path: "/income/passive-streams", unregistered: true },
     ],
   },
   {
@@ -67,9 +71,9 @@ const NAV: NavSection[] = [
     color: "var(--section-expenses)",
     path: "/expenses",
     children: [
-      { label: "Monthly Import", path: "/expenses/monthly-import" },
-      { label: "Budget Baseline", path: "/expenses/budget-baseline" },
-      { label: "Categories", path: "/expenses/categories" },
+      { label: "Monthly Import", path: "/expenses/monthly-import", unregistered: true },
+      { label: "Budget Baseline", path: "/expenses/budget-baseline", unregistered: true },
+      { label: "Categories", path: "/expenses/categories", unregistered: true },
     ],
   },
   {
@@ -79,9 +83,9 @@ const NAV: NavSection[] = [
     color: "var(--section-housing)",
     path: "/housing",
     children: [
-      { label: "Mortgage", path: "/housing/mortgage" },
-      { label: "Home Equity", path: "/housing/home-equity" },
-      { label: "Future Events", path: "/housing/future-events" },
+      { label: "Mortgage", path: "/housing/mortgage", unregistered: true },
+      { label: "Home Equity", path: "/housing/home-equity", unregistered: true },
+      { label: "Future Events", path: "/housing/future-events", unregistered: true },
     ],
   },
   {
@@ -91,9 +95,9 @@ const NAV: NavSection[] = [
     color: "var(--section-taxes)",
     path: "/taxes",
     children: [
-      { label: "Overview", path: "/taxes/overview" },
-      { label: "Roth Scenarios", path: "/taxes/roth-scenarios" },
-      { label: "RMDs", path: "/taxes/rmds" },
+      { label: "Overview", path: "/taxes/overview", unregistered: true },
+      { label: "Roth Scenarios", path: "/taxes/roth-scenarios", unregistered: true },
+      { label: "RMDs", path: "/taxes/rmds", unregistered: true },
     ],
   },
   {
@@ -103,8 +107,8 @@ const NAV: NavSection[] = [
     color: "var(--section-scenarios)",
     path: "/scenarios",
     children: [
-      { label: "Configure", path: "/scenarios/configure" },
-      { label: "Compare", path: "/scenarios/compare" },
+      { label: "Configure", path: "/scenarios/configure", unregistered: true },
+      { label: "Compare", path: "/scenarios/compare", unregistered: true },
     ],
   },
   {
@@ -114,8 +118,8 @@ const NAV: NavSection[] = [
     color: "var(--section-simulation)",
     path: "/simulation",
     children: [
-      { label: "Run", path: "/simulation/run" },
-      { label: "Results", path: "/simulation/results" },
+      { label: "Run", path: "/simulation/run", unregistered: true },
+      { label: "Results", path: "/simulation/results", unregistered: true },
     ],
   },
 ];
@@ -290,8 +294,8 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                     return (
                       <Link
                         key={child.path}
-                        // biome-ignore lint/suspicious/noExplicitAny: TanStack Router `to` requires registered routes; unbuilt routes need cast
-                        to={child.path as any}
+                        // biome-ignore lint/suspicious/noExplicitAny: unregistered routes need cast; remove flag from NavChild entry when route is built
+                        to={"unregistered" in child ? (child.path as any) : child.path}
                         className="flex items-center gap-1.5 h-[34px] pl-9 pr-3 text-[12.5px] whitespace-nowrap"
                         style={{
                           color: childActive ? "var(--text)" : "var(--text-dim)",
