@@ -3,6 +3,7 @@ import { useState } from "react";
 
 interface ErrorDisplayProps {
   error: unknown;
+  defaultExpanded?: boolean;
   onDismiss?: () => void;
 }
 
@@ -20,8 +21,8 @@ function extractError(error: unknown): { type: string; message: string; stack?: 
   return { type: "Unknown", message: JSON.stringify(error, null, 2) };
 }
 
-export function ErrorDisplay({ error, onDismiss }: ErrorDisplayProps) {
-  const [stackExpanded, setStackExpanded] = useState(false);
+export function ErrorDisplay({ error, defaultExpanded = false, onDismiss }: ErrorDisplayProps) {
+  const [stackExpanded, setStackExpanded] = useState(defaultExpanded);
   const { type, message, stack } = extractError(error);
 
   return (
@@ -102,7 +103,7 @@ export function ErrorDisplay({ error, onDismiss }: ErrorDisplayProps) {
             whiteSpace: "pre-wrap",
             wordBreak: "break-all",
             overflowY: "auto",
-            maxHeight: 220,
+            maxHeight: defaultExpanded ? "none" : 220,
             borderTop: "1px solid color-mix(in srgb, var(--color-negative) 20%, transparent)",
             background: "color-mix(in srgb, var(--color-negative) 5%, transparent)",
             lineHeight: 1.6,

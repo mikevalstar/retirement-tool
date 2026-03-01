@@ -37,8 +37,8 @@ export const Route = createFileRoute("/investments/allocations/")({
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function fmtPct(n: number | null): string {
-  return n === null ? "—" : `${n.toFixed(1)}%`;
+function fmtPct(n: number | null | undefined): string {
+  return n == null ? "—" : `${n.toFixed(1)}%`;
 }
 
 // ─── Accordion Editor ─────────────────────────────────────────────────────────

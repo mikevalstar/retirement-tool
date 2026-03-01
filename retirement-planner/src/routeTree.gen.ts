@@ -17,6 +17,7 @@ import { Route as ExpensesIndexRouteImport } from './routes/expenses/index'
 import { Route as InvestmentsGlidePathsIndexRouteImport } from './routes/investments/glide-paths/index'
 import { Route as InvestmentsAllocationsIndexRouteImport } from './routes/investments/allocations/index'
 import { Route as InvestmentsAccountsIndexRouteImport } from './routes/investments/accounts/index'
+import { Route as ExpensesCategoriesIndexRouteImport } from './routes/expenses/categories/index'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -61,6 +62,11 @@ const InvestmentsAccountsIndexRoute =
     path: '/investments/accounts/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ExpensesCategoriesIndexRoute = ExpensesCategoriesIndexRouteImport.update({
+  id: '/expenses/categories/',
+  path: '/expenses/categories/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/expenses/': typeof ExpensesIndexRoute
   '/investments/': typeof InvestmentsIndexRoute
+  '/expenses/categories/': typeof ExpensesCategoriesIndexRoute
   '/investments/accounts/': typeof InvestmentsAccountsIndexRoute
   '/investments/allocations/': typeof InvestmentsAllocationsIndexRoute
   '/investments/glide-paths/': typeof InvestmentsGlidePathsIndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/expenses': typeof ExpensesIndexRoute
   '/investments': typeof InvestmentsIndexRoute
+  '/expenses/categories': typeof ExpensesCategoriesIndexRoute
   '/investments/accounts': typeof InvestmentsAccountsIndexRoute
   '/investments/allocations': typeof InvestmentsAllocationsIndexRoute
   '/investments/glide-paths': typeof InvestmentsGlidePathsIndexRoute
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/expenses/': typeof ExpensesIndexRoute
   '/investments/': typeof InvestmentsIndexRoute
+  '/expenses/categories/': typeof ExpensesCategoriesIndexRoute
   '/investments/accounts/': typeof InvestmentsAccountsIndexRoute
   '/investments/allocations/': typeof InvestmentsAllocationsIndexRoute
   '/investments/glide-paths/': typeof InvestmentsGlidePathsIndexRoute
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/expenses/'
     | '/investments/'
+    | '/expenses/categories/'
     | '/investments/accounts/'
     | '/investments/allocations/'
     | '/investments/glide-paths/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/expenses'
     | '/investments'
+    | '/expenses/categories'
     | '/investments/accounts'
     | '/investments/allocations'
     | '/investments/glide-paths'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/expenses/'
     | '/investments/'
+    | '/expenses/categories/'
     | '/investments/accounts/'
     | '/investments/allocations/'
     | '/investments/glide-paths/'
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   ExpensesIndexRoute: typeof ExpensesIndexRoute
   InvestmentsIndexRoute: typeof InvestmentsIndexRoute
+  ExpensesCategoriesIndexRoute: typeof ExpensesCategoriesIndexRoute
   InvestmentsAccountsIndexRoute: typeof InvestmentsAccountsIndexRoute
   InvestmentsAllocationsIndexRoute: typeof InvestmentsAllocationsIndexRoute
   InvestmentsGlidePathsIndexRoute: typeof InvestmentsGlidePathsIndexRoute
@@ -195,6 +208,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InvestmentsAccountsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/expenses/categories/': {
+      id: '/expenses/categories/'
+      path: '/expenses/categories'
+      fullPath: '/expenses/categories/'
+      preLoaderRoute: typeof ExpensesCategoriesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   ExpensesIndexRoute: ExpensesIndexRoute,
   InvestmentsIndexRoute: InvestmentsIndexRoute,
+  ExpensesCategoriesIndexRoute: ExpensesCategoriesIndexRoute,
   InvestmentsAccountsIndexRoute: InvestmentsAccountsIndexRoute,
   InvestmentsAllocationsIndexRoute: InvestmentsAllocationsIndexRoute,
   InvestmentsGlidePathsIndexRoute: InvestmentsGlidePathsIndexRoute,
