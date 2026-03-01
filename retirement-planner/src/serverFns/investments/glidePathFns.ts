@@ -27,6 +27,21 @@ const DeleteWaypointInput = z.object({
   id: z.number().int().positive(),
 });
 
+const BatchCreateWaypointsInput = z.object({
+  waypoints: z.array(
+    z
+      .object({
+        year: z.number().int().min(1900).max(2200),
+        equityPct: z.number().min(0).max(100),
+        fixedIncomePct: z.number().min(0).max(100),
+        cashPct: z.number().min(0).max(100),
+      })
+      .refine((d) => Math.round(d.equityPct + d.fixedIncomePct + d.cashPct) === 100, {
+        message: "Allocation percentages must sum to 100",
+      }),
+  ),
+});
+
 // ─── Server Functions ─────────────────────────────────────────────────────────
 
 /**
@@ -82,5 +97,45 @@ export const deleteWaypoint = createServerFn({ method: "POST" })
       });
     } catch (err) {
       throw new Error(`Failed to delete waypoint: ${(err as Error).message}`);
+    }
+  });
+
+/**
+ * Fetch all people with their birth years.
+ */
+export const getPeopleWithBirthYears = createServerFn({ method: "GET" }).handler(async () => {
+  try {
+    return prisma.person.findMany({
+      select: { id: true, name: true, birthYear: true },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    });
+  } catch (err) {
+    throw new Error(`Failed to fetch people: ${(err as Error).message}`);
+  }
+});
+
+/**
+ * Batch create waypoints, replacing any existing waypoints for the same years.
+ */
+export const batchCreateWaypoints = createServerFn({ method: "POST" })
+  .inputValidator(BatchCreateWaypointsInput.parse)
+  .handler(async ({ data }) => {
+    try {
+      const years = data.waypoints.map((w) => w.year);
+
+      await prisma.glidePathWaypoint.deleteMany({
+        where: { year: { in: years } },
+      });
+
+      return prisma.glidePathWaypoint.createMany({
+        data: data.waypoints.map((w) => ({
+          year: w.year,
+          equityPct: w.equityPct,
+          fixedIncomePct: w.fixedIncomePct,
+          cashPct: w.cashPct,
+        })),
+      });
+    } catch (err) {
+      throw new Error(`Failed to create waypoints: ${(err as Error).message}`);
     }
   });

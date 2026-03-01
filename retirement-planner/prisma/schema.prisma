@@ -16,6 +16,7 @@ model Todo {
 model Person {
   id        Int       @id @default(autoincrement())
   name      String
+  birthYear Int?      // 4-digit year, optional (used for glide path recommendations)
   sortOrder Int       @default(0)
   createdAt DateTime  @default(now())
   // Restrict (Prisma default) — cannot delete a Person who owns accounts.

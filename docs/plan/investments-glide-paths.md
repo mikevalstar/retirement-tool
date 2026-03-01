@@ -56,5 +56,6 @@ Empty state (no waypoints at all): shows the explainer prominently + "Add your f
 
 - Per-account glide paths (one portfolio-wide path only)
 - Non-linear (curved) interpolation between waypoints
-- Automatic glide path suggestions based on age or target date
 - Importing glide paths from target-date fund benchmarks
+
+**Note:** Recommended glide path generation is covered in [`recommended-glide-path.md`](./recommended-glide-path.md).

@@ -124,6 +124,19 @@ A: One portfolio-wide glide path.
 
 ---
 
+## Recommended Glide Path - 2026-03-01
+
+**Q: Where should birth year be stored?**
+A: On the Person model, editable in Settings. Use birth year (not age) for longevity.
+
+**Q: When should we ask for birth year?**
+A: Require Settings to be configured first. The glide path wizard blocks if no birth year exists.
+
+**Q: Should we ask for target retirement age in the wizard?**
+A: Yes — scenarios aren't built yet, so ask during the glide path wizard. This becomes a default that scenarios can later override.
+
+---
+
 ## Error Display (Ignition-style) - 2026-03-01
 
 **Q: IDE integration — single IDE or multiple?**

@@ -4,6 +4,7 @@ import { Check, GripVertical, Plus, Settings, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { InlineError } from "#/components/InlineError";
 import { prisma } from "#/db";
+import { dayjs } from "#/lib/date";
 
 // ─── Server functions ─────────────────────────────────────────────────────────
 
@@ -19,9 +20,9 @@ const createPerson = createServerFn({ method: "POST" })
   });
 
 const updatePerson = createServerFn({ method: "POST" })
-  .inputValidator((data: { id: number; name: string }) => data)
+  .inputValidator((data: { id: number; name: string; birthYear: number | null }) => data)
   .handler(async ({ data }) => {
-    return await prisma.person.update({ where: { id: data.id }, data: { name: data.name } });
+    return await prisma.person.update({ where: { id: data.id }, data: { name: data.name, birthYear: data.birthYear } });
   });
 
 const deletePerson = createServerFn({ method: "POST" })
@@ -46,27 +47,39 @@ function SettingsPage() {
   const people = Route.useLoaderData();
 
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editValue, setEditValue] = useState("");
+  const [editName, setEditName] = useState("");
+  const [editBirthYear, setEditBirthYear] = useState("");
   const [newName, setNewName] = useState("");
   const [adding, setAdding] = useState(false);
   const [pageError, setPageError] = useState<unknown>(null);
 
-  const startEdit = (id: number, name: string) => {
+  const currentYear = dayjs().year();
+  const minBirthYear = 1920;
+  const maxBirthYear = currentYear - 18;
+
+  const startEdit = (id: number, name: string, birthYear: number | null) => {
     setEditingId(id);
-    setEditValue(name);
+    setEditName(name);
+    setEditBirthYear(birthYear?.toString() ?? "");
   };
 
   const commitEdit = async () => {
     if (editingId === null) return;
-    const trimmed = editValue.trim();
-    if (trimmed) {
-      try {
-        await updatePerson({ data: { id: editingId, name: trimmed } });
-        router.invalidate();
-      } catch (err) {
-        setPageError(err);
-        return;
-      }
+    const trimmedName = editName.trim();
+    if (!trimmedName) return;
+
+    const birthYearNum = editBirthYear.trim() ? Number.parseInt(editBirthYear, 10) : null;
+    if (birthYearNum !== null && (birthYearNum < minBirthYear || birthYearNum > maxBirthYear)) {
+      setPageError(new Error(`Birth year must be between ${minBirthYear} and ${maxBirthYear}`));
+      return;
+    }
+
+    try {
+      await updatePerson({ data: { id: editingId, name: trimmedName, birthYear: birthYearNum } });
+      router.invalidate();
+    } catch (err) {
+      setPageError(err);
+      return;
     }
     setEditingId(null);
   };
@@ -181,123 +194,174 @@ function SettingsPage() {
             No people added yet. Add household members to get started.
           </div>
         ) : (
-          <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-            {people.map((person, i) => (
-              <li
-                key={person.id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  padding: "10px 18px",
-                  borderBottom: i < people.length - 1 || adding ? "1px solid var(--border)" : undefined,
-                }}>
-                <GripVertical size={13} style={{ color: "var(--text-dim)", flexShrink: 0 }} />
+          <>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                padding: "8px 18px",
+                borderBottom: "1px solid var(--border)",
+                fontSize: 11,
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                color: "var(--text-dim)",
+              }}>
+              <div style={{ width: 13 }} />
+              <div style={{ flex: 1 }}>Name</div>
+              <div style={{ width: 80, textAlign: "right" }}>Birth Year</div>
+              <div style={{ width: 24 }} />
+            </div>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              {people.map((person, i) => (
+                <li
+                  key={person.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    padding: "10px 18px",
+                    borderBottom: i < people.length - 1 || adding ? "1px solid var(--border)" : undefined,
+                  }}>
+                  <GripVertical size={13} style={{ color: "var(--text-dim)", flexShrink: 0 }} />
 
-                {editingId === person.id ? (
-                  <>
-                    <input
-                      autoFocus
-                      value={editValue}
-                      onChange={(e) => setEditValue(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") commitEdit();
-                        if (e.key === "Escape") cancelEdit();
-                      }}
-                      style={{
-                        flex: 1,
-                        background: "var(--surface-raised)",
-                        border: "1px solid var(--border)",
-                        borderRadius: 4,
-                        padding: "4px 8px",
-                        fontSize: 13,
-                        color: "var(--text)",
-                        fontFamily: "inherit",
-                        outline: "none",
-                      }}
-                    />
-                    <button type="button" onClick={commitEdit} style={iconBtn}>
-                      <Check size={13} style={{ color: "var(--color-positive)" }} />
-                    </button>
-                    <button type="button" onClick={cancelEdit} style={iconBtn}>
-                      <X size={13} style={{ color: "var(--text-dim)" }} />
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => startEdit(person.id, person.name)}
-                      style={{
-                        flex: 1,
-                        fontSize: 13,
-                        color: "var(--text)",
-                        cursor: "text",
-                        background: "none",
-                        border: "none",
-                        padding: 0,
-                        textAlign: "left",
-                        fontFamily: "inherit",
-                      }}>
-                      {person.name}
-                    </button>
-                    <button type="button" onClick={() => handleDelete(person.id)} style={iconBtn}>
-                      <Trash2 size={13} style={{ color: "var(--text-dim)" }} />
-                    </button>
-                  </>
-                )}
-              </li>
-            ))}
+                  {editingId === person.id ? (
+                    <>
+                      <input
+                        autoFocus
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") commitEdit();
+                          if (e.key === "Escape") cancelEdit();
+                        }}
+                        placeholder="Name"
+                        style={{
+                          flex: 1,
+                          background: "var(--surface-raised)",
+                          border: "1px solid var(--border)",
+                          borderRadius: 4,
+                          padding: "4px 8px",
+                          fontSize: 13,
+                          color: "var(--text)",
+                          fontFamily: "inherit",
+                          outline: "none",
+                        }}
+                      />
+                      <input
+                        value={editBirthYear}
+                        onChange={(e) => setEditBirthYear(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") commitEdit();
+                          if (e.key === "Escape") cancelEdit();
+                        }}
+                        placeholder="Birth year"
+                        className="num"
+                        style={{
+                          width: 80,
+                          background: "var(--surface-raised)",
+                          border: "1px solid var(--border)",
+                          borderRadius: 4,
+                          padding: "4px 8px",
+                          fontSize: 13,
+                          color: "var(--text)",
+                          fontFamily: "inherit",
+                          outline: "none",
+                        }}
+                      />
+                      <button type="button" onClick={commitEdit} style={iconBtn}>
+                        <Check size={13} style={{ color: "var(--color-positive)" }} />
+                      </button>
+                      <button type="button" onClick={cancelEdit} style={iconBtn}>
+                        <X size={13} style={{ color: "var(--text-dim)" }} />
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => startEdit(person.id, person.name, person.birthYear)}
+                        style={{
+                          flex: 1,
+                          fontSize: 13,
+                          color: "var(--text)",
+                          cursor: "text",
+                          background: "none",
+                          border: "none",
+                          padding: 0,
+                          textAlign: "left",
+                          fontFamily: "inherit",
+                        }}>
+                        {person.name}
+                      </button>
+                      <span
+                        className="num"
+                        style={{
+                          fontSize: 12,
+                          color: person.birthYear ? "var(--text-muted)" : "var(--text-dim)",
+                          width: 80,
+                          textAlign: "right",
+                        }}>
+                        {person.birthYear ?? "—"}
+                      </span>
+                      <button type="button" onClick={() => handleDelete(person.id)} style={iconBtn}>
+                        <Trash2 size={13} style={{ color: "var(--text-dim)" }} />
+                      </button>
+                    </>
+                  )}
+                </li>
+              ))}
 
-            {/* Add new row */}
-            {adding && (
-              <li
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  padding: "10px 18px",
-                }}>
-                <GripVertical size={13} style={{ color: "var(--text-dim)", flexShrink: 0 }} />
-                <input
-                  autoFocus
-                  placeholder="Name"
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleAdd();
-                    if (e.key === "Escape") {
+              {/* Add new row */}
+              {adding && (
+                <li
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    padding: "10px 18px",
+                  }}>
+                  <GripVertical size={13} style={{ color: "var(--text-dim)", flexShrink: 0 }} />
+                  <input
+                    autoFocus
+                    placeholder="Name"
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleAdd();
+                      if (e.key === "Escape") {
+                        setAdding(false);
+                        setNewName("");
+                      }
+                    }}
+                    style={{
+                      flex: 1,
+                      background: "var(--surface-raised)",
+                      border: "1px solid var(--border)",
+                      borderRadius: 4,
+                      padding: "4px 8px",
+                      fontSize: 13,
+                      color: "var(--text)",
+                      fontFamily: "inherit",
+                      outline: "none",
+                    }}
+                  />
+                  <button type="button" onClick={handleAdd} style={iconBtn}>
+                    <Check size={13} style={{ color: "var(--color-positive)" }} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
                       setAdding(false);
                       setNewName("");
-                    }
-                  }}
-                  style={{
-                    flex: 1,
-                    background: "var(--surface-raised)",
-                    border: "1px solid var(--border)",
-                    borderRadius: 4,
-                    padding: "4px 8px",
-                    fontSize: 13,
-                    color: "var(--text)",
-                    fontFamily: "inherit",
-                    outline: "none",
-                  }}
-                />
-                <button type="button" onClick={handleAdd} style={iconBtn}>
-                  <Check size={13} style={{ color: "var(--color-positive)" }} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAdding(false);
-                    setNewName("");
-                  }}
-                  style={iconBtn}>
-                  <X size={13} style={{ color: "var(--text-dim)" }} />
-                </button>
-              </li>
-            )}
-          </ul>
+                    }}
+                    style={iconBtn}>
+                    <X size={13} style={{ color: "var(--text-dim)" }} />
+                  </button>
+                </li>
+              )}
+            </ul>
+          </>
         )}
       </section>
     </div>

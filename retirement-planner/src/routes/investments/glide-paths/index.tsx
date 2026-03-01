@@ -1,14 +1,15 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { GitCommitHorizontal, Plus, Trash2, TrendingDown } from "lucide-react";
+import { GitCommitHorizontal, Plus, Sparkles, Trash2, TrendingDown } from "lucide-react";
 import { useState } from "react";
 import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { InlineError } from "#/components/InlineError";
 import { SlidePanel } from "#/components/SlidePanel";
 import { dayjs } from "#/lib/date";
 import { SECTION_ACCENT } from "#/lib/formatters";
+import { generateRecommendedGlidePath, getOldestPerson } from "#/lib/glidePathGeneration";
 import { panelCancelBtnCls, panelCancelBtnCSS, panelInputCls, panelInputCSS, panelSaveBtnCls, panelSaveBtnCSS } from "#/lib/panelStyles";
 import { thCls, thCSS } from "#/lib/tableStyles";
-import { deleteWaypoint, getWaypoints, upsertWaypoint } from "#/serverFns/investments/glidePathFns";
+import { batchCreateWaypoints, deleteWaypoint, getPeopleWithBirthYears, getWaypoints, upsertWaypoint } from "#/serverFns/investments/glidePathFns";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -19,8 +20,8 @@ type Waypoint = Awaited<ReturnType<typeof getWaypoints>>[number];
 export const Route = createFileRoute("/investments/glide-paths/")({
   component: GlidePathsPage,
   loader: async () => {
-    const waypoints = await getWaypoints();
-    return { waypoints };
+    const [waypoints, people] = await Promise.all([getWaypoints(), getPeopleWithBirthYears()]);
+    return { waypoints, people };
   },
 });
 
@@ -195,6 +196,171 @@ function AddWaypointPanel({ existingYears, onSaved, onClose, onError }: AddPanel
           <p className="text-[12px] m-0" style={{ color: "var(--color-negative)" }}>
             Percentages must sum to exactly 100.
           </p>
+        )}
+      </div>
+    </SlidePanel>
+  );
+}
+
+// ─── Generate Recommended Path Panel ────────────────────────────────────────────
+
+interface GeneratePanelProps {
+  people: { id: number; name: string; birthYear: number | null }[];
+  onGenerated: () => void;
+  onClose: () => void;
+  onError: (err: unknown) => void;
+}
+
+function GenerateRecommendedPanel({ people, onGenerated, onClose, onError }: GeneratePanelProps) {
+  const [retirementAgeStr, setRetirementAgeStr] = useState("65");
+  const [saving, setSaving] = useState(false);
+
+  const currentYear = dayjs().year();
+  const oldestPerson = getOldestPerson(people);
+  const hasBirthYear = oldestPerson !== null;
+
+  const retirementAge = Number.parseInt(retirementAgeStr, 10);
+  const retirementAgeValid = !Number.isNaN(retirementAge) && retirementAge >= 55 && retirementAge <= 75;
+  const currentAge = oldestPerson ? currentYear - oldestPerson.birthYear : null;
+  const retirementInPast = currentAge !== null && retirementAge < currentAge;
+
+  const previewWaypoints = hasBirthYear && retirementAgeValid && !retirementInPast ? generateRecommendedGlidePath(oldestPerson.birthYear, retirementAge) : [];
+
+  const canGenerate = hasBirthYear && retirementAgeValid && !retirementInPast && !saving;
+
+  const handleGenerate = async () => {
+    if (!canGenerate || !oldestPerson) return;
+    setSaving(true);
+    try {
+      await batchCreateWaypoints({
+        data: {
+          waypoints: previewWaypoints.map((w) => ({
+            year: w.year,
+            equityPct: w.equityPct,
+            fixedIncomePct: w.fixedIncomePct,
+            cashPct: w.cashPct,
+          })),
+        },
+      });
+      onGenerated();
+    } catch (err) {
+      onError(err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <SlidePanel
+      title="Generate Recommended Path"
+      onClose={onClose}
+      footer={
+        <>
+          <button type="button" onClick={onClose} className={panelCancelBtnCls} style={panelCancelBtnCSS}>
+            Cancel
+          </button>
+          <button type="button" onClick={handleGenerate} disabled={!canGenerate} className={panelSaveBtnCls(canGenerate)} style={panelSaveBtnCSS(canGenerate)}>
+            {saving ? "Generating…" : "Generate waypoints"}
+          </button>
+        </>
+      }>
+      <div className="p-5 flex flex-col gap-5">
+        {!hasBirthYear && (
+          <div
+            className="rounded-md px-4 py-3"
+            style={{
+              background: "color-mix(in srgb, var(--color-warning) 10%, transparent)",
+              border: "1px solid color-mix(in srgb, var(--color-warning) 30%, transparent)",
+            }}>
+            <p className="text-[13px] m-0" style={{ color: "var(--text)" }}>
+              To generate a recommended glide path, add your birth year in{" "}
+              <a href="/settings" style={{ color: SECTION_ACCENT, textDecoration: "underline" }}>
+                Settings
+              </a>{" "}
+              first.
+            </p>
+          </div>
+        )}
+
+        {hasBirthYear && (
+          <>
+            <div className="rounded-md px-4 py-3" style={{ background: "var(--app-bg)", border: "1px solid var(--border)" }}>
+              <p className="text-[12px] m-0" style={{ color: "var(--text-muted)" }}>
+                <span className="font-medium" style={{ color: "var(--text)" }}>
+                  {oldestPerson.birthYear}
+                </span>{" "}
+                (birth year{people.filter((p) => p.birthYear !== null).length > 1 ? ", oldest person used" : ""})
+              </p>
+            </div>
+
+            <label className="flex flex-col gap-1.5">
+              <span className="text-[11px] uppercase tracking-wide font-medium" style={{ color: "var(--text-dim)" }}>
+                Target Retirement Age
+              </span>
+              <input
+                type="number"
+                min={55}
+                max={75}
+                step={1}
+                value={retirementAgeStr}
+                onChange={(e) => setRetirementAgeStr(e.target.value)}
+                placeholder="65"
+                className={`num ${panelInputCls}`}
+                style={panelInputCSS}
+              />
+              {retirementInPast && (
+                <p className="text-[12px] m-0" style={{ color: "var(--color-negative)" }}>
+                  Retirement age is in the past. Choose a future retirement age.
+                </p>
+              )}
+            </label>
+
+            {previewWaypoints.length > 0 && (
+              <div className="flex flex-col gap-3">
+                <span className="text-[11px] uppercase tracking-wide font-medium" style={{ color: "var(--text-dim)" }}>
+                  Preview
+                </span>
+                <div className="rounded-md overflow-hidden" style={{ background: "var(--app-bg)", border: "1px solid var(--border)" }}>
+                  <table className="w-full border-collapse text-[12px]">
+                    <thead>
+                      <tr style={{ borderBottom: "1px solid var(--border)" }}>
+                        <th className="py-2 px-3 text-left" style={{ color: "var(--text-dim)" }}>
+                          Year
+                        </th>
+                        <th className="py-2 px-3 text-right num" style={{ color: "var(--text-dim)" }}>
+                          Equities
+                        </th>
+                        <th className="py-2 px-3 text-right num" style={{ color: "var(--text-dim)" }}>
+                          Fixed
+                        </th>
+                        <th className="py-2 px-3 text-right num" style={{ color: "var(--text-dim)" }}>
+                          Cash
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {previewWaypoints.map((w) => (
+                        <tr key={w.year} style={{ borderTop: "1px solid var(--border)" }}>
+                          <td className="py-1.5 px-3 num" style={{ color: "var(--text)" }}>
+                            {w.year}
+                          </td>
+                          <td className="py-1.5 px-3 text-right num" style={{ color: "var(--text)" }}>
+                            {w.equityPct.toFixed(0)}%
+                          </td>
+                          <td className="py-1.5 px-3 text-right num" style={{ color: "var(--text)" }}>
+                            {w.fixedIncomePct.toFixed(0)}%
+                          </td>
+                          <td className="py-1.5 px-3 text-right num" style={{ color: "var(--text)" }}>
+                            {w.cashPct.toFixed(0)}%
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </SlidePanel>
@@ -484,8 +650,9 @@ function ChartPlaceholder() {
 
 function GlidePathsPage() {
   const router = useRouter();
-  const { waypoints } = Route.useLoaderData();
+  const { waypoints, people } = Route.useLoaderData();
   const [panelOpen, setPanelOpen] = useState(false);
+  const [generatePanelOpen, setGeneratePanelOpen] = useState(false);
   const [pageError, setPageError] = useState<unknown>(null);
 
   const existingYears = new Set(waypoints.map((w) => w.year));
@@ -501,6 +668,11 @@ function GlidePathsPage() {
 
   const handleSaved = () => {
     setPanelOpen(false);
+    router.invalidate();
+  };
+
+  const handleGenerated = () => {
+    setGeneratePanelOpen(false);
     router.invalidate();
   };
 
@@ -552,19 +724,34 @@ function GlidePathsPage() {
               Define your first allocation target to start building your glide path.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => setPanelOpen(true)}
-            className="flex items-center gap-1.5 py-[7px] px-4 rounded-md text-[13px] font-medium cursor-pointer"
-            style={{
-              background: `color-mix(in srgb, ${SECTION_ACCENT} 15%, transparent)`,
-              border: `1px solid color-mix(in srgb, ${SECTION_ACCENT} 35%, transparent)`,
-              color: SECTION_ACCENT,
-              fontFamily: "inherit",
-            }}>
-            <Plus size={14} />
-            Add your first waypoint
-          </button>
+          <div className="flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={() => setPanelOpen(true)}
+              className="flex items-center gap-1.5 py-[7px] px-4 rounded-md text-[13px] font-medium cursor-pointer"
+              style={{
+                background: `color-mix(in srgb, ${SECTION_ACCENT} 15%, transparent)`,
+                border: `1px solid color-mix(in srgb, ${SECTION_ACCENT} 35%, transparent)`,
+                color: SECTION_ACCENT,
+                fontFamily: "inherit",
+              }}>
+              <Plus size={14} />
+              Add your first waypoint
+            </button>
+            <button
+              type="button"
+              onClick={() => setGeneratePanelOpen(true)}
+              className="flex items-center gap-1.5 py-[7px] px-4 rounded-md text-[13px] font-medium cursor-pointer"
+              style={{
+                background: "transparent",
+                border: "1px solid var(--border)",
+                color: "var(--text-muted)",
+                fontFamily: "inherit",
+              }}>
+              <Sparkles size={14} />
+              Generate recommended path
+            </button>
+          </div>
         </div>
       ) : (
         <>
@@ -581,6 +768,18 @@ function GlidePathsPage() {
           onError={(err) => {
             setPageError(err);
             setPanelOpen(false);
+          }}
+        />
+      )}
+
+      {generatePanelOpen && (
+        <GenerateRecommendedPanel
+          people={people}
+          onGenerated={handleGenerated}
+          onClose={() => setGeneratePanelOpen(false)}
+          onError={(err) => {
+            setPageError(err);
+            setGeneratePanelOpen(false);
           }}
         />
       )}
