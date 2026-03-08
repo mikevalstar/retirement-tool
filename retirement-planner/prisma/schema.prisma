@@ -165,6 +165,11 @@ model Scenario {
   retirementYear  Int      // Household retirement year (last person retires)
   planningEndYear Int      // Year simulation ends (expected end of life for longer-lived person)
   inflationRate   Float    @default(3.0) // Annual inflation rate (%)
+  // JSON blob from the most recent simulation run. Null until first run.
+  // Shape: { runAt, mode, crashProfile, settingsSnapshot, startingPortfolio,
+  //          years: number[], p10: number[], p25: number[], p50: number[],
+  //          p75: number[], p90: number[], successRate: number, medianDepletionYear: number|null }
+  simulationResultsJson String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -172,6 +177,31 @@ model Scenario {
   contributions  ScenarioContribution[]
   housingEvents  ScenarioHousingEvent[]
   cppOasSettings ScenarioCppOas[]
+}
+
+// ─── Simulation Settings ──────────────────────────────────────────────────────
+// Singleton — at most one row. Upserted on first visit to Simulation → Settings.
+// Stores global return assumptions and engine config used for all simulation runs.
+
+model SimulationSettings {
+  id Int @id @default(autoincrement())
+
+  // Return assumptions per asset class
+  equityReturn   Float @default(7.0)   // Expected annual return (%)
+  equityStdDev   Float @default(15.0)  // Annual standard deviation (%)
+  fixedReturn    Float @default(3.5)   // Expected annual return (%)
+  fixedStdDev    Float @default(6.0)   // Annual standard deviation (%)
+  cashReturn     Float @default(2.0)   // Expected annual return (%)
+  cashStdDev     Float @default(1.0)   // Annual standard deviation (%)
+
+  // CPP base as a fraction of the 2026 published maximum (0.70 = 70% of max)
+  cppBaseMultiplier Float @default(0.70)
+
+  // Number of Monte Carlo runs per simulation
+  numRuns Int @default(1000)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // Ordered spending phases post-retirement. First phase starts at retirementYear.

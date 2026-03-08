@@ -12,11 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SimulationIndexRouteImport } from './routes/simulation/index'
 import { Route as ScenariosIndexRouteImport } from './routes/scenarios/index'
 import { Route as InvestmentsIndexRouteImport } from './routes/investments/index'
 import { Route as IncomeIndexRouteImport } from './routes/income/index'
 import { Route as HousingIndexRouteImport } from './routes/housing/index'
 import { Route as ExpensesIndexRouteImport } from './routes/expenses/index'
+import { Route as SimulationSettingsIndexRouteImport } from './routes/simulation/settings/index'
+import { Route as SimulationResultsIndexRouteImport } from './routes/simulation/results/index'
 import { Route as ScenariosCompareIndexRouteImport } from './routes/scenarios/compare/index'
 import { Route as ScenariosScenarioIdIndexRouteImport } from './routes/scenarios/$scenarioId/index'
 import { Route as InvestmentsGlidePathsIndexRouteImport } from './routes/investments/glide-paths/index'
@@ -38,6 +41,11 @@ const RssDotxmlRoute = RssDotxmlRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SimulationIndexRoute = SimulationIndexRouteImport.update({
+  id: '/simulation/',
+  path: '/simulation/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ScenariosIndexRoute = ScenariosIndexRouteImport.update({
@@ -63,6 +71,16 @@ const HousingIndexRoute = HousingIndexRouteImport.update({
 const ExpensesIndexRoute = ExpensesIndexRouteImport.update({
   id: '/expenses/',
   path: '/expenses/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SimulationSettingsIndexRoute = SimulationSettingsIndexRouteImport.update({
+  id: '/simulation/settings/',
+  path: '/simulation/settings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SimulationResultsIndexRoute = SimulationResultsIndexRouteImport.update({
+  id: '/simulation/results/',
+  path: '/simulation/results/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ScenariosCompareIndexRoute = ScenariosCompareIndexRouteImport.update({
@@ -114,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/income/': typeof IncomeIndexRoute
   '/investments/': typeof InvestmentsIndexRoute
   '/scenarios/': typeof ScenariosIndexRoute
+  '/simulation/': typeof SimulationIndexRoute
   '/expenses/categories/': typeof ExpensesCategoriesIndexRoute
   '/income/sources/': typeof IncomeSourcesIndexRoute
   '/investments/accounts/': typeof InvestmentsAccountsIndexRoute
@@ -121,6 +140,8 @@ export interface FileRoutesByFullPath {
   '/investments/glide-paths/': typeof InvestmentsGlidePathsIndexRoute
   '/scenarios/$scenarioId/': typeof ScenariosScenarioIdIndexRoute
   '/scenarios/compare/': typeof ScenariosCompareIndexRoute
+  '/simulation/results/': typeof SimulationResultsIndexRoute
+  '/simulation/settings/': typeof SimulationSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -131,6 +152,7 @@ export interface FileRoutesByTo {
   '/income': typeof IncomeIndexRoute
   '/investments': typeof InvestmentsIndexRoute
   '/scenarios': typeof ScenariosIndexRoute
+  '/simulation': typeof SimulationIndexRoute
   '/expenses/categories': typeof ExpensesCategoriesIndexRoute
   '/income/sources': typeof IncomeSourcesIndexRoute
   '/investments/accounts': typeof InvestmentsAccountsIndexRoute
@@ -138,6 +160,8 @@ export interface FileRoutesByTo {
   '/investments/glide-paths': typeof InvestmentsGlidePathsIndexRoute
   '/scenarios/$scenarioId': typeof ScenariosScenarioIdIndexRoute
   '/scenarios/compare': typeof ScenariosCompareIndexRoute
+  '/simulation/results': typeof SimulationResultsIndexRoute
+  '/simulation/settings': typeof SimulationSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -149,6 +173,7 @@ export interface FileRoutesById {
   '/income/': typeof IncomeIndexRoute
   '/investments/': typeof InvestmentsIndexRoute
   '/scenarios/': typeof ScenariosIndexRoute
+  '/simulation/': typeof SimulationIndexRoute
   '/expenses/categories/': typeof ExpensesCategoriesIndexRoute
   '/income/sources/': typeof IncomeSourcesIndexRoute
   '/investments/accounts/': typeof InvestmentsAccountsIndexRoute
@@ -156,6 +181,8 @@ export interface FileRoutesById {
   '/investments/glide-paths/': typeof InvestmentsGlidePathsIndexRoute
   '/scenarios/$scenarioId/': typeof ScenariosScenarioIdIndexRoute
   '/scenarios/compare/': typeof ScenariosCompareIndexRoute
+  '/simulation/results/': typeof SimulationResultsIndexRoute
+  '/simulation/settings/': typeof SimulationSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -168,6 +195,7 @@ export interface FileRouteTypes {
     | '/income/'
     | '/investments/'
     | '/scenarios/'
+    | '/simulation/'
     | '/expenses/categories/'
     | '/income/sources/'
     | '/investments/accounts/'
@@ -175,6 +203,8 @@ export interface FileRouteTypes {
     | '/investments/glide-paths/'
     | '/scenarios/$scenarioId/'
     | '/scenarios/compare/'
+    | '/simulation/results/'
+    | '/simulation/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -185,6 +215,7 @@ export interface FileRouteTypes {
     | '/income'
     | '/investments'
     | '/scenarios'
+    | '/simulation'
     | '/expenses/categories'
     | '/income/sources'
     | '/investments/accounts'
@@ -192,6 +223,8 @@ export interface FileRouteTypes {
     | '/investments/glide-paths'
     | '/scenarios/$scenarioId'
     | '/scenarios/compare'
+    | '/simulation/results'
+    | '/simulation/settings'
   id:
     | '__root__'
     | '/'
@@ -202,6 +235,7 @@ export interface FileRouteTypes {
     | '/income/'
     | '/investments/'
     | '/scenarios/'
+    | '/simulation/'
     | '/expenses/categories/'
     | '/income/sources/'
     | '/investments/accounts/'
@@ -209,6 +243,8 @@ export interface FileRouteTypes {
     | '/investments/glide-paths/'
     | '/scenarios/$scenarioId/'
     | '/scenarios/compare/'
+    | '/simulation/results/'
+    | '/simulation/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -220,6 +256,7 @@ export interface RootRouteChildren {
   IncomeIndexRoute: typeof IncomeIndexRoute
   InvestmentsIndexRoute: typeof InvestmentsIndexRoute
   ScenariosIndexRoute: typeof ScenariosIndexRoute
+  SimulationIndexRoute: typeof SimulationIndexRoute
   ExpensesCategoriesIndexRoute: typeof ExpensesCategoriesIndexRoute
   IncomeSourcesIndexRoute: typeof IncomeSourcesIndexRoute
   InvestmentsAccountsIndexRoute: typeof InvestmentsAccountsIndexRoute
@@ -227,6 +264,8 @@ export interface RootRouteChildren {
   InvestmentsGlidePathsIndexRoute: typeof InvestmentsGlidePathsIndexRoute
   ScenariosScenarioIdIndexRoute: typeof ScenariosScenarioIdIndexRoute
   ScenariosCompareIndexRoute: typeof ScenariosCompareIndexRoute
+  SimulationResultsIndexRoute: typeof SimulationResultsIndexRoute
+  SimulationSettingsIndexRoute: typeof SimulationSettingsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -250,6 +289,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/simulation/': {
+      id: '/simulation/'
+      path: '/simulation'
+      fullPath: '/simulation/'
+      preLoaderRoute: typeof SimulationIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/scenarios/': {
@@ -285,6 +331,20 @@ declare module '@tanstack/react-router' {
       path: '/expenses'
       fullPath: '/expenses/'
       preLoaderRoute: typeof ExpensesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/simulation/settings/': {
+      id: '/simulation/settings/'
+      path: '/simulation/settings'
+      fullPath: '/simulation/settings/'
+      preLoaderRoute: typeof SimulationSettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/simulation/results/': {
+      id: '/simulation/results/'
+      path: '/simulation/results'
+      fullPath: '/simulation/results/'
+      preLoaderRoute: typeof SimulationResultsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/scenarios/compare/': {
@@ -348,6 +408,7 @@ const rootRouteChildren: RootRouteChildren = {
   IncomeIndexRoute: IncomeIndexRoute,
   InvestmentsIndexRoute: InvestmentsIndexRoute,
   ScenariosIndexRoute: ScenariosIndexRoute,
+  SimulationIndexRoute: SimulationIndexRoute,
   ExpensesCategoriesIndexRoute: ExpensesCategoriesIndexRoute,
   IncomeSourcesIndexRoute: IncomeSourcesIndexRoute,
   InvestmentsAccountsIndexRoute: InvestmentsAccountsIndexRoute,
@@ -355,6 +416,8 @@ const rootRouteChildren: RootRouteChildren = {
   InvestmentsGlidePathsIndexRoute: InvestmentsGlidePathsIndexRoute,
   ScenariosScenarioIdIndexRoute: ScenariosScenarioIdIndexRoute,
   ScenariosCompareIndexRoute: ScenariosCompareIndexRoute,
+  SimulationResultsIndexRoute: SimulationResultsIndexRoute,
+  SimulationSettingsIndexRoute: SimulationSettingsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

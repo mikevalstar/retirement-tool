@@ -29,7 +29,10 @@ type RegisteredNavPath =
   | "/income/sources/"
   | "/housing/"
   | "/scenarios"
-  | "/scenarios/compare";
+  | "/scenarios/compare"
+  | "/simulation/"
+  | "/simulation/results/"
+  | "/simulation/settings/";
 
 type NavChild = { label: string; path: RegisteredNavPath } | { label: string; path: string; unregistered: true };
 
@@ -114,10 +117,10 @@ const NAV: NavSection[] = [
     label: "Simulation",
     icon: Play,
     color: "var(--section-simulation)",
-    path: "/simulation",
+    path: "/simulation/",
     children: [
-      { label: "Run", path: "/simulation/run", unregistered: true },
-      { label: "Results", path: "/simulation/results", unregistered: true },
+      { label: "Results", path: "/simulation/results/" },
+      { label: "Settings", path: "/simulation/settings/" },
     ],
   },
 ];
